@@ -1,12 +1,12 @@
 {
-  "name": "acme/hyperf-dpop-workspace",
+  "name": "lowelllab/hyperf-dpop-workspace",
   "description": "Development and verification workspace for a Hyperf DPoP extension.",
   "type": "project",
   "license": "MIT",
   "require": {
     "php": "^8.5",
-    "acme/dpop-core": "^0.1@dev",
-    "acme/hyperf-dpop": "^0.1@dev",
+    "lowelllab/dpop-core": "^0.1@dev",
+    "lowelllab/hyperf-dpop": "^0.1@dev",
     "hyperf/framework": "~3.2.0",
     "hyperf/di": "~3.2.0",
     "hyperf/command": "~3.2.0"
@@ -17,7 +17,7 @@
     "phpstan/phpstan": "^2.3",
     "phpunit/phpunit": "^13.4"
   },
-  "repositories": [{"type": "path", "url": "packages/*", "options": {"symlink": true, "versions": {"acme/dpop-core": "0.1.x-dev", "acme/hyperf-dpop": "0.1.x-dev"}}}],
+  "repositories": [{"type": "path", "url": "packages/*", "options": {"symlink": true, "versions": {"lowelllab/dpop-core": "0.1.x-dev", "lowelllab/hyperf-dpop": "0.1.x-dev"}}}],
   "autoload-dev": {"psr-4": {"DpopTest\\": "tests/", "DpopExample\\": "examples/hyperf/app/"}},
   "config": {"sort-packages": true, "allow-plugins": {}},
   "scripts": {

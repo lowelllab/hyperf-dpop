@@ -42,12 +42,12 @@ $custom=$run('custom-budget-unverified',['dpop:doctor'],1);
 if(!str_contains($custom,'unverified')){throw new RuntimeException('Custom budget health falsely reported');}
 $writeDependencies([Acme\HyperfDpop\Admission\AdmissionBudgetInterface::class=>DpopTest\Support\ProbeableBudget::class]);
 $run('custom-budget-readonly-probe',['dpop:doctor']);$writeDependencies();
-$run('publish-ddl',['vendor:publish','acme/hyperf-dpop','--id=schema']);
+$run('publish-ddl',['vendor:publish','lowelllab/hyperf-dpop','--id=schema']);
 if(hash_file('sha256',$app.'/dpop-proofs.sql')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/dpop-proofs.sql')){throw new RuntimeException('Published DDL differs');}
 $original=file_get_contents($app.'/config/autoload/dpop.php');
-$run('publish-config-preserves-existing',['vendor:publish','acme/hyperf-dpop','--id=config']);
+$run('publish-config-preserves-existing',['vendor:publish','lowelllab/hyperf-dpop','--id=config']);
 if(file_get_contents($app.'/config/autoload/dpop.php')!==$original){throw new RuntimeException('Config overwritten without force');}
-$run('publish-config-explicit-force',['vendor:publish','acme/hyperf-dpop','--id=config','--force']);
+$run('publish-config-explicit-force',['vendor:publish','lowelllab/hyperf-dpop','--id=config','--force']);
 if(hash_file('sha256',$app.'/config/autoload/dpop.php')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/dpop.php')){throw new RuntimeException('Published config differs');}
 if($before!==(int)Environment::pdo()->query('SELECT COUNT(*) FROM dpop_proofs')->fetchColumn()){throw new RuntimeException('Doctor/publishing wrote authentication data');}
 file_put_contents($root.'/build/review2-cli-result.json',json_encode(['cases'=>$cases,'production_cache'=>true,'authentication_writes'=>0],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));

@@ -18,3 +18,6 @@ RUN curl -fsSL https://getcomposer.org/download/2.11.1/composer.phar -o /usr/loc
     && chmod +x /usr/local/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /workspace
+# Used only by the local two-repository Composer publication check.
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*

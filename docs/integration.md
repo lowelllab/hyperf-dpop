@@ -2,11 +2,11 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：未发布0.1开发版。`acme`为占位vendor，不存在可直接从公共Packagist安装的正式发行包。开发时使用根Composer工作区的path仓库；确定正式vendor后再更新所有包依赖和文档。
+状态：未发布0.1开发版。Composer包名已确定为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`，尚未提交公共Packagist。开发时使用path仓库；两包独立发布步骤见[发布指南](publishing.md)。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 
-业务项目安装`acme/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
+业务项目安装`lowelllab/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
 
 当前两个path包均为0.1.x-dev。另建开发消费项目时，必须显式允许这两个开发包（例如minimum-stability=dev并prefer-stable=true，或在根需求逐包标记@dev）；仅在扩展的传递依赖里写@dev不会自动放宽消费项目稳定性。正式稳定发行后使用实际稳定版本，无需开发稳定性配置。`tools/consumer-smoke.php`在独立临时Composer项目及独立PHP进程验证这一接入，不借用工作区dev依赖。
 
@@ -17,8 +17,8 @@
 Hyperf从Composer extra读取ConfigProvider。宿主安装可选`hyperf/devtool ~3.2.0`后，可以显式发布模板：
 
 ```bash
-php bin/hyperf.php vendor:publish acme/hyperf-dpop --id=config
-php bin/hyperf.php vendor:publish acme/hyperf-dpop --id=schema
+php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
+php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=schema
 ```
 
 schema只复制至应用根目录的`dpop-proofs.sql`，不执行SQL。已有配置默认保留；仅明确需要覆盖时使用`--force`，并先保存自己的配置。以上命令已在生产缓存模式验证。也可手动复制：

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 // Separate Composer project and PHP process: root dev autoloading cannot hide missing package dependencies.
 $root=dirname(__DIR__);$consumer=sys_get_temp_dir().'/dpop-consumer-'.bin2hex(random_bytes(6));mkdir($consumer,0700,true);
-$metadata=['name'=>'fixture/dpop-consumer','require'=>['php'=>'^8.5','acme/hyperf-dpop'=>'^0.1@dev'],'repositories'=>[['type'=>'path','url'=>$root.'/packages/*','options'=>['symlink'=>true,'versions'=>['acme/dpop-core'=>'0.1.x-dev','acme/hyperf-dpop'=>'0.1.x-dev']]]],'config'=>['allow-plugins'=>new stdClass()]];
+$metadata=['name'=>'fixture/dpop-consumer','require'=>['php'=>'^8.5','lowelllab/hyperf-dpop'=>'^0.1@dev'],'repositories'=>[['type'=>'path','url'=>$root.'/packages/*','options'=>['symlink'=>true,'versions'=>['lowelllab/dpop-core'=>'0.1.x-dev','lowelllab/hyperf-dpop'=>'0.1.x-dev']]]],'config'=>['allow-plugins'=>new stdClass()]];
 // This is an unpublished path development build; the consumer must explicitly opt into dev stability.
 $metadata['minimum-stability']='dev';$metadata['prefer-stable']=true;
 file_put_contents($consumer.'/composer.json',json_encode($metadata,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));

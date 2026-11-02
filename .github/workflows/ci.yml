@@ -13,6 +13,8 @@ jobs:
       - run: docker compose run --rm test php tools/runtime.php
       - run: docker compose run --rm test composer validate-packages
       - run: docker compose run --rm test php tools/consumer-smoke.php
+      - run: docker compose run --rm test php tools/prepare-packages.php
+      - run: docker compose run --rm test php tools/verify-package-exports.php
       - run: docker compose run --rm test composer check
       - run: docker compose run --rm test php tests/http-e2e.php
       - run: docker compose run --rm test php tests/tls-e2e.php

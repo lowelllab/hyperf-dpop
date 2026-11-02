@@ -2,7 +2,7 @@
 
 下面以现有 Hyperf 应用接入不透明令牌为例，串联配置、登录签发、受保护资源、刷新和客户端 nonce 重试。JWT 接入方式见第 7 节。
 
-服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。当前 `acme/hyperf-dpop`、`acme/dpop-core` 是开发包名，尚不能直接从公共 Packagist 安装；以下使用本地 Composer path 仓库。账号校验、会话和权限使用宿主自己的业务服务。
+服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。两个包名为 `lowelllab/hyperf-dpop`、`lowelllab/dpop-core`，尚未提交公共 Packagist；以下使用本地 Composer path 仓库。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
 
 ## 1 安装开发包
 
@@ -11,7 +11,7 @@
 ```json
 {
   "require": {
-    "acme/hyperf-dpop": "^0.1@dev",
+    "lowelllab/hyperf-dpop": "^0.1@dev",
     "hyperf/redis": "~3.2.0"
   },
   "repositories": [
@@ -21,8 +21,8 @@
       "options": {
         "symlink": false,
         "versions": {
-          "acme/dpop-core": "0.1.x-dev",
-          "acme/hyperf-dpop": "0.1.x-dev"
+          "lowelllab/dpop-core": "0.1.x-dev",
+          "lowelllab/hyperf-dpop": "0.1.x-dev"
         }
       }
     }
@@ -35,18 +35,18 @@
 在宿主目录执行：
 
 ```bash
-composer update acme/hyperf-dpop hyperf/redis --with-all-dependencies
+composer update lowelllab/hyperf-dpop hyperf/redis --with-all-dependencies
 ```
 
-核心包会自动引入。这里使用文件副本安装；修改扩展源码后，需要在宿主执行 `composer reinstall acme/dpop-core acme/hyperf-dpop` 更新副本。单独把当前 GitHub 工作区根目录配置为 VCS 仓库，不能替代两个子包的安装。
+核心包会自动引入。这里使用文件副本安装；修改扩展源码后，需要在宿主执行 `composer reinstall lowelllab/dpop-core lowelllab/hyperf-dpop` 更新副本。单独把当前 GitHub 工作区根目录配置为 VCS 仓库，不能替代两个子包的安装。
 
 ## 2 配置与建表
 
 宿主安装 `hyperf/devtool ~3.2.0` 时，可以发布模板：
 
 ```bash
-php bin/hyperf.php vendor:publish acme/hyperf-dpop --id=config
-php bin/hyperf.php vendor:publish acme/hyperf-dpop --id=schema
+php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
+php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=schema
 ```
 
 也可以手动复制[配置模板](../packages/hyperf-dpop/publish/dpop.php)和[防重放 DDL](../packages/hyperf-dpop/publish/dpop-proofs.sql)。DDL 需要由宿主迁移流程显式执行；安装和发布命令不会自动建表。

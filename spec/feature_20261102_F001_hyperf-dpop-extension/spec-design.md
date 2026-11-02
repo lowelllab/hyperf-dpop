@@ -1,6 +1,6 @@
 # Feature: 20261102_F001 - Hyperf DPoP 标准扩展
 
-创建日期：2026-11-02（Asia/Shanghai）。版本：0.5。状态：已追加独立官方Hyperf骨架消费测试与宿主超时要求；生产容量、真实代理拓扑、独立安全审计和稳定发行仍待后续完成。
+创建日期：2026-11-02（Asia/Shanghai）。版本：0.6。状态：Composer vendor确定为lowelllab，保留双包及现有PHP命名空间；生产容量、真实代理拓扑、独立安全审计和稳定发行仍待后续完成。
 
 审查依据与修订：[首轮审查](review-20261102.md)、[整体功能复审](review-functional-20261102.md)。第18、19节为修订后的精确实施契约，冲突时以最新第19节为准。用户已授权直接修订并实施，不再设置方案二次确认门禁。
 
@@ -94,7 +94,7 @@ hyperf-dpop/
 └── docs/                             # 接入、部署、验证和维护说明
 ```
 
-- 包名暂定 `acme/dpop-core`、`acme/hyperf-dpop`，命名空间暂定 `Acme\Dpop`、`Acme\HyperfDpop`；均为占位符，不使用未获授权的 `hyperf/*` 名称。
+- 包名为 `lowelllab/dpop-core`、`lowelllab/hyperf-dpop`，PHP命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。Composer vendor与PHP命名空间独立；本次不改动现有类名。替代最初acme包名占位，命名决定见§19.12。
 - 用户只安装 Hyperf 扩展，Composer 自动引入核心包。
 - 核心包不依赖 Hyperf、Swoole 或某项目的数据库模型；只消费明确传入的参数、可信上下文和扩展接口。
 - Hyperf 包通过 `extra.hyperf.config` 注册 ConfigProvider，提供依赖绑定及配置发布；中间件和业务路由由宿主显式启用。
@@ -345,7 +345,7 @@ mTLS 在传输层处理客户端证书认证。后续可从受信网关传递经
 
 以下不阻塞本方案交付，但需在对应阶段冻结：
 
-1. 正式vendor、命名空间、仓库归属及开源或私有发布方式。
+1. Composer vendor已确定为lowelllab，PHP命名空间保持现有Acme；两个独立发布仓库的创建、公开提交和发行方式仍待执行。
 2. P0候选协议库是否满足严格验证及存储时序要求。
 3. 默认发行配置采用Redis还是数据库权威存储；两者必须在配置和文档中明确保证差异，不能静默互换。
 4. 首版是否只公开ES256；本方案默认是，新增算法需专门测试。
@@ -398,3 +398,4 @@ mTLS 在传输层处理客户端证书认证。后续可从受信网关传递经
 9. **发布能力实测**：可选hyperf/devtool提供vendor:publish；配置与DDL仅复制，既有配置无force不覆盖。生产缓存冷/热启动、缺依赖、错误配置、自定义探测及发布均在独立临时应用根测试，不修改工作区示例配置。
 10. **验证扩展**：固定Node原生ES256向量由PHP验证；直连TLS使用专属临时CA且同时校验证书和主机名，覆盖保留字符编码及同proof跨Worker竞争。无系统信任库修改，无真实账号凭据。真实代理头处理、故障切换、恢复及目标容量仍须部署验收，不能用本地直连TLS替代。
 11. **独立消费者与超时（0.5补充）**：官方骨架消费项目使用独立锁文件/vendor及非符号链接的包副本验证接入；客户端由原生OpenSSL签名，覆盖MySQL/Redis、生产缓存冷/热及无开发依赖。实际停止Redis发现仅设池等待参数不能保证及时503，宿主必须显式设置Redis顶层timeout/read_timeout，并按DNS、重连及请求期限验收总耗时。HTTP客户端超时不构成服务端协程已取消或业务未执行的证明。原始重复认证头的丢失按既有第18.13条处理，独立消费者已实测复现，不计为通过场景；完整依据见docs/verification-consumer-20261102.md。
+12. **正式包名与双仓发布（0.6补充）**：用户明确采用lowelllab/dpop-core和lowelllab/hyperf-dpop双包；保留Acme PHP命名空间，不增加类名迁移。工作区根为lowelllab/hyperf-dpop-workspace、type=project，不能提交成扩展。每个子包须另有根composer.json为对应library的发布仓库，保留现有开发仓库。两包main分支别名为0.1.x-dev；本地导出只包含包源码、元信息、许可及发布模板，不带环境凭据或工作区依赖。公开创建仓库、推送发布仓库、Packagist提交和版本标签不由准备工具执行。既有审查报告及摘要保留原命名的历史快照；当前规则替代RULE-007/046/047等条款中的acme占位包名，不改写历史事实。

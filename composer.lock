@@ -4,83 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c5ab097416e3eb20fdfa5afe8dea026c",
+    "content-hash": "2507a93f28c2857b868731ff0f4c2c7c",
     "packages": [
-        {
-            "name": "acme/dpop-core",
-            "version": "0.1.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/dpop-core",
-                "reference": "08fd05f73350983cc15129860600a346df756f16"
-            },
-            "require": {
-                "ext-openssl": "*",
-                "php": "^8.5",
-                "psr/clock": "^1.0",
-                "web-token/jwt-library": "^4.2.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Acme\\Dpop\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Framework-independent strict RFC 9449 DPoP verification and authentication coordination.",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "acme/hyperf-dpop",
-            "version": "0.1.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/hyperf-dpop",
-                "reference": "7cab8bdd043b774598d92d09d2f71a0444db896d"
-            },
-            "require": {
-                "acme/dpop-core": "^0.1@dev",
-                "ext-pdo": "*",
-                "hyperf/config": "~3.2.0",
-                "hyperf/contract": "~3.2.0",
-                "hyperf/event": "~3.2.0",
-                "hyperf/framework": "~3.2.0",
-                "hyperf/http-message": "~3.2.0",
-                "hyperf/http-server": "~3.2.0",
-                "php": "^8.5",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "suggest": {
-                "ext-pdo_mysql": "Required by the default MySQL replay store.",
-                "hyperf/command": "Required for the read-only dpop:doctor command.",
-                "hyperf/devtool": "Provides vendor:publish for configuration and opt-in DDL templates.",
-                "hyperf/redis": "Required by the default shared admission budget and the optional Redis replay store."
-            },
-            "type": "library",
-            "extra": {
-                "hyperf": {
-                    "config": "Acme\\HyperfDpop\\ConfigProvider"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Acme\\HyperfDpop\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Hyperf integration for strict DPoP authentication, nonce and atomic replay protection.",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
         {
             "name": "brick/math",
             "version": "1.0.0",
@@ -2295,6 +2220,89 @@
             ],
             "time": "2026-06-07T09:04:32+00:00",
             "published-time": "2026-06-07T09:31:16+00:00"
+        },
+        {
+            "name": "lowelllab/dpop-core",
+            "version": "0.1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/dpop-core",
+                "reference": "4d7754c53066bde8dfd4c3149f2788a55d81bb36"
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": "^8.5",
+                "psr/clock": "^1.0",
+                "web-token/jwt-library": "^4.2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Acme\\Dpop\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Framework-independent strict RFC 9449 DPoP verification and authentication coordination.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "lowelllab/hyperf-dpop",
+            "version": "0.1.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/hyperf-dpop",
+                "reference": "9a4d2351c76d2a3390f5a25ed36f2285376d69dd"
+            },
+            "require": {
+                "ext-pdo": "*",
+                "hyperf/config": "~3.2.0",
+                "hyperf/contract": "~3.2.0",
+                "hyperf/event": "~3.2.0",
+                "hyperf/framework": "~3.2.0",
+                "hyperf/http-message": "~3.2.0",
+                "hyperf/http-server": "~3.2.0",
+                "lowelllab/dpop-core": "^0.1@dev",
+                "php": "^8.5",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "suggest": {
+                "ext-pdo_mysql": "Required by the default MySQL replay store.",
+                "hyperf/command": "Required for the read-only dpop:doctor command.",
+                "hyperf/devtool": "Provides vendor:publish for configuration and opt-in DDL templates.",
+                "hyperf/redis": "Required by the default shared admission budget and the optional Redis replay store."
+            },
+            "type": "library",
+            "extra": {
+                "hyperf": {
+                    "config": "Acme\\HyperfDpop\\ConfigProvider"
+                },
+                "branch-alias": {
+                    "dev-main": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Acme\\HyperfDpop\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Hyperf integration for strict DPoP authentication, nonce and atomic replay protection.",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "nikic/fast-route",
@@ -6553,8 +6561,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "acme/dpop-core": 20,
-        "acme/hyperf-dpop": 20
+        "lowelllab/dpop-core": 20,
+        "lowelllab/hyperf-dpop": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

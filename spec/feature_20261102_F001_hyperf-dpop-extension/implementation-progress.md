@@ -1,6 +1,6 @@
 # Hyperf DPoP 实施进度与规则记录
 
-创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.5。当前阶段：独立官方Hyperf骨架消费测试与环境收尾完成；稳定发行条件待后续满足。
+创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.6。当前阶段：lowelllab双包命名、本地发布准备及回归验证完成；公开提交和稳定发行待后续执行。
 
 关联方案：[spec-design.md](spec-design.md)。本文件是后续实施的进度、规则索引、决策变更和验证证据记录入口。
 
@@ -25,14 +25,14 @@
 | --- | --- |
 | 项目位置 | 工作区 `hyperf-dpop`，与后端仓库同级 |
 | 已有交付物 | 双包源码、配置与DDL、示例、测试、CI配置、接入/维护文档及审查/执行/进度记录 |
-| 当前授权范围 | 用户要求新建Hyperf项目深度测试，并明确先完成测试、暂不公开发布；延续私有仓库维护，不公开仓库、不提交Packagist或发行包 |
-| 设计状态 | 0.5，增加独立消费项目实证和宿主Redis超时要求；冲突时以§19为准 |
+| 当前授权范围 | 用户明确采用lowelllab/dpop-core与lowelllab/hyperf-dpop双包；执行命名及发布准备，未另行执行新远端创建、可见性修改、Packagist提交或打标签 |
+| 设计状态 | 0.6，确定Composer vendor与双发布根目录，保留现有Acme PHP命名空间；冲突时以§19为准 |
 | 实现状态 | 未发布0.1开发版，通用核心、Hyperf适配、MySQL/Redis驱动和示例已实现 |
 | 依赖状态 | Composer锁定并实际运行PHP8.5.12、Hyperf3.2.0、Swoole6.2.4、JOSE4.2.4；依赖审计无已知公告 |
-| 测试状态 | 既有108测试等结果保留历史；新增独立骨架4组各85项通过、2项部署限制，CLI8、限流15及中断/恢复11个不同断言通过；见VAL-013 |
+| 测试状态 | 更名后108测试/169断言、静态、81文件语法、CLI15、HTTP27、TLS12及独立宿主85项通过；双导出VCS安装通过；既有2项重复头限制不变，见VAL-015 |
 | 仓库与发布 | 已初始化Git并首次推送至私有仓库lowelllab/hyperf-dpop，main跟踪origin/main；未发布Composer包、版本标签或Release |
 | 实验环境 | 工作区和本轮独立消费项目的MySQL/Redis及网络均已关闭移除；消费者源码、独立vendor和脱敏证据保留，tmpfs数据已清除 |
-| 下一实施入口 | 先读本文件最新消费验证规则补充、LOG-012及遗留问题；确定正式vendor、目标容量与部署拓扑后推进发行验收 |
+| 下一实施入口 | 先读LOG-014、RULE-062及docs/publishing.md；两个独立发布仓库与Packagist提交另行执行；继续生产容量、代理及恢复验收 |
 
 版本快照、文件存在与测试通过是不同事实。这里不将其他业务仓库的运行结果作为本扩展已经通过验收的依据。
 
@@ -129,6 +129,7 @@
 | TASK-010 | 私有Git仓库初始化与首次上传 | 已完成 | 用户提供远端；首次提交820f44d已推送main，vendor/build/runtime及临时密钥未纳入提交；LOG-010 |
 | TASK-011 | 新建官方Hyperf骨架并深度测试扩展 | 已完成 | 同级hyperf-dpop-consumer独立锁/vendor/存储；4组85项、CLI/限流/中断与恢复通过，重复头及宿主超时要求据实记录；VAL-013、LOG-012 |
 | TASK-012 | 增加使用示例文档 | 已完成 | docs/usage-examples.md覆盖安装、配置、宿主绑定、签发/刷新、路由、PHP客户端和JWT；6段PHP语法与客户端真实HTTPS流程通过；VAL-014、LOG-013 |
+| TASK-013 | lowelllab双包命名与本地发布准备 | 已完成 | Composer名/依赖/文档/锁同步；两个根目录与ZIP、分支别名、独立VCS消费及回归通过；不含公开仓库/Packagist提交；VAL-015、LOG-014 |
 
 原“仅文档、P0未开始”状态已被用户本次实施授权和LOG-003至LOG-005替代。下一步面向正式发行条件，不重复已通过的检查，除非代码变化或新问题需要回归。
 
@@ -151,7 +152,7 @@
 
 | 编号 | 问题或风险 | 状态 | 解决阶段或条件 |
 | --- | --- | --- | --- |
-| ISSUE-001 | 正式vendor、命名空间、仓库归属及发布渠道未确定 | 待确定 | 定稿包定义及发布前明确；现阶段使用占位符 |
+| ISSUE-001 | 双发布仓库与公开提交尚未执行 | 部分解决 | Composer vendor已定lowelllab，PHP命名空间保留Acme；本地双包产物已验证，正式远端、提交账号权限及Packagist发布另行执行 |
 | ISSUE-002 | 候选库严格解析、认证顺序、nonce及重放接口是否适合 | 已解决 | 通过源码审查否决直接复用，DEC-004确定JOSE路线 |
 | ISSUE-003 | 初始版本组合是否可运行 | 已解决 | VAL-002、003、005；仅声明实际验证组合 |
 | ISSUE-004 | 默认存储及发行配置选择 | 已解决 | DEC-005；MySQL默认，Redis预算必需，替换点及限制已说明 |
@@ -179,6 +180,7 @@
 | VAL-012 | 2026-11-02 | 第二轮文档、诊断及快照 | verify-docs.php、实际dpop:doctor、PowerShell SHA256及compose down | 通过 | 15份Markdown链接/编码/围栏；只读doctor成功；49项包/锁摘要；独立容器/网络移除；build/review2-docs.log、review2-doctor.log、source-manifest.json、review2-down.log |
 | VAL-013 | 2026-11-02 | 独立官方Hyperf骨架消费测试 | 独立Composer镜像安装、原生OpenSSL客户端、HTTPS双Worker、实际中断/恢复、生产缓存与no-dev | 适用检查通过，重复头单列部署限制 | 4组各85项通过，另2项重复头限制；CLI8、限流15、中断/恢复11个不同断言；48文件摘要相同，宿主39文件语法及依赖审计通过；docs/verification-consumer-20261102.md及结构化JSON |
 | VAL-014 | 2026-11-02 | 使用示例与客户端 | 提取PHP/JSON代码块检查；独立宿主真实HTTPS执行文档客户端，适配路由/租户头/本地DNS和CA | 通过 | 6段PHP语法、Resolver与控制器按已安装API加载、JSON语法、17份Markdown编码/链接/围栏；nonce、签发、资源、刷新及新access访问成功；build/usage-doc-check及消费者evidence/doc-client-result.json |
+| VAL-015 | 2026-11-02 | 正式包名与双发布根目录 | Composer最小更新、strict、composer check、HTTP/TLS、消费迁移及双本地Git main分支安装 | 通过，既有部署限制保留 | 108测试/169断言、PHPStan6、81语法、CLI15、HTTP27、TLS12；独立宿主85通过/2限制；91个第三方包版本不变，核心17/适配31文件导出摘要一致、VCS别名/依赖及PHP接口通过；docs/verification-packaging-20261102.md |
 
 当前文档检查命令为`docker compose run --rm test php tools/verify-docs.php`，自动排除vendor/build/runtime。以下保留初期仅有文档、未安装依赖时的历史PowerShell命令，不再用于扫描已安装依赖的整个目录：
 
@@ -372,3 +374,20 @@ LOG-NNN · 日期/时间（Asia/Shanghai） · 本次任务
 - 完整PHP CLI客户端保持会话密钥、生成ES256 proof与access ath、按用途缓存nonce，挑战后重新生成proof并仅重试一次；展示登录、资源、刷新、新令牌资源访问，不打印令牌或私钥。
 - VAL-014通过：提取6段PHP语法检查、Resolver/控制器按当前API加载、JSON示例语法和17份Markdown链接/编码/围栏。文档客户端在独立Hyperf宿主真实TLS运行，仅适配路径、X-Tenant以及本地DNS/CA；初始和刷新后的资源主体均正确。宿主业务服务示意未冒称已整段部署。
 - 本次不修改扩展源码；文档验证完成后，消费者Compose服务和网络已关闭移除。未公开发布或改动仓库可见性。
+
+### LOG-014 · 2026-11-02 · lowelllab 双包命名与本地发布准备
+
+- 用户提供Packagist acme vendor占用报错，并明确选择lowelllab/dpop-core + lowelllab/hyperf-dpop保留双包。更新Composer名称、传递依赖、path映射、发布命令及接入文档；PHP类及命名空间Acme保持原样，包内PHP源码未改。
+- 根工作区命名lowelllab/hyperf-dpop-workspace，仍为project，不可提交为扩展。维护现有开发仓库，建议另备lowelllab/dpop-core与lowelllab/hyperf-dpop-package作为发布仓库；这是待创建的建议地址，未冒称已建成或已提交Packagist。
+- 两包添加dev-main到0.1.x-dev分支别名。新增prepare-packages.php按包文件白名单导出两个根目录，verify-package-exports.php在本地副本建main分支并实际用VCS安装；未添加远端或推送。测试镜像补Git，CI增加导出与消费验证步骤，未声称远端CI已过。
+- 根及同级独立消费者均由Composer重新生成锁文件和vendor，旧acme包被移除；91个第三方包版本保持不变。生产CLI测试命令使用lowelllab包名；README保持功能/使用内容，历史报告中的acme与旧摘要保留历史事实。
+- VAL-015通过：108测试/169断言、PHPStan6、81文件语法、MySQL/Redis各12进程竞争、Swoole取消、CLI15、HTTP27、TLS12，以及独立宿主no-dev的85项（另2项重复头限制）。新消费者初启遭MySQL临时启动TCP未就绪，在测试setup补有限SQL就绪探测后通过，未改包实现。
+- 导出48文件摘要一致；从两本地Git main分支安装适配包时自动引入新核心，旧名称和工作区dev加载未泄漏，ConfigProvider和原PHP接口正常。两个ZIP直接以包composer.json为根，排除.git/vendor/runtime。结果见docs/verification-packaging-20261102.md与build/packaging-verification-20261102.json。
+- 公开发布仍未执行；维护/漏洞渠道、目标容量、真实代理、主从切换/备份恢复及独立安全审计继续按既有条件验收。
+- 收尾：19份Markdown编码/链接/围栏通过；根工作区及独立消费者Compose容器/网络均已移除，tmpfs数据清除。同级消费者源码归档同步新包名及锁文件；Git暂存检查通过后同步开发仓库，不推送新发布仓库。
+
+### 双包发布规则补充（2026-11-02生效）
+
+| 编号 | 规则 | 来源及替代关系 |
+| --- | --- | --- |
+| RULE-062 | Composer名确定为lowelllab双包，PHP命名空间保留Acme；工作区不作为包提交，每包独立根目录发布，main有0.1.x-dev别名；准备工具不公开远端或提交Packagist | 用户明确选择；设计§19.12；替代早期acme占位包名要求，不改历史验证记录 |

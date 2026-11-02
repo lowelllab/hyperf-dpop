@@ -1,15 +1,15 @@
 {
-  "name": "acme/hyperf-dpop",
+  "name": "lowelllab/hyperf-dpop",
   "description": "Hyperf integration for strict DPoP authentication, nonce and atomic replay protection.",
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": "^8.5", "acme/dpop-core": "^0.1@dev", "ext-pdo": "*",
+    "php": "^8.5", "lowelllab/dpop-core": "^0.1@dev", "ext-pdo": "*",
     "hyperf/config": "~3.2.0", "hyperf/http-server": "~3.2.0", "hyperf/framework": "~3.2.0",
     "hyperf/contract": "~3.2.0", "hyperf/event": "~3.2.0", "hyperf/http-message": "~3.2.0",
     "psr/http-server-middleware": "^1.0"
   },
   "suggest": {"hyperf/redis": "Required by the default shared admission budget and the optional Redis replay store.", "hyperf/command": "Required for the read-only dpop:doctor command.", "hyperf/devtool": "Provides vendor:publish for configuration and opt-in DDL templates.", "ext-pdo_mysql": "Required by the default MySQL replay store."},
   "autoload": {"psr-4": {"Acme\\HyperfDpop\\": "src/"}},
-  "extra": {"hyperf": {"config": "Acme\\HyperfDpop\\ConfigProvider"}}
+  "extra": {"hyperf": {"config": "Acme\\HyperfDpop\\ConfigProvider"}, "branch-alias": {"dev-main": "0.1.x-dev"}}
 }
