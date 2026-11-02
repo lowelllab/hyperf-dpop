@@ -8,14 +8,14 @@
 
 Packagist 读取提交仓库根目录的 `composer.json`；包名中的 vendor 需要使用你有权发布的命名空间，不能使用已被其他账号持有的 `acme`。[Packagist 提交规则](https://packagist.org/about)
 
-保留当前开发仓库，另外准备两个只含包内容的发布仓库。下面是建议的仓库命名，仓库地址可以不同，Composer 包名仍以各自根配置为准：
+保留当前开发仓库，两个发布仓库各自只放对应包内容。核心仓库已由用户创建并同步源码；适配包仓库仍待创建。Composer 包名以各自根配置为准：
 
-| Composer 包 | 建议 GitHub 发布仓库 | 仓库根内容 |
+| Composer 包 | GitHub 发布仓库 | 状态与仓库根内容 |
 | --- | --- | --- |
-| `lowelllab/dpop-core` | `lowelllab/dpop-core` | packages/dpop-core 的内容 |
-| `lowelllab/hyperf-dpop` | `lowelllab/hyperf-dpop-package` | packages/hyperf-dpop 的内容 |
+| `lowelllab/dpop-core` | [lowelllab/dpop-core](https://github.com/lowelllab/dpop-core) | 已推送 main，提交 cb47754；根目录为核心包 |
+| `lowelllab/hyperf-dpop` | 建议 `lowelllab/hyperf-dpop-package` | 待创建及推送，内容为 packages/hyperf-dpop |
 
-第二个建议名称使用 `-package` 后缀，是因为 `lowelllab/hyperf-dpop` 已用于开发工作区。上述新仓库尚未由本工具创建。
+第二个建议名称使用 `-package` 后缀，是因为 `lowelllab/hyperf-dpop` 已用于开发工作区。核心仓库当前只有开发分支，尚未提交 Packagist 或创建版本标签。
 
 ## 准备本地发布目录
 
@@ -41,7 +41,7 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 ## 公开提交的顺序
 
-以下为正式发布步骤，需要另行执行；当前准备工具不执行这些外部操作。
+核心仓库的首次源码推送已完成，其余步骤仍需执行；准备工具不自动执行这些外部操作。
 
 1. 创建上述两个发布仓库，让各自 `composer.json` 位于根目录，分别提交和推送对应包内容。仅改变现有工作区根包名，不能完成这一步。
 2. 确保公开 Packagist 可以访问这两个仓库，且提交账号有权使用 `lowelllab` vendor。
