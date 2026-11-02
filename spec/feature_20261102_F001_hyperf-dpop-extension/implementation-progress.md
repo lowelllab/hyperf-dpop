@@ -1,6 +1,6 @@
 # Hyperf DPoP 实施进度与规则记录
 
-创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.6。当前阶段：核心包源码已推送用户创建的公开仓库；适配发布仓库、Packagist提交和稳定发行待后续执行。
+创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.6。当前阶段：核心和适配包源码均已推送用户创建的独立公开仓库；本助手未提交Packagist，稳定发行待后续执行。
 
 关联方案：[spec-design.md](spec-design.md)。本文件是后续实施的进度、规则索引、决策变更和验证证据记录入口。
 
@@ -25,14 +25,14 @@
 | --- | --- |
 | 项目位置 | 工作区 `hyperf-dpop`，与后端仓库同级 |
 | 已有交付物 | 双包源码、配置与DDL、示例、测试、CI配置、接入/维护文档及审查/执行/进度记录 |
-| 当前授权范围 | 用户提供自建公开核心仓库截图，按双包发布上下文同步核心源码；未创建适配远端、修改可见性、提交Packagist或打标签 |
+| 当前授权范围 | 用户先后提供自建公开核心与适配仓库截图，按双包发布上下文同步各自源码；未创建远端、修改可见性、提交Packagist或打标签 |
 | 设计状态 | 0.6，确定Composer vendor与双发布根目录，保留现有Acme PHP命名空间；冲突时以§19为准 |
 | 实现状态 | 未发布0.1开发版，通用核心、Hyperf适配、MySQL/Redis驱动和示例已实现 |
 | 依赖状态 | Composer锁定并实际运行PHP8.5.12、Hyperf3.2.0、Swoole6.2.4、JOSE4.2.4；依赖审计无已知公告 |
 | 测试状态 | 更名后108测试/169断言、静态、81文件语法、CLI15、HTTP27、TLS12及独立宿主85项通过；双导出VCS安装通过；既有2项重复头限制不变，见VAL-015 |
-| 仓库与发布 | 开发工作区lowelllab/hyperf-dpop已同步；核心公开仓库lowelllab/dpop-core的main已推送cb47754；未提交Packagist、版本标签或Release |
+| 仓库与发布 | 开发工作区已同步；核心lowelllab/dpop-core的main为cb47754，适配lowelllab/hyperf-dpop-package的main为e0fd48c；本助手未提交Packagist、版本标签或Release |
 | 实验环境 | 工作区和本轮独立消费项目的MySQL/Redis及网络均已关闭移除；消费者源码、独立vendor和脱敏证据保留，tmpfs数据已清除 |
-| 下一实施入口 | 先读LOG-015及docs/publishing.md；核心可提交其独立仓库URL，适配发布仓库仍待提供；继续生产容量、代理及恢复验收 |
+| 下一实施入口 | 先读LOG-016及docs/publishing.md；Packagist按核心、适配顺序登记两个独立仓库URL；继续生产容量、代理及恢复验收 |
 
 版本快照、文件存在与测试通过是不同事实。这里不将其他业务仓库的运行结果作为本扩展已经通过验收的依据。
 
@@ -131,6 +131,7 @@
 | TASK-012 | 增加使用示例文档 | 已完成 | docs/usage-examples.md覆盖安装、配置、宿主绑定、签发/刷新、路由、PHP客户端和JWT；6段PHP语法与客户端真实HTTPS流程通过；VAL-014、LOG-013 |
 | TASK-013 | lowelllab双包命名与本地发布准备 | 已完成 | Composer名/依赖/文档/锁同步；两个根目录与ZIP、分支别名、独立VCS消费及回归通过；不含公开仓库/Packagist提交；VAL-015、LOG-014 |
 | TASK-014 | 核心公开仓库首次源码同步 | 已完成 | 用户提供空公开仓库；17个已验证文件摘要相同，根Composer strict及匿名远端安装通过，main提交cb47754已推送且远端一致；VAL-016、LOG-015 |
+| TASK-015 | 适配公开仓库首次源码同步 | 已完成 | 用户提供空公开适配仓库；31个已验证文件摘要相同，Composer strict与匿名双公开仓库安装通过，main提交e0fd48c已推送且远端一致；VAL-017、LOG-016 |
 
 原“仅文档、P0未开始”状态已被用户本次实施授权和LOG-003至LOG-005替代。下一步面向正式发行条件，不重复已通过的检查，除非代码变化或新问题需要回归。
 
@@ -153,7 +154,7 @@
 
 | 编号 | 问题或风险 | 状态 | 解决阶段或条件 |
 | --- | --- | --- | --- |
-| ISSUE-001 | 适配发布仓库与Packagist提交尚未执行 | 部分解决 | 核心独立公开仓库已推送，正式vendor为lowelllab；适配远端、Packagist账号权限及提交仍待执行，PHP命名空间保留Acme |
+| ISSUE-001 | Packagist登记与正式发行条件 | 部分解决 | 两独立公开仓库已同步；正式vendor为lowelllab，PHP命名空间保留Acme；本助手未提交Packagist，需核对账号权限及登记状态后发行 |
 | ISSUE-002 | 候选库严格解析、认证顺序、nonce及重放接口是否适合 | 已解决 | 通过源码审查否决直接复用，DEC-004确定JOSE路线 |
 | ISSUE-003 | 初始版本组合是否可运行 | 已解决 | VAL-002、003、005；仅声明实际验证组合 |
 | ISSUE-004 | 默认存储及发行配置选择 | 已解决 | DEC-005；MySQL默认，Redis预算必需，替换点及限制已说明 |
@@ -183,6 +184,7 @@
 | VAL-014 | 2026-11-02 | 使用示例与客户端 | 提取PHP/JSON代码块检查；独立宿主真实HTTPS执行文档客户端，适配路由/租户头/本地DNS和CA | 通过 | 6段PHP语法、Resolver与控制器按已安装API加载、JSON语法、17份Markdown编码/链接/围栏；nonce、签发、资源、刷新及新access访问成功；build/usage-doc-check及消费者evidence/doc-client-result.json |
 | VAL-015 | 2026-11-02 | 正式包名与双发布根目录 | Composer最小更新、strict、composer check、HTTP/TLS、消费迁移及双本地Git main分支安装 | 通过，既有部署限制保留 | 108测试/169断言、PHPStan6、81语法、CLI15、HTTP27、TLS12；独立宿主85通过/2限制；91个第三方包版本不变，核心17/适配31文件导出摘要一致、VCS别名/依赖及PHP接口通过；docs/verification-packaging-20261102.md |
 | VAL-016 | 2026-11-02 | 核心公开远端与消费 | 17文件SHA256、Composer strict、push/ls-remote、无凭据Docker消费者从公开Git URL安装 | 通过 | cb47754本地/远端一致；根library名称正确，^0.1@dev解析dev-main及别名，实际安装引用cb477548cea9ac63d557c04e6f999735dc6f339e，原PHP接口可加载；build/core-public-consumer |
+| VAL-017 | 2026-11-02 | 适配公开远端与双包消费 | 31文件SHA256、Composer strict、push/ls-remote、无凭据Docker消费者从两个公开Git URL安装 | 通过 | 仅要求适配包，自动引入核心；适配e0fd48c/core cb47754引用一致，别名、原PHP接口、ConfigProvider与发布模板通过，无根dev或旧包泄漏；build/public-package-consumer/result.json |
 
 当前文档检查命令为`docker compose run --rm test php tools/verify-docs.php`，自动排除vendor/build/runtime。以下保留初期仅有文档、未安装依赖时的历史PowerShell命令，不再用于扫描已安装依赖的整个目录：
 
@@ -400,3 +402,11 @@ LOG-NNN · 日期/时间（Asia/Shanghai） · 本次任务
 - 本地独立目录为同级dpop-core，仅复制已验证核心17文件，全部SHA256与导出manifest一致；根composer.json为lowelllab/dpop-core、library，保留Acme PHP命名空间和main别名。
 - Composer strict通过；首次提交cb477548cea9ac63d557c04e6f999735dc6f339e已推送main，git ls-remote与本地HEAD一致，工作区干净。不包含开发工作区、vendor、运行密钥、构建日志或测试凭据，没有创建版本标签。
 - 无凭据Docker环境从https://github.com/lowelllab/dpop-core.git实际安装^0.1@dev，解析dev-main及别名，核对安装引用与cb47754一致；纯核心依赖和原PHP接口通过，没有引入适配包。当前可用的是公开源码/VCS开发分支，Packagist索引和稳定发行仍未执行。
+
+### LOG-016 · 2026-11-02 · 适配公开仓库首次同步
+
+- 用户提供自建Public空仓库lowelllab/hyperf-dpop-package截图，按此前双包发布上下文同步已验证适配内容；没有创建远端、修改可见性或提交Packagist。
+- 同级本地目录hyperf-dpop-package仅含适配31文件，SHA256全部与已验证导出manifest一致；根Composer名lowelllab/hyperf-dpop、library，依赖lowelllab/dpop-core ^0.1@dev，保留原PHP命名空间及main别名。
+- Composer strict通过，首次提交e0fd48c0df9fb90417dcbbfab395674e7898c339已推送main，git ls-remote与本地HEAD一致，工作区干净。未携带工作区、vendor、测试凭据或临时密钥，未创建版本标签。
+- 无凭据Docker消费者只要求lowelllab/hyperf-dpop ^0.1@dev，通过两个公开Git URL自动安装核心；引用分别为e0fd48c与cb47754，PHP类、ConfigProvider、可选命令隔离和DDL模板均正常，没有工作区dev或旧acme包混入。此次未修改包内容，不重复运行已通过的协议功能测试。
+- 发布指南更新两个实际公开仓库及源码提交状态；Packagist登记尚未由本助手执行，也未假定用户是否另行登记。19份Markdown编码、链接和围栏通过，开发工作区与两个发布checkout均保持同步。
