@@ -1,6 +1,6 @@
 # Hyperf DPoP 实施进度与规则记录
 
-创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.4。当前阶段：整体功能复审、修复、自动化验证与本地收尾完成；稳定发行条件待后续满足。
+创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.5。当前阶段：独立官方Hyperf骨架消费测试与环境收尾完成；稳定发行条件待后续满足。
 
 关联方案：[spec-design.md](spec-design.md)。本文件是后续实施的进度、规则索引、决策变更和验证证据记录入口。
 
@@ -25,14 +25,14 @@
 | --- | --- |
 | 项目位置 | 工作区 `hyperf-dpop`，与后端仓库同级 |
 | 已有交付物 | 双包源码、配置与DDL、示例、测试、CI配置、接入/维护文档及审查/执行/进度记录 |
-| 当前授权范围 | 整体功能复审已完成；用户在首次上传协作中提供新建私有仓库，按会话上下文执行本地Git初始化、提交及首次推送；不扩展为Composer包或稳定版发布授权 |
-| 设计状态 | 0.4，增加整体功能复审契约；冲突时以§19为准 |
+| 当前授权范围 | 用户要求新建Hyperf项目深度测试，并明确先完成测试、暂不公开发布；延续私有仓库维护，不公开仓库、不提交Packagist或发行包 |
+| 设计状态 | 0.5，增加独立消费项目实证和宿主Redis超时要求；冲突时以§19为准 |
 | 实现状态 | 未发布0.1开发版，通用核心、Hyperf适配、MySQL/Redis驱动和示例已实现 |
 | 依赖状态 | Composer锁定并实际运行PHP8.5.12、Hyperf3.2.0、Swoole6.2.4、JOSE4.2.4；依赖审计无已知公告 |
-| 测试状态 | 108项/169断言、静态分析、79文件语法、跨进程竞争、取消、27个HTTP、12个TLS及15个生产CLI场景通过；新增验证见VAL-008至VAL-012 |
+| 测试状态 | 既有108测试等结果保留历史；新增独立骨架4组各85项通过、2项部署限制，CLI8、限流15及中断/恢复11个不同断言通过；见VAL-013 |
 | 仓库与发布 | 已初始化Git并首次推送至私有仓库lowelllab/hyperf-dpop，main跟踪origin/main；未发布Composer包、版本标签或Release |
-| 实验环境 | 第二轮独立MySQL/Redis及网络已关闭移除；tmpfs测试数据已清除，镜像与Composer缓存保留 |
-| 下一实施入口 | 先读本文件§11最新规则及遗留问题；确定正式vendor、目标容量与部署拓扑后推进发行验收 |
+| 实验环境 | 工作区和本轮独立消费项目的MySQL/Redis及网络均已关闭移除；消费者源码、独立vendor和脱敏证据保留，tmpfs数据已清除 |
+| 下一实施入口 | 先读本文件最新消费验证规则补充、LOG-012及遗留问题；确定正式vendor、目标容量与部署拓扑后推进发行验收 |
 
 版本快照、文件存在与测试通过是不同事实。这里不将其他业务仓库的运行结果作为本扩展已经通过验收的依据。
 
@@ -127,6 +127,7 @@
 | TASK-008 | 整体功能深度复审、直接维护并补充验证 | 已完成 | 8项问题已维护；108测试、HTTP/TLS/CLI及独立消费通过；报告review-functional-20261102.md |
 | TASK-009 | 第二轮文档检查、快照和环境收尾 | 已完成 | VAL-012及LOG-009；当前快照、文档与隔离服务收尾均有证据 |
 | TASK-010 | 私有Git仓库初始化与首次上传 | 已完成 | 用户提供远端；首次提交820f44d已推送main，vendor/build/runtime及临时密钥未纳入提交；LOG-010 |
+| TASK-011 | 新建官方Hyperf骨架并深度测试扩展 | 已完成 | 同级hyperf-dpop-consumer独立锁/vendor/存储；4组85项、CLI/限流/中断与恢复通过，重复头及宿主超时要求据实记录；VAL-013、LOG-012 |
 
 原“仅文档、P0未开始”状态已被用户本次实施授权和LOG-003至LOG-005替代。下一步面向正式发行条件，不重复已通过的检查，除非代码变化或新问题需要回归。
 
@@ -154,8 +155,8 @@
 | ISSUE-003 | 初始版本组合是否可运行 | 已解决 | VAL-002、003、005；仅声明实际验证组合 |
 | ISSUE-004 | 默认存储及发行配置选择 | 已解决 | DEC-005；MySQL默认，Redis预算必需，替换点及限制已说明 |
 | ISSUE-005 | 目标硬件、性能门槛及审计安排未确定 | 待确定 | P4前明确验收环境和标准 |
-| ISSUE-006 | 正式代理拓扑、原始重复头、故障切换和备份恢复尚未部署验证 | 部分验证，生产待验 | 本轮直连TLS/证书及主机名已通过；断开本测试MySQL连接及提交故障注入已验，不能替代正式拓扑/切换/恢复 |
-| ISSUE-007 | 公共CI配置尚未在远端仓库执行 | 待验证 | 已提供配置并本地执行同类命令；未创建/推送远端仓库 |
+| ISSUE-006 | 正式代理拓扑、原始重复头、故障切换和备份恢复尚未部署验证 | 部分验证，生产待验 | 新增独立宿主实际Redis停止/MySQL断网及恢复；Swoole丢弃重复头已实证，网关拒绝仍待真实拓扑验收；不替代主从切换/备份恢复 |
+| ISSUE-007 | 远端CI运行结果尚未核对 | 待验证 | 已有私有远端及推送，不能据此推断CI通过；本轮聚焦本地独立消费测试 |
 
 问题记录需区分“待确定”与“阻塞”。只有影响当前任务继续推进时才标为受阻，并写明阻塞对象、所需条件和可继续的独立工作。
 
@@ -175,6 +176,7 @@
 | VAL-010 | 2026-11-02 | HTTP、TLS与跨语言 | http-e2e.php、tls-e2e.php、InteropTest.php | 通过 | HTTP27场景及32请求2Worker主体隔离；TLS12场景、12路同proof1接受11拒绝；Node签名PHP验签；build/review2-http.log、review2-tls-result.json |
 | VAL-011 | 2026-11-02 | 新依赖及独立消费 | validate-packages、consumer-smoke.php、audit --locked --format=json | 通过 | 三份元信息strict通过、独立安装/加载成功，advisories/abandoned空；build/review2-validate.log、review2-consumer.log、review2-audit.log |
 | VAL-012 | 2026-11-02 | 第二轮文档、诊断及快照 | verify-docs.php、实际dpop:doctor、PowerShell SHA256及compose down | 通过 | 15份Markdown链接/编码/围栏；只读doctor成功；49项包/锁摘要；独立容器/网络移除；build/review2-docs.log、review2-doctor.log、source-manifest.json、review2-down.log |
+| VAL-013 | 2026-11-02 | 独立官方Hyperf骨架消费测试 | 独立Composer镜像安装、原生OpenSSL客户端、HTTPS双Worker、实际中断/恢复、生产缓存与no-dev | 适用检查通过，重复头单列部署限制 | 4组各85项通过，另2项重复头限制；CLI8、限流15、中断/恢复11个不同断言；48文件摘要相同，宿主39文件语法及依赖审计通过；docs/verification-consumer-20261102.md及结构化JSON |
 
 当前文档检查命令为`docker compose run --rm test php tools/verify-docs.php`，自动排除vendor/build/runtime。以下保留初期仅有文档、未安装依赖时的历史PowerShell命令，不再用于扫描已安装依赖的整个目录：
 
@@ -342,3 +344,21 @@ LOG-NNN · 日期/时间（Asia/Shanghai） · 本次任务
 - 按用户要求清理根README中的方案设计、审查、执行计划、实施进度、验证记录及仓库上传说明，保留扩展用途、功能、组件结构、运行环境、使用边界、接入文档与许可证。
 - 未修改功能代码、依赖和既有历史报告；README不再承担实施记录入口职责，后续维护仍通过本文件与docs/maintenance.md查阅规则。
 - 禁网络只读容器执行verify-docs.php，15份Markdown编码、链接和围栏检查通过；git diff --check通过。此次仅修改文档，不重复运行功能测试。
+
+### LOG-012 · 2026-11-02 · 独立官方 Hyperf 消费项目深度测试
+
+- 用户要求新建Hyperf项目深度测试；随后补充Packagist提交失败截图，并明确选择“先完成独立Hyperf深度测试，暂不公开发布”。未改变仓库可见性、包名或包结构。
+- 使用官方hyperf-skeleton3.2.0在同级hyperf-dpop-consumer创建独立宿主，使用自己的锁文件/vendor和MySQL/Redis；两包以symlink=false安装，48文件摘要与源目录一致。不调用旧示例、DpopTest或工作区vendor。
+- NativeClient由PHP原生OpenSSL签名和生成公钥指纹，仅处理DER/JOSE编码，不自行实现签名算法。真实TLS校验CA和主机名，宿主自行实现opaque/JWT、租户绑定、刷新行锁与异常处理。
+- MySQL、Redis及移除55个开发依赖后的生产缓存冷/热共4组，每组85项通过；2个原始重复认证头用例按LIMITATION单列。Swoole保留最后值，有效值在后可200，确认部署网关需先拒绝重复头。
+- CLI8项、来源/全局预算15项、实际停止Redis/断开MySQL网络及恢复11个不同断言通过。配置有限Redis超时后，Redis503约5517ms，MySQL503约3012ms；恢复后同proof可重试，成功后重放被拒。不是主从切换、状态丢失或备份恢复验收。
+- 初始测试宿主仅配置池等待，缺顶层Redis超时，导致HTTP客户端8秒超时且服务端仍可能继续；保留反例，不计为通过。修正消费者配置并补充接入/设计说明，扩展PHP源码未变。早期测试宿主的OPTIONS路由写法、TLS设置位置、sleep参数类型和空env回填问题均修正，未列为扩展缺陷。
+- Composer strict与依赖公告审计通过，39宿主PHP文件语法通过。各底层命令已逐项执行；汇总retest.ps1另做语法检查，不冒称整段复跑。脱敏结构化结果随docs保存；源码与独立锁文件归档build/consumer-acceptance-project.zip，排除.env/runtime/vendor/evidence。
+- 已执行消费者docker compose down --remove-orphans，独立MySQL/Redis容器和网络均移除，tmpfs数据清除。源码、no-dev vendor和脱敏证据保留；正式发行与既有生产验收事项未完成。
+- 收尾检查：16份Markdown编码、链接及围栏通过；结构化结果计数、48文件摘要、锁文件一致性和脱敏检查通过；git diff --check通过。README保持功能介绍，未恢复实施痕迹。
+
+### 第三轮消费验证规则补充（2026-11-02生效）
+
+| 编号 | 规则 | 来源及适用范围 |
+| --- | --- | --- |
+| RULE-061 | 宿主Redis必须设置有限的顶层连接/读取超时，不能以池等待参数替代；总期限包含DNS/重连；HTTP客户端超时不证明协程取消或业务未执行 | VAL-013真实中断反例；设计§19.11；精化RULE-031及故障接入要求 |

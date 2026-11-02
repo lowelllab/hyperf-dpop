@@ -4,7 +4,7 @@
 
 ## 1. 包与运行环境
 
-业务项目安装`acme/hyperf-dpop`即可引入核心。开发工作区安装命令见[README](../README.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
+业务项目安装`acme/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
 
 当前两个path包均为0.1.x-dev。另建开发消费项目时，必须显式允许这两个开发包（例如minimum-stability=dev并prefer-stable=true，或在根需求逐包标记@dev）；仅在扩展的传递依赖里写@dev不会自动放宽消费项目稳定性。正式稳定发行后使用实际稳定版本，无需开发稳定性配置。`tools/consumer-smoke.php`在独立临时Composer项目及独立PHP进程验证这一接入，不借用工作区dev依赖。
 
@@ -25,6 +25,8 @@ schema只复制至应用根目录的`dpop-proofs.sql`，不执行SQL。已有配
 - [DDL模板](../packages/hyperf-dpop/publish/dpop-proofs.sql)交由宿主迁移流程执行，包不自动建表。
 
 必需配置：HTTPS公开origin、独立环境安全域、至少32字节随机nonce密钥、MySQL专用连接凭据、Redis连接和独立namespace。nonce密钥通过部署密钥管理注入，不写入源码。受信代理默认空；使用内部/外部前缀映射时，按组件模板显式填写，保留原始路径编码。
+
+在宿主`config/autoload/redis.php`中显式配置Redis连接的顶层`timeout`和`read_timeout`为有限正值，同时设置连接池`wait_timeout`；连接池参数不能替代套接字连接/读取超时。按部署的DNS、框架重连和HTTP请求期限验收总耗时，不把单次超时当成全链路上限。客户端HTTP超时不等于服务端协程已取消，不能据此推断proof或业务操作尚未发生。独立宿主的实际中断结果见[消费项目测试报告](verification-consumer-20261102.md)。
 
 MySQL表要求InnoDB，必需列非空且不是生成列：security_domain为VARCHAR(96) ascii_bin，jkt为CHAR(43) ascii_bin，jti_hash为BINARY(32)，两个时间列为BIGINT UNSIGNED。唯一索引必须完整且按security_domain、jkt、jti_hash顺序覆盖，不接受前缀索引或其他唯一限制。以发布DDL为准，不能缩短时间/摘要字段。驱动在每个进程首次登记时核验schema；doctor同样只读核验。管理员修改DDL后重新运行doctor并重启Worker。
 
