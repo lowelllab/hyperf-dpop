@@ -2,7 +2,7 @@
 
 为 Hyperf 项目提供可通过 Composer 接入的 DPoP（RFC 9449）服务端认证组件。
 
-当前状态：**方案深度审查完成，已实现未发布的0.1开发版**。包含通用核心、Hyperf适配、真实存储驱动、独立示例和自动化验证。正式vendor仍待确定，尚未完成独立安全审计或公共稳定发行，未创建Git仓库或执行发布。
+当前状态：**方案深度审查完成，已实现未发布的0.1开发版**。包含通用核心、Hyperf适配、真实存储驱动、独立示例和自动化验证。代码已首次提交并推送至私有仓库 [lowelllab/hyperf-dpop](https://github.com/lowelllab/hyperf-dpop)，主分支为`main`。正式vendor仍待确定，尚未完成独立安全审计或公共稳定发行。
 
 已追加整体功能复审与修复，当前结论见[整体功能验证记录](docs/verification-functional-20261102.md)及[问题审查报告](spec/feature_20261102_F001_hyperf-dpop-extension/review-functional-20261102.md)。首轮验证保留为历史快照。
 
