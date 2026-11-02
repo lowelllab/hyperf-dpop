@@ -37,6 +37,7 @@
 
 ## 使用文档
 
+- [使用示例](docs/usage-examples.md)：配置、令牌绑定、签发与刷新、路由保护及客户端请求。
 - [接入指南](docs/integration.md)
 - [错误契约](docs/errors.md)
 - [安全与部署说明](docs/security.md)

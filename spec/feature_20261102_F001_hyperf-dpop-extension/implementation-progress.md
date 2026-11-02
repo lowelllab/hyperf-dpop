@@ -128,6 +128,7 @@
 | TASK-009 | 第二轮文档检查、快照和环境收尾 | 已完成 | VAL-012及LOG-009；当前快照、文档与隔离服务收尾均有证据 |
 | TASK-010 | 私有Git仓库初始化与首次上传 | 已完成 | 用户提供远端；首次提交820f44d已推送main，vendor/build/runtime及临时密钥未纳入提交；LOG-010 |
 | TASK-011 | 新建官方Hyperf骨架并深度测试扩展 | 已完成 | 同级hyperf-dpop-consumer独立锁/vendor/存储；4组85项、CLI/限流/中断与恢复通过，重复头及宿主超时要求据实记录；VAL-013、LOG-012 |
+| TASK-012 | 增加使用示例文档 | 已完成 | docs/usage-examples.md覆盖安装、配置、宿主绑定、签发/刷新、路由、PHP客户端和JWT；6段PHP语法与客户端真实HTTPS流程通过；VAL-014、LOG-013 |
 
 原“仅文档、P0未开始”状态已被用户本次实施授权和LOG-003至LOG-005替代。下一步面向正式发行条件，不重复已通过的检查，除非代码变化或新问题需要回归。
 
@@ -177,6 +178,7 @@
 | VAL-011 | 2026-11-02 | 新依赖及独立消费 | validate-packages、consumer-smoke.php、audit --locked --format=json | 通过 | 三份元信息strict通过、独立安装/加载成功，advisories/abandoned空；build/review2-validate.log、review2-consumer.log、review2-audit.log |
 | VAL-012 | 2026-11-02 | 第二轮文档、诊断及快照 | verify-docs.php、实际dpop:doctor、PowerShell SHA256及compose down | 通过 | 15份Markdown链接/编码/围栏；只读doctor成功；49项包/锁摘要；独立容器/网络移除；build/review2-docs.log、review2-doctor.log、source-manifest.json、review2-down.log |
 | VAL-013 | 2026-11-02 | 独立官方Hyperf骨架消费测试 | 独立Composer镜像安装、原生OpenSSL客户端、HTTPS双Worker、实际中断/恢复、生产缓存与no-dev | 适用检查通过，重复头单列部署限制 | 4组各85项通过，另2项重复头限制；CLI8、限流15、中断/恢复11个不同断言；48文件摘要相同，宿主39文件语法及依赖审计通过；docs/verification-consumer-20261102.md及结构化JSON |
+| VAL-014 | 2026-11-02 | 使用示例与客户端 | 提取PHP/JSON代码块检查；独立宿主真实HTTPS执行文档客户端，适配路由/租户头/本地DNS和CA | 通过 | 6段PHP语法、Resolver与控制器按已安装API加载、JSON语法、17份Markdown编码/链接/围栏；nonce、签发、资源、刷新及新access访问成功；build/usage-doc-check及消费者evidence/doc-client-result.json |
 
 当前文档检查命令为`docker compose run --rm test php tools/verify-docs.php`，自动排除vendor/build/runtime。以下保留初期仅有文档、未安装依赖时的历史PowerShell命令，不再用于扫描已安装依赖的整个目录：
 
@@ -362,3 +364,11 @@ LOG-NNN · 日期/时间（Asia/Shanghai） · 本次任务
 | 编号 | 规则 | 来源及适用范围 |
 | --- | --- | --- |
 | RULE-061 | 宿主Redis必须设置有限的顶层连接/读取超时，不能以池等待参数替代；总期限包含DNS/重连；HTTP客户端超时不证明协程取消或业务未执行 | VAL-013真实中断反例；设计§19.11；精化RULE-031及故障接入要求 |
+
+### LOG-013 · 2026-11-02 · 使用示例文档与客户端验证
+
+- 按用户要求新增docs/usage-examples.md，README和接入指南增加入口；README继续仅包含功能与使用信息，不恢复设计、审查或实施痕迹。
+- 示例覆盖双包path开发安装、显式DDL、公开origin/前缀与nonce/Redis超时配置、可信Resolver、token/refresh辅助器、资源路由与请求身份、JWT绑定和错误处理。AccountService/SessionService明确为宿主需实现的服务，不伪装成扩展自带API；刷新锁/CAS与业务授权责任单独说明。
+- 完整PHP CLI客户端保持会话密钥、生成ES256 proof与access ath、按用途缓存nonce，挑战后重新生成proof并仅重试一次；展示登录、资源、刷新、新令牌资源访问，不打印令牌或私钥。
+- VAL-014通过：提取6段PHP语法检查、Resolver/控制器按当前API加载、JSON示例语法和17份Markdown链接/编码/围栏。文档客户端在独立Hyperf宿主真实TLS运行，仅适配路径、X-Tenant以及本地DNS/CA；初始和刷新后的资源主体均正确。宿主业务服务示意未冒称已整段部署。
+- 本次不修改扩展源码；文档验证完成后，消费者Compose服务和网络已关闭移除。未公开发布或改动仓库可见性。
