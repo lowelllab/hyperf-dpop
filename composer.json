@@ -1,0 +1,29 @@
+{
+  "name": "acme/hyperf-dpop-workspace",
+  "description": "Development and verification workspace for a Hyperf DPoP extension.",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.5",
+    "acme/dpop-core": "^0.1@dev",
+    "acme/hyperf-dpop": "^0.1@dev",
+    "hyperf/framework": "~3.2.0",
+    "hyperf/di": "~3.2.0",
+    "hyperf/command": "~3.2.0"
+  },
+  "require-dev": {
+    "hyperf/devtool": "~3.2.0",
+    "hyperf/redis": "~3.2.0",
+    "phpstan/phpstan": "^2.3",
+    "phpunit/phpunit": "^13.4"
+  },
+  "repositories": [{"type": "path", "url": "packages/*", "options": {"symlink": true, "versions": {"acme/dpop-core": "0.1.x-dev", "acme/hyperf-dpop": "0.1.x-dev"}}}],
+  "autoload-dev": {"psr-4": {"DpopTest\\": "tests/", "DpopExample\\": "examples/hyperf/app/"}},
+  "config": {"sort-packages": true, "allow-plugins": {}},
+  "scripts": {
+    "test": "phpunit tests",
+    "analyse": "phpstan analyse --no-progress",
+    "check": ["@test", "@analyse", "@php tools/lint.php", "@php tests/concurrency.php", "@php tests/coroutine.php", "@php tests/package-cli.php"],
+    "validate-packages": ["@composer validate --strict", "@composer validate --strict packages/dpop-core/composer.json", "@composer validate --strict packages/hyperf-dpop/composer.json"]
+  }
+}

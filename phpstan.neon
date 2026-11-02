@@ -1,0 +1,11 @@
+parameters:
+    level: 6
+    paths:
+        - packages/dpop-core/src
+        - packages/hyperf-dpop/src
+    tmpDir: build/phpstan
+    bootstrapFiles:
+        - tools/phpstan-bootstrap.php
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        - identifier: missingType.iterableValue

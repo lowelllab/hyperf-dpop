@@ -1,0 +1,8 @@
+{
+  "producer": "Node.js crypto",
+  "synthetic": true,
+  "now": 1800000000,
+  "access": "synthetic-access-for-interop",
+  "jkt": "uW5gnfwxo5-aaGJh-EXRGciM63raLq84KuCIXbpyDdU",
+  "proof": "eyJ0eXAiOiJkcG9wK2p3dCIsImFsZyI6IkVTMjU2IiwiandrIjp7Imt0eSI6IkVDIiwieCI6InpwVnViWXU2cHM1THFSQV9adXFNZmhOekZsZTlvR1pDeFRpTEtmNUpDZ28iLCJ5IjoieFVZZlJRNWRNNHoydWNmX2JRRmJ5MVc2LS1JYzlQVjc5eUs2TjQ1OU1sMCIsImNydiI6IlAtMjU2In19.eyJodG0iOiJHRVQiLCJodHUiOiJodHRwczovL2FwaS5leGFtcGxlL2l0ZW1zIiwiaWF0IjoxODAwMDAwMDAwLCJqdGkiOiJub2RlLWludGVyb3Atc3ludGhldGljLXZlY3RvciIsImF0aCI6IkdycDFTOTU0YjB1MlY4NWJtd3NqdWdIc2JRQ0F4OXlVSjZUUF84VUhlNjQifQ.JJ9HU_mzkXdkQDTY60k0C3ie0iDIqHjbt3sl13P2A3-fYXfVDL6WLcPGw7IHNNJPlOyG3euLCucseZUn6V0EkA"
+}

@@ -1,0 +1,6 @@
+/vendor/
+/build/
+/examples/hyperf/runtime/
+/.phpunit.cache/
+/composer.phar
+/.env

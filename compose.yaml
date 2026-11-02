@@ -1,0 +1,43 @@
+name: hyperf-dpop-lab
+services:
+  test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: hyperf-dpop-lab:php8.5
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - composer-cache:/tmp/composer-cache
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
+      DPOP_TEST_MYSQL_USER: dpop
+      DPOP_TEST_MYSQL_PASSWORD: isolated-test-only
+      DPOP_TEST_REDIS_HOST: redis
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_healthy}
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: isolated-root-only
+      MYSQL_DATABASE: dpop_test
+      MYSQL_USER: dpop
+      MYSQL_PASSWORD: isolated-test-only
+    tmpfs: [/var/lib/mysql]
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, localhost, -pisolated-root-only]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --save, '', --appendonly, 'no']
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+volumes:
+  composer-cache:

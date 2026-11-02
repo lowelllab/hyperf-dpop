@@ -1,0 +1,23 @@
+name: DPoP verification
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  php85-hyperf32:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: docker compose build test
+      - run: docker compose up -d --wait mysql redis
+      - run: docker compose run --rm test composer install --no-interaction --prefer-dist
+      - run: docker compose run --rm test php tools/runtime.php
+      - run: docker compose run --rm test composer validate-packages
+      - run: docker compose run --rm test php tools/consumer-smoke.php
+      - run: docker compose run --rm test composer check
+      - run: docker compose run --rm test php tests/http-e2e.php
+      - run: docker compose run --rm test php tests/tls-e2e.php
+      - run: docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor
+      - run: docker compose run --rm test composer audit --locked
+      - run: docker compose run --rm test php tools/verify-docs.php
+      - if: always()
+        run: docker compose down
