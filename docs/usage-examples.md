@@ -2,43 +2,17 @@
 
 下面以现有 Hyperf 应用接入不透明令牌为例，串联配置、登录签发、受保护资源、刷新和客户端 nonce 重试。JWT 接入方式见第 7 节。
 
-服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。两个包名为 `lowelllab/hyperf-dpop`、`lowelllab/dpop-core`，尚未提交公共 Packagist；以下使用本地 Composer path 仓库。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
+服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。两个包名为 `lowelllab/hyperf-dpop`、`lowelllab/dpop-core`，正式发行版为0.1.0，以下从默认Packagist安装。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
 
-## 1 安装开发包
-
-假设宿主目录 `my-api` 与本扩展目录 `hyperf-dpop` 同级。在宿主 `composer.json` 中合并以下配置，保留原有依赖和自动加载设置：
-
-```json
-{
-  "require": {
-    "lowelllab/hyperf-dpop": "^0.1@dev",
-    "hyperf/redis": "~3.2.0"
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../hyperf-dpop/packages/*",
-      "options": {
-        "symlink": false,
-        "versions": {
-          "lowelllab/dpop-core": "0.1.x-dev",
-          "lowelllab/hyperf-dpop": "0.1.x-dev"
-        }
-      }
-    }
-  ],
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}
-```
+## 1 安装正式包
 
 在宿主目录执行：
 
 ```bash
-composer update lowelllab/hyperf-dpop hyperf/redis --with-all-dependencies
+composer require "lowelllab/hyperf-dpop:^0.1" "hyperf/redis:~3.2.0"
 ```
 
-核心包会自动引入。这里使用文件副本安装；修改扩展源码后，需要在宿主执行 `composer reinstall lowelllab/dpop-core lowelllab/hyperf-dpop` 更新副本。单独把当前 GitHub 工作区根目录配置为 VCS 仓库，不能替代两个子包的安装。
+协议核心自动作为依赖引入，保留宿主默认稳定性，不需要path/VCS仓库或克隆开发工作区。若宿主原有beta/path配置，先按[发布指南](publishing.md)移除覆盖，再通过Composer更新锁和vendor。
 
 ## 2 配置与建表
 

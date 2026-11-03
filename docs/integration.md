@@ -2,13 +2,13 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：两个正式包已登记Packagist开发分支，尚未发布稳定版；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
+状态：两个正式包的正式发行版本为0.1.0；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 
 业务项目安装`lowelllab/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
 
-当前两个path包均为0.1.x-dev。另建开发消费项目时，必须显式允许这两个开发包（例如minimum-stability=dev并prefer-stable=true，或在根需求逐包标记@dev）；仅在扩展的传递依赖里写@dev不会自动放宽消费项目稳定性。正式稳定发行后使用实际稳定版本，无需开发稳定性配置。`tools/consumer-smoke.php`在独立临时Composer项目及独立PHP进程验证这一接入，不借用工作区dev依赖。
+正式接入使用`composer require "lowelllab/hyperf-dpop:^0.1"`，核心自动引入，保持宿主默认稳定性。开发工作区仍使用0.1.x-dev path别名；它是开发检查入口，不作为业务安装来源。发行与干净公开安装证据见[0.1.0发布记录](release-0.1.0.md)。
 
 默认方案需要pdo_mysql及共享Redis：MySQL负责权威防重放，Redis负责跨Worker/实例认证预算。切换Redis重放驱动不会消除预算，也不会获得数据库同等的恢复保证。
 

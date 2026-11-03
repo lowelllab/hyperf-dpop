@@ -8,7 +8,7 @@ if(!mkdir($output,0700,true)){throw new RuntimeException('Cannot create package 
 $manifest=['directory'=>$output,'packages'=>[]];
 foreach(['dpop-core','hyperf-dpop'] as $package){
     $source=$root.'/packages/'.$package;$target=$output.'/'.$package;$files=[];
-    foreach(['composer.json','README.md','LICENSE','src','publish'] as $entry){
+    foreach(['composer.json','README.md','LICENSE','SECURITY.md','src','publish'] as $entry){
         $path=$source.'/'.$entry;if(!file_exists($path)){continue;}
         $paths=is_dir($path)?new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path,FilesystemIterator::SKIP_DOTS)):[$path];
         foreach($paths as $item){

@@ -405,3 +405,9 @@ mTLS 在传输层处理客户端证书认证。后续可从受信网关传递经
 14. **原生HTTP/2与网关契约（0.7补充）**：Swoole6.2.4原生HTTP/2覆盖字段且getData不可用，无法核验唯一性的受保护请求503 dpop_security_unavailable；不存在允许静默接受已覆盖单值的开关。入口HAProxy在任何字段归并/转发前通过完整字段计数拒绝重复Authorization/DPoP及逗号列表，客户端HTTP/1.1和HTTP/2均适用；后端强制HTTP/1.1，只允许网关连接。提供gateway发布项，仅复制haproxy.cfg不部署；保留无force不覆盖宿主文件行为。更早代理若已丢弃字段，仍须在该入口拒绝。实际生产拓扑、容量和网络策略验收独立于本地测试。
 
 15. **请求代理与尾部字段（0.8补充）**：标准Hyperf\HttpServer\Request代理通过相同protocol version的不可变PSR操作获得底层请求，不修改RequestContext；不能将它当作没有原生来源的手工PSR请求而跳过检查。Swoole HTTP/1起始原始认证字段应与当前PSR字段完全一致；禁止解析后改写凭据、认证Trailer声明及实际认证尾部字段。按chunk长度与CRLF边界跳过载荷，检查真正的trailers，避免扫描body文本误判；长度溢出、边界错误或不可核验时拒绝。网关拒绝认证Trailer声明，并以HAProxy http-drop-request-trailers在发送后端前剥离所有实际HTTP/1和HTTP/2尾部字段，正常body保留。原生Swoole网络解析尾部报文的等待发生于应用前，不能计作应用400或客户端超时即取消；后端隔离和入口剥离是该部署契约的组成部分。
+
+16. **正式分发与部署验证分开（0.8发行补充）**：用户在本地独立beta验收后明确要求正式版，按0.1.0双包发行。
+维护入口lowelllab，三个仓库启用GitHub私密漏洞报告，SECURITY.md随两个library包导出；适配依赖核心^0.1.0，默认稳定Composer可传递安装。
+协议PHP与publish模板沿用已验收beta字节，不以发行标签放宽nonce、存储、认证字段或网关契约。
+依据最新发行指令，将原P5安排中的独立审计/目标生产验证与版本分发分开记录，调整发行时点，不将未完成事项标为通过。
+目标真实入口、容量/SLO、HA/状态丢失/备份恢复、独立安全审计继续开放；原生Swoole限制继续适用。证据见DEC-009及docs/release-0.1.0.md。

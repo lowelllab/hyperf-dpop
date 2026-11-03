@@ -3,7 +3,26 @@
   "description": "Framework-independent strict RFC 9449 DPoP verification and authentication coordination.",
   "type": "library",
   "license": "MIT",
-  "require": {"php": "^8.5", "ext-openssl": "*", "web-token/jwt-library": "^4.2.4", "psr/clock": "^1.0"},
-  "autoload": {"psr-4": {"Acme\\Dpop\\": "src/"}},
-  "extra": {"branch-alias": {"dev-main": "0.1.x-dev"}}
+  "require": {
+    "php": "^8.5",
+    "ext-openssl": "*",
+    "web-token/jwt-library": "^4.2.4",
+    "psr/clock": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Acme\\Dpop\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "0.1.x-dev"
+    }
+  },
+  "support": {
+    "issues": "https://github.com/lowelllab/dpop-core/issues",
+    "source": "https://github.com/lowelllab/dpop-core",
+    "docs": "https://github.com/lowelllab/hyperf-dpop/blob/main/docs/usage-examples.md",
+    "security": "https://github.com/lowelllab/dpop-core/security/advisories/new"
+  }
 }

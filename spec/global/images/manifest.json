@@ -7,7 +7,7 @@
   "source_documents": {
     "spec/global/architecture.md": "a0c596862feaf0195b804ab7f2bde91fc63ce5ca21db9ac019533f11f70f168a",
     "spec/global/constraints.md": "83c133b8634d3c795b5054f8fe2ef4baacbd6c65730b5249d25187963c02979d",
-    "spec/global/features.md": "e318989d45adc57908ac2d148ff220cd2e688d2770f80aacbc123f89c9e8512a",
+    "spec/global/features.md": "61ca1828af97aa6adab5a1e34198e261226d562b16501983df40277b4c9ac8ef",
     "spec/global/index.md": "9290025a7d5b0286a303b50ffa9d1632706aa21c418ab8fd7039bf5a92c8e99b",
     "spec/global/overview.md": "5e8c7645e9affe8b0e2205145c821610d6f8bbfad8d89b7eaab1b19c7192a5bd"
   },
@@ -138,5 +138,11 @@
     "images": "保留初始化发布前快照，正文显式图注说明；职责与数据流不变",
     "source_documents": "当前正文SHA256；初始生成依据另存generation_source_documents",
     "remote_ci": "41563865101，89defd3全部23步骤通过"
+  },
+  "local_beta_acceptance": {
+    "date": "2026-11-03",
+    "report": "docs/acceptance-beta-20261103.md",
+    "result": "PASS_LOCAL_ACCEPTANCE",
+    "images": "沿用已标明初始化时点的图；职责和数据流不变"
   }
 }

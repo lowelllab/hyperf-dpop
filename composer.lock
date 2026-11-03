@@ -2227,7 +2227,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/dpop-core",
-                "reference": "4d7754c53066bde8dfd4c3149f2788a55d81bb36"
+                "reference": "18f0bfb8fef7013abbc2bf5f586eafe8c8aa70f7"
             },
             "require": {
                 "ext-openssl": "*",
@@ -2250,6 +2250,12 @@
                 "MIT"
             ],
             "description": "Framework-independent strict RFC 9449 DPoP verification and authentication coordination.",
+            "support": {
+                "issues": "https://github.com/lowelllab/dpop-core/issues",
+                "source": "https://github.com/lowelllab/dpop-core",
+                "docs": "https://github.com/lowelllab/hyperf-dpop/blob/main/docs/usage-examples.md",
+                "security": "https://github.com/lowelllab/dpop-core/security/advisories/new"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -2261,7 +2267,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/hyperf-dpop",
-                "reference": "a80b67fff94341c12f846d3aa6d2154b834e7697"
+                "reference": "d7eae2b79adaf0368177cafa3ec7bab5bc3c132f"
             },
             "require": {
                 "ext-pdo": "*",
@@ -2271,7 +2277,7 @@
                 "hyperf/framework": "~3.2.0",
                 "hyperf/http-message": "~3.2.0",
                 "hyperf/http-server": "~3.2.0",
-                "lowelllab/dpop-core": "^0.1.0-beta.1",
+                "lowelllab/dpop-core": "^0.1.0",
                 "php": "^8.5",
                 "psr/http-server-middleware": "^1.0"
             },
@@ -2299,6 +2305,12 @@
                 "MIT"
             ],
             "description": "Hyperf integration for strict DPoP authentication, nonce and atomic replay protection.",
+            "support": {
+                "issues": "https://github.com/lowelllab/hyperf-dpop-package/issues",
+                "source": "https://github.com/lowelllab/hyperf-dpop-package",
+                "docs": "https://github.com/lowelllab/hyperf-dpop/blob/main/docs/usage-examples.md",
+                "security": "https://github.com/lowelllab/hyperf-dpop-package/security/advisories/new"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
