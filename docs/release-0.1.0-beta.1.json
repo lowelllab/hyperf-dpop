@@ -2428,7 +2428,244 @@
   "remote_ci": {
     "initial_run": 41563085542,
     "initial_result": "failure: missing build directory in tools/consumer-smoke.php",
-    "followup": "pending"
+    "fix_scope": "test harness only; create build before opening log",
+    "clean_checkout_reproduction": "PASS without pre-existing build/vendor",
+    "run_id": 41563865101,
+    "url": "https://github.com/lowelllab/hyperf-dpop/actions/runs/41563865101",
+    "head_sha": "89defd3f71452a1d37df7e0f622dd10c8887fee5",
+    "conclusion": "success",
+    "job_id": 125680563138,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose build test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose up -d --wait mysql redis",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer install --no-interaction --prefer-dist",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/runtime.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer validate-packages",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/consumer-smoke.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/prepare-packages.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/verify-package-exports.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer check",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tests/http-e2e.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tests/tls-e2e.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait gateway",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml exec -T gateway-app php tests/gateway-e2e.php client",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml run --rm --no-deps gateway-wire",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml stop gateway gateway-app",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer audit --locked",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/verify-docs.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml down --remove-orphans",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "h2_wire_checks": {
+      "node": "v24.22.2",
+      "cases": [
+        {
+          "case": "h2-tls-peer-and-alpn",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-trailer-fixture-nonce",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "h2-trailer-fixture-issued",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-trailer-resource-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "h2-hidden-auth-cannot-replace-invalid-header",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "h2-real-auth-trailer-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-hidden-auth-no-proof-consumption",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-trailers-cannot-corrupt-valid-initial-fields",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-real-multiple-trailers-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-streamed-success-proof-is-consumed",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "h2-trailer-only-credentials-not-authentication",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "h2-trailer-only-no-spurious-token-error",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-forbidden-trailer-declaration",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-forbidden-declaration-dPoP",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-forbidden-declaration-X-Checksum, AUTHORIZATION",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-harmless-trailer-remains-compatible",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-body-and-original-proof-preserved",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        }
+      ],
+      "failure": null,
+      "meaning": "Actual HTTP/2 trailing HEADERS with independent signer; no credentials in evidence"
+    }
   },
   "production_acceptance": "NOT_COMPLETED",
   "retained_limitations": [
@@ -2438,5 +2675,23 @@
   "cleanup": {
     "beta_consumer_containers": [],
     "root_test_containers": []
-  }
+  },
+  "public_releases": [
+    {
+      "package": "lowelllab/dpop-core",
+      "version": "v0.1.0-beta.1",
+      "ref": "503fbfed2410c06682997edf0f345a77dac88d1c",
+      "release": "https://github.com/lowelllab/dpop-core/releases/tag/v0.1.0-beta.1",
+      "prerelease": true,
+      "draft": false
+    },
+    {
+      "package": "lowelllab/hyperf-dpop",
+      "version": "v0.1.0-beta.1",
+      "ref": "c92cd27b23beae51c205341a338628acc6810db9",
+      "release": "https://github.com/lowelllab/hyperf-dpop-package/releases/tag/v0.1.0-beta.1",
+      "prerelease": true,
+      "draft": false
+    }
+  ]
 }

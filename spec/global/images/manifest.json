@@ -6,7 +6,7 @@
   "generation_policy": "按确认大纲逐张同步生成；失败重试一次，仍失败再使用技能允许的本地PNG恢复路径",
   "source_documents": {
     "spec/global/architecture.md": "a0c596862feaf0195b804ab7f2bde91fc63ce5ca21db9ac019533f11f70f168a",
-    "spec/global/constraints.md": "a72ad813e3e4ff9463554a4e645b8633722059a28d62a37a14e638263f8d8cdd",
+    "spec/global/constraints.md": "83c133b8634d3c795b5054f8fe2ef4baacbd6c65730b5249d25187963c02979d",
     "spec/global/features.md": "e318989d45adc57908ac2d148ff220cd2e688d2770f80aacbc123f89c9e8512a",
     "spec/global/index.md": "9290025a7d5b0286a303b50ffa9d1632706aa21c418ab8fd7039bf5a92c8e99b",
     "spec/global/overview.md": "5e8c7645e9affe8b0e2205145c821610d6f8bbfad8d89b7eaab1b19c7192a5bd"
@@ -136,6 +136,7 @@
     "date": "2026-11-03",
     "release_record": "docs/release-0.1.0-beta.1.md",
     "images": "保留初始化发布前快照，正文显式图注说明；职责与数据流不变",
-    "source_documents": "当前正文SHA256；初始生成依据另存generation_source_documents"
+    "source_documents": "当前正文SHA256；初始生成依据另存generation_source_documents",
+    "remote_ci": "41563865101，89defd3全部23步骤通过"
   }
 }

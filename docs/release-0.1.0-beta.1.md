@@ -1,6 +1,6 @@
 # 0.1.0-beta.1 发布记录
 
-日期：2026-11-03。阶段：首次测试版，非稳定版。双包已公开发布并通过全新Hyperf消费验证；远端CI首次暴露测试脚本日志目录缺失，窄修复和干净检出复验通过，等待后续CI。
+日期：2026-11-03。阶段：首次测试版，非稳定版。双包已公开发布并通过全新Hyperf消费验证；远端CI首次暴露的测试脚本日志目录缺失已修复；干净检出及后续远端CI均通过。
 
 ## 分发范围
 
@@ -34,6 +34,8 @@ composer require "lowelllab/hyperf-dpop:0.1.0-beta.1" "lowelllab/dpop-core:0.1.0
 - 公开消费：新建同级hyperf-dpop-beta-consumer，沿用官方Hyperf3.2验收宿主源码；没有repositories/minimum-stability覆盖、全新lock/vendor，无工作区挂载。两个beta均由默认Packagist解析到上表提交，88个生产包，49个包文件逐字节一致，包根文件集合无多余内容。
 - 独立真实Hyperf：完整执行acceptance/retest-gateway.ps1（含install），MySQL/Redis分别HTTP1冷缓存与HTTP2热缓存，四组各87 PASS/0 LIMITATION；生产APP_ENV、SCAN_CACHEABLE=true、无dev。每组64并发跨两Worker身份隔离、24路同proof仅1成功、8路refresh仅1成功。37宿主语法、strict及锁依赖公告审计通过。新解析依赖实际包括PHP8.5.12、Swoole6.2.4、Hyperf framework3.2.0及DI3.2.2，不将宿主旧锁冒充本次新锁。
 - 环境：独立beta宿主脚本finally已移除自身容器/网络，tmpfs清除；根实验环境也已移除自身容器/网络；两项目查询为空，其他业务项目未操作。
-- 远端CI：[首次执行](https://github.com/lowelllab/hyperf-dpop/actions/runs/41563085542)失败于consumer-smoke日志目录缺失，而非扩展行为。tools/consumer-smoke.php显式创建build目录；在无build/vendor的新git archive源码副本实际安装消费通过。后续远端CI待核实，已发布包源码不因此修改或重打标签。
+- 远端CI：[首次执行](https://github.com/lowelllab/hyperf-dpop/actions/runs/41563085542)失败于consumer-smoke日志目录缺失，而非扩展行为。tools/consumer-smoke.php显式创建build目录；在无build/vendor的新git archive源码副本实际安装消费通过。[后续CI 41563865101](https://github.com/lowelllab/hyperf-dpop/actions/runs/41563865101)在代码提交89defd3上全部23步骤通过，含153/281、HTTP27、TLS12、网关180及真实H2尾帧17；原生尾部等待仍单列观察。已发布包源码不因此修改或重打标签。收尾只更新验证记录，文档校验另行通过，记录提交使用skip ci避免重复执行未变代码。
 
 [结构化版本/49文件摘要/四组验收证据](release-0.1.0-beta.1.json)；原始运行日志保留忽略的build/release-0.1.0-beta.1/。87项为同一场景集在四种模式重复，不宣称348个独立场景。生产验收事项继续开放。
+
+固定发行证据已附于[GitHub Release](https://github.com/lowelllab/hyperf-dpop-package/releases/download/v0.1.0-beta.1/verification-0.1.0-beta.1.json)，SHA256：`464a4ef2081ef0fff4024a4803485cbd893b2fd969f988035750ee0d64ee7747`，与本地结构化证据逐字节相同。
