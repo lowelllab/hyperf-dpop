@@ -1,0 +1,3309 @@
+{
+  "date": "2026-11-03",
+  "version": "0.1.0",
+  "result": "PUBLISHED_AND_VERIFIED",
+  "release_phase": "stable",
+  "packages": {
+    "lowelllab/dpop-core": {
+      "version": "v0.1.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/lowelllab/dpop-core.git",
+        "reference": "f8fae1215edbeb4b80ec067f93f3a828708effb9"
+      },
+      "files": {
+        "LICENSE": "7a46f96d8310300551e1bd3a3c28e2269e410e93383c4ba806053684d30b0023",
+        "README.md": "973956a65f90580d65b6e0f0adcd6631a29e1cf98b8499d1d9f8cbaf678e3f05",
+        "SECURITY.md": "8493740c85752dfcd640fd1edce416a937205b1e3a44ccda4064b0fe6e6e99c0",
+        "composer.json": "7858a0b6970d9e44723cfd388e032afb144e157e7cfe51f2abbf74ae2f35c28a",
+        "src/Authenticator.php": "419511ae4417db2da442c32566a5b57aaeb7c382c5f85cb7f37f55f0328f7a0a",
+        "src/Contract/NonceManagerInterface.php": "05f343bbe9db129360460d8bda695cf6ec113af292cd43962de7b53a67b11e0b",
+        "src/Contract/ReplayStoreInterface.php": "561e5ce8d51c529b4af072d19d5bac4e7a1f2acec43401520ce2f3e2f890630e",
+        "src/Exception/DpopException.php": "844cbdc977f9e4887b9df77cedc2b59be13b00c4c1d84b3b9bdc0cf48add21e6",
+        "src/Nonce/HmacNonceManager.php": "3c259e2d9a2c77f5dbeb3b9c09b5b392257f0d7f1a88c3370d640b2a8f2eff31",
+        "src/Protocol/Base64Url.php": "18d4b68f222fe953c10c316f416190863caf8f0101657f374b6ec8ca71527188",
+        "src/Protocol/JwkThumbprint.php": "edd7276f27d3027fc1fad6a1ce5fd088d389bf8f643f0ec10584ecc4bed45376",
+        "src/Protocol/ProofVerifier.php": "0984097cdee5b903cbba55ff85127d003b46d64fb94f55bd4e0fcbc280b95881",
+        "src/Protocol/StrictJson.php": "6362b5c1a60448049b633c2b116f887f0448e414c038642ea19460f1d4729bd2",
+        "src/Protocol/UriCanonicalizer.php": "47a21ed9843a5932e67fb2e4ab49a8e3b926abe008f807a3daab6857ecefd1d3",
+        "src/SystemClock.php": "0c6065b84309d33853c00d46545f9ae224e11bfba6c121ec4ebff86d0c89f211",
+        "src/ValueObject/SecurityPolicy.php": "d76684f31c89b4d46786a4ce78c92b01940e1ace5b87cfe24545ea46b30b6c81",
+        "src/ValueObject/TokenBinding.php": "0f2741c7a566708001714b57bf7fdc475c300bf0fe8a4016049b5446432f8e83",
+        "src/ValueObject/VerifiedProof.php": "02f37b508441e469f1db03b3fc413a9cb28d402d769b63cbcc7c955d4e0fa819"
+      }
+    },
+    "lowelllab/hyperf-dpop": {
+      "version": "v0.1.0",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/lowelllab/hyperf-dpop-package.git",
+        "reference": "91026a2cea960be4315dbab3dcf63920d6ca3b0f"
+      },
+      "files": {
+        "LICENSE": "7a46f96d8310300551e1bd3a3c28e2269e410e93383c4ba806053684d30b0023",
+        "README.md": "336265957d766c5148eef980ff7d090f32f60b96205e073e6dc4381a5f53b46d",
+        "SECURITY.md": "8493740c85752dfcd640fd1edce416a937205b1e3a44ccda4064b0fe6e6e99c0",
+        "composer.json": "c18918d2cb9584e139f87549e850cba971bf7865292aa9f0ee0f5d0796031239",
+        "publish/dpop-proofs.sql": "8679aa6ad2e795e1601921ab04604ab85aa4a50df1fcecdeeed6043dfac7b14f",
+        "publish/dpop.php": "336d173b6565366c3237b81ff138eb31261f10db7604f47851152399762cfa9b",
+        "publish/haproxy.cfg": "87e6ebe4409c21499e811feed2795e929428257e8cede44221962be70abf1336",
+        "src/Admission/AdmissionBudgetInterface.php": "5263c79e2795b1f0eba2cb688e522abfc7a2f6c64ca7210cc7a936d1de9d4dd6",
+        "src/Admission/AdmissionBudgetProbeInterface.php": "bca838a2e9279c948e0f99fb4765047d8c98de2a1a169713bb89bad20b1f4a18",
+        "src/Admission/RedisAdmissionBudget.php": "0ac6423039b8e639f5f9b548a3002499ebeeafc72ab2ab796d6d27c3b9d11c7e",
+        "src/AuthenticationObserver.php": "3a6a073b9bd935783f89945c333e337afd42914157364a31469b83480b3f088f",
+        "src/BootstrapValidator.php": "40d1c981201238ce5644cb7a03eea3b1253826d22fd2d8759313e04b80308d1a",
+        "src/Cancellation.php": "453a3811825b2e6ffa4f8cf1a80abad81221a41daff933ef7cd894cf5a7baff7",
+        "src/Command/DoctorCommand.php": "6fc13632f918a3a84845b9bebf2559c22e8581855d6587ea0d7776051bc1a308",
+        "src/ConfigProvider.php": "5792ca665c121f75fba5a9f9f53554c49f11a07fcfe4391aecc7752227ca1396",
+        "src/Contract/AuthenticationObserverInterface.php": "b19c1113c930043d5d5af15fbf78df1dd922cb57d08eea764dfd5c00ded259e7",
+        "src/Contract/ErrorResponseFactoryInterface.php": "f6cfb27b1fe4a2a391900bc5316706d15d21b398a07afd91ca471bd8dcbac507",
+        "src/Contract/ExternalUriResolverInterface.php": "49f40f6648cf2ac19a2d34159c5d536f39e99cf64703d15e98d994faab496fa9",
+        "src/Contract/RefreshBindingResolverInterface.php": "3ffc32b107dc918e616496100319eac489af692ff1dcb93f3a24145f1753255b",
+        "src/Contract/TokenBindingResolverInterface.php": "bf62d53bfca68fc39e342e77bab770984252b17e0158864edd824feda6e87397",
+        "src/DpopContext.php": "8f6f1a1eb503dff53cd048c5e314f9a41a1c91eaea19b7b208cf9581b4be23ac",
+        "src/Factory.php": "13c0f5b863dee0b32fa575abcae8ca0a591d198b7144473f2a2365c7b75d9773",
+        "src/Http/ClientSource.php": "0a8e60231e3a0e8c496da1d31611eced3b80798d87a0f1a3bf8479638ff9f642",
+        "src/Http/ErrorResponseFactory.php": "9d890cde691439c8d77d2fe3b983018678f13d3b8786b9b648e72817b0bc15db",
+        "src/Http/ExternalUriResolver.php": "4afc9582586d0b62ba8f947a538527b99cf7615e35995d1d951babb2874eb796",
+        "src/Http/HeaderReader.php": "e288cbd2178a542401fd8e2a96ce5edf566f939f99a9123f0cacb953fb69790a",
+        "src/Middleware/DpopMiddleware.php": "6f0e720d39963ff6e6b79ff5541cf44cffa66b5047ada71e060d0ba8489113df",
+        "src/Store/HyperfRedisExecutor.php": "5f24b8f7f76af11362adc3fc112ce7307ec1808c335c4953a804506b01a66e64",
+        "src/Store/MySqlReplayStore.php": "68123adede53003d73ec72850fa2b9ac625b3a174acdf6802ff8da5442849c8d",
+        "src/Store/RedisExecutorInterface.php": "23c9c468a5e93b8fa64ae41a516a132bb99842a72094039a3f805b85806d096f",
+        "src/Store/RedisReplayStore.php": "60d46e2664ac6157f47f9267eec969a8b451967f2146558fdfa86186fe681485",
+        "src/Store/ReplayStoreProbeInterface.php": "726ceebe23b94954fcdb49367bea66371bfb8988799e2b4c85c73a440abf058a",
+        "src/TokenEndpoint.php": "3a28b87dc9392e0cdc21926b1f4e72a4160f06916c6fa21bc201f18694c4c7b2"
+      }
+    }
+  },
+  "core_transitive": true,
+  "require_only": "lowelllab/hyperf-dpop:^0.1",
+  "default_stability": true,
+  "custom_repositories": false,
+  "production_installed_packages": 88,
+  "source_files_matched": 51,
+  "functional_beta_files_unchanged": 43,
+  "consumer": "C:\\ProjectArchiving\\GegoreGos\\hyperf-dpop-stable-consumer",
+  "consumer_lock_sha256": "7caf1815e8adb66510e42449a474afc4d3c3b86cdd915243eeeb1f2640e17bec",
+  "modes": {
+    "mysql-http1-cold": {
+      "driver": "mysql",
+      "client_protocol": 2,
+      "label": "mysql-http1-cold",
+      "dev_dependencies": false,
+      "scan_cacheable": "true",
+      "php": "8.5.12",
+      "swoole": "6.2.4",
+      "framework": "v3.2.0",
+      "di": "v3.2.2",
+      "cases": [
+        {
+          "case": "official-skeleton-real-server-starts",
+          "result": "PASS"
+        },
+        {
+          "case": "independent-vendor-without-workspace-test-autoload",
+          "result": "PASS"
+        },
+        {
+          "case": "tls-ca-and-host-verified",
+          "result": "PASS"
+        },
+        {
+          "case": "unknown-ca-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "wrong-host-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "options-bypasses-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "missing-auth",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "missing-auth-challenge-without-spurious-error",
+          "result": "PASS"
+        },
+        {
+          "case": "bearer-downgrade-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "malformed-auth",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "missing-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "token-missing-proof",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "nonce-before-issuance",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "challenge-no-session-side-effect",
+          "result": "PASS"
+        },
+        {
+          "case": "nonce-response-no-store",
+          "result": "PASS"
+        },
+        {
+          "case": "opaque-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "token-type-and-response-cache",
+          "result": "PASS"
+        },
+        {
+          "case": "native-openssl-proof-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "request-subject",
+          "result": "PASS"
+        },
+        {
+          "case": "successful-proof-replay",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "query-not-part-of-target",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "method-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-method",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "path-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-origin",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-query-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-fragment-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "old-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "iat-string",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "expired-exp",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-nbf",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "short-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-client-key",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "tenant-binding-rejects-cross-tenant",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "invalid-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "cross-purpose-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "wrong-typ",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-alg",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "remote-jku",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "critical-extension",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "private-jwk",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "null-jwk-use",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-jwk-curve",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "duplicate-json-claim",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "missing-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "signature-tampering",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "oversized-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "raw-duplicate-authorization",
+          "result": "PASS",
+          "invalid_last_status": 400,
+          "valid_last_status": 400
+        },
+        {
+          "case": "raw-duplicate-dpop",
+          "result": "PASS",
+          "valid_last_status": 400
+        },
+        {
+          "case": "encoded-path-/groups/team%40chat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/team%2Fchat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/%7Eteam",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "reserved-encoding-distinct",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "failed-proof-does-not-reserve-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "corrected-proof-same-jti-accepted",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "same-jti-across-path-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-transaction-rollback",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-action-rolled-back",
+          "result": "PASS"
+        },
+        {
+          "case": "host-rollback-does-not-release-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "resolver-exception-is-503",
+          "result": "PASS",
+          "status": 503,
+          "expected": 503,
+          "error": "dpop_security_unavailable"
+        },
+        {
+          "case": "host-exception-propagates",
+          "result": "PASS",
+          "status": 500,
+          "expected": 500,
+          "error": "host_failure"
+        },
+        {
+          "case": "host-exception-handler-used",
+          "result": "PASS"
+        },
+        {
+          "case": "host-exception-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-authorization-remains-403",
+          "result": "PASS",
+          "status": 403,
+          "expected": 403,
+          "error": "host_forbidden"
+        },
+        {
+          "case": "host-denial-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-jwt-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-jwt-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "jwt-expired",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-issuer",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-audience",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-missing-binding",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "refresh-other-key",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "same-key-refresh",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "old-access-invalidated",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "old-refresh-invalidated",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_grant"
+        },
+        {
+          "case": "rotated-access",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "refresh-eight-way-cas",
+          "result": "PASS",
+          "accepted": 1,
+          "invalid_grant": 7
+        },
+        {
+          "case": "isolation-session-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-session-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "64-requests-two-workers-identity-isolated",
+          "result": "PASS",
+          "requests": 64,
+          "workers": 2
+        },
+        {
+          "case": "24-way-identical-proof-race",
+          "result": "PASS",
+          "accepted": 1,
+          "rejected": 23
+        },
+        {
+          "case": "host-revocation",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "throwing-observer-does-not-change-authentication",
+          "result": "PASS"
+        }
+      ],
+      "observation": {
+        "p50_ms": 243.64,
+        "p95_ms": 247.29,
+        "meaning": "local test observation, not production capacity"
+      },
+      "failure": null
+    },
+    "mysql-http2-warm": {
+      "driver": "mysql",
+      "client_protocol": 3,
+      "label": "mysql-http2-warm",
+      "dev_dependencies": false,
+      "scan_cacheable": "true",
+      "php": "8.5.12",
+      "swoole": "6.2.4",
+      "framework": "v3.2.0",
+      "di": "v3.2.2",
+      "cases": [
+        {
+          "case": "official-skeleton-real-server-starts",
+          "result": "PASS"
+        },
+        {
+          "case": "independent-vendor-without-workspace-test-autoload",
+          "result": "PASS"
+        },
+        {
+          "case": "tls-ca-and-host-verified",
+          "result": "PASS"
+        },
+        {
+          "case": "unknown-ca-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "wrong-host-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "options-bypasses-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "missing-auth",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "missing-auth-challenge-without-spurious-error",
+          "result": "PASS"
+        },
+        {
+          "case": "bearer-downgrade-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "malformed-auth",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "missing-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "token-missing-proof",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "nonce-before-issuance",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "challenge-no-session-side-effect",
+          "result": "PASS"
+        },
+        {
+          "case": "nonce-response-no-store",
+          "result": "PASS"
+        },
+        {
+          "case": "opaque-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "token-type-and-response-cache",
+          "result": "PASS"
+        },
+        {
+          "case": "native-openssl-proof-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "request-subject",
+          "result": "PASS"
+        },
+        {
+          "case": "successful-proof-replay",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "query-not-part-of-target",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "method-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-method",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "path-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-origin",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-query-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-fragment-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "old-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "iat-string",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "expired-exp",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-nbf",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "short-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-client-key",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "tenant-binding-rejects-cross-tenant",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "invalid-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "cross-purpose-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "wrong-typ",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-alg",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "remote-jku",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "critical-extension",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "private-jwk",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "null-jwk-use",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-jwk-curve",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "duplicate-json-claim",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "missing-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "signature-tampering",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "oversized-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "raw-duplicate-authorization",
+          "result": "PASS",
+          "invalid_last_status": 400,
+          "valid_last_status": 400
+        },
+        {
+          "case": "raw-duplicate-dpop",
+          "result": "PASS",
+          "valid_last_status": 400
+        },
+        {
+          "case": "encoded-path-/groups/team%40chat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/team%2Fchat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/%7Eteam",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "reserved-encoding-distinct",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "failed-proof-does-not-reserve-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "corrected-proof-same-jti-accepted",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "same-jti-across-path-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-transaction-rollback",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-action-rolled-back",
+          "result": "PASS"
+        },
+        {
+          "case": "host-rollback-does-not-release-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "resolver-exception-is-503",
+          "result": "PASS",
+          "status": 503,
+          "expected": 503,
+          "error": "dpop_security_unavailable"
+        },
+        {
+          "case": "host-exception-propagates",
+          "result": "PASS",
+          "status": 500,
+          "expected": 500,
+          "error": "host_failure"
+        },
+        {
+          "case": "host-exception-handler-used",
+          "result": "PASS"
+        },
+        {
+          "case": "host-exception-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-authorization-remains-403",
+          "result": "PASS",
+          "status": 403,
+          "expected": 403,
+          "error": "host_forbidden"
+        },
+        {
+          "case": "host-denial-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-jwt-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-jwt-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "jwt-expired",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-issuer",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-audience",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-missing-binding",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "refresh-other-key",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "same-key-refresh",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "old-access-invalidated",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "old-refresh-invalidated",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_grant"
+        },
+        {
+          "case": "rotated-access",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "refresh-eight-way-cas",
+          "result": "PASS",
+          "accepted": 1,
+          "invalid_grant": 7
+        },
+        {
+          "case": "isolation-session-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-session-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "64-requests-two-workers-identity-isolated",
+          "result": "PASS",
+          "requests": 64,
+          "workers": 2
+        },
+        {
+          "case": "24-way-identical-proof-race",
+          "result": "PASS",
+          "accepted": 1,
+          "rejected": 23
+        },
+        {
+          "case": "host-revocation",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "throwing-observer-does-not-change-authentication",
+          "result": "PASS"
+        }
+      ],
+      "observation": {
+        "p50_ms": 199.87,
+        "p95_ms": 208.78,
+        "meaning": "local test observation, not production capacity"
+      },
+      "failure": null
+    },
+    "redis-http1-cold": {
+      "driver": "redis",
+      "client_protocol": 2,
+      "label": "redis-http1-cold",
+      "dev_dependencies": false,
+      "scan_cacheable": "true",
+      "php": "8.5.12",
+      "swoole": "6.2.4",
+      "framework": "v3.2.0",
+      "di": "v3.2.2",
+      "cases": [
+        {
+          "case": "official-skeleton-real-server-starts",
+          "result": "PASS"
+        },
+        {
+          "case": "independent-vendor-without-workspace-test-autoload",
+          "result": "PASS"
+        },
+        {
+          "case": "tls-ca-and-host-verified",
+          "result": "PASS"
+        },
+        {
+          "case": "unknown-ca-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "wrong-host-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "options-bypasses-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "missing-auth",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "missing-auth-challenge-without-spurious-error",
+          "result": "PASS"
+        },
+        {
+          "case": "bearer-downgrade-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "malformed-auth",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "missing-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "token-missing-proof",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "nonce-before-issuance",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "challenge-no-session-side-effect",
+          "result": "PASS"
+        },
+        {
+          "case": "nonce-response-no-store",
+          "result": "PASS"
+        },
+        {
+          "case": "opaque-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "token-type-and-response-cache",
+          "result": "PASS"
+        },
+        {
+          "case": "native-openssl-proof-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "request-subject",
+          "result": "PASS"
+        },
+        {
+          "case": "successful-proof-replay",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "query-not-part-of-target",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "method-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-method",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "path-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-origin",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-query-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-fragment-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "old-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "iat-string",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "expired-exp",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-nbf",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "short-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-client-key",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "tenant-binding-rejects-cross-tenant",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "invalid-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "cross-purpose-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "wrong-typ",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-alg",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "remote-jku",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "critical-extension",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "private-jwk",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "null-jwk-use",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-jwk-curve",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "duplicate-json-claim",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "missing-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "signature-tampering",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "oversized-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "raw-duplicate-authorization",
+          "result": "PASS",
+          "invalid_last_status": 400,
+          "valid_last_status": 400
+        },
+        {
+          "case": "raw-duplicate-dpop",
+          "result": "PASS",
+          "valid_last_status": 400
+        },
+        {
+          "case": "encoded-path-/groups/team%40chat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/team%2Fchat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/%7Eteam",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "reserved-encoding-distinct",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "failed-proof-does-not-reserve-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "corrected-proof-same-jti-accepted",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "same-jti-across-path-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-transaction-rollback",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-action-rolled-back",
+          "result": "PASS"
+        },
+        {
+          "case": "host-rollback-does-not-release-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "resolver-exception-is-503",
+          "result": "PASS",
+          "status": 503,
+          "expected": 503,
+          "error": "dpop_security_unavailable"
+        },
+        {
+          "case": "host-exception-propagates",
+          "result": "PASS",
+          "status": 500,
+          "expected": 500,
+          "error": "host_failure"
+        },
+        {
+          "case": "host-exception-handler-used",
+          "result": "PASS"
+        },
+        {
+          "case": "host-exception-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-authorization-remains-403",
+          "result": "PASS",
+          "status": 403,
+          "expected": 403,
+          "error": "host_forbidden"
+        },
+        {
+          "case": "host-denial-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-jwt-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-jwt-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "jwt-expired",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-issuer",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-audience",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-missing-binding",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "refresh-other-key",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "same-key-refresh",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "old-access-invalidated",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "old-refresh-invalidated",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_grant"
+        },
+        {
+          "case": "rotated-access",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "refresh-eight-way-cas",
+          "result": "PASS",
+          "accepted": 1,
+          "invalid_grant": 7
+        },
+        {
+          "case": "isolation-session-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-session-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "64-requests-two-workers-identity-isolated",
+          "result": "PASS",
+          "requests": 64,
+          "workers": 2
+        },
+        {
+          "case": "24-way-identical-proof-race",
+          "result": "PASS",
+          "accepted": 1,
+          "rejected": 23
+        },
+        {
+          "case": "host-revocation",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "throwing-observer-does-not-change-authentication",
+          "result": "PASS"
+        }
+      ],
+      "observation": {
+        "p50_ms": 184.41,
+        "p95_ms": 196.96,
+        "meaning": "local test observation, not production capacity"
+      },
+      "failure": null
+    },
+    "redis-http2-warm": {
+      "driver": "redis",
+      "client_protocol": 3,
+      "label": "redis-http2-warm",
+      "dev_dependencies": false,
+      "scan_cacheable": "true",
+      "php": "8.5.12",
+      "swoole": "6.2.4",
+      "framework": "v3.2.0",
+      "di": "v3.2.2",
+      "cases": [
+        {
+          "case": "official-skeleton-real-server-starts",
+          "result": "PASS"
+        },
+        {
+          "case": "independent-vendor-without-workspace-test-autoload",
+          "result": "PASS"
+        },
+        {
+          "case": "tls-ca-and-host-verified",
+          "result": "PASS"
+        },
+        {
+          "case": "unknown-ca-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "wrong-host-rejected",
+          "result": "PASS"
+        },
+        {
+          "case": "options-bypasses-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "missing-auth",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "missing-auth-challenge-without-spurious-error",
+          "result": "PASS"
+        },
+        {
+          "case": "bearer-downgrade-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "malformed-auth",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "missing-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "token-missing-proof",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "nonce-before-issuance",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "challenge-no-session-side-effect",
+          "result": "PASS"
+        },
+        {
+          "case": "nonce-response-no-store",
+          "result": "PASS"
+        },
+        {
+          "case": "opaque-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "token-type-and-response-cache",
+          "result": "PASS"
+        },
+        {
+          "case": "native-openssl-proof-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "request-subject",
+          "result": "PASS"
+        },
+        {
+          "case": "successful-proof-replay",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "query-not-part-of-target",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "method-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-method",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "path-case",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-origin",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-query-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "proof-fragment-forbidden",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "old-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-iat",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "iat-string",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "expired-exp",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "future-nbf",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "short-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-client-key",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "tenant-binding-rejects-cross-tenant",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "invalid-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "cross-purpose-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "wrong-typ",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-alg",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "remote-jku",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "critical-extension",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "private-jwk",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "null-jwk-use",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "wrong-jwk-curve",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "duplicate-json-claim",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "missing-ath",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "signature-tampering",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "oversized-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "raw-duplicate-authorization",
+          "result": "PASS",
+          "invalid_last_status": 400,
+          "valid_last_status": 400
+        },
+        {
+          "case": "raw-duplicate-dpop",
+          "result": "PASS",
+          "valid_last_status": 400
+        },
+        {
+          "case": "encoded-path-/groups/team%40chat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/team%2Fchat",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "encoded-path-/groups/%7Eteam",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "reserved-encoding-distinct",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "failed-proof-does-not-reserve-jti",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "corrected-proof-same-jti-accepted",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "same-jti-across-path-rejected",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-transaction-rollback",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-action-rolled-back",
+          "result": "PASS"
+        },
+        {
+          "case": "host-rollback-does-not-release-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "resolver-exception-is-503",
+          "result": "PASS",
+          "status": 503,
+          "expected": 503,
+          "error": "dpop_security_unavailable"
+        },
+        {
+          "case": "host-exception-propagates",
+          "result": "PASS",
+          "status": 500,
+          "expected": 500,
+          "error": "host_failure"
+        },
+        {
+          "case": "host-exception-handler-used",
+          "result": "PASS"
+        },
+        {
+          "case": "host-exception-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-authorization-remains-403",
+          "result": "PASS",
+          "status": 403,
+          "expected": 403,
+          "error": "host_forbidden"
+        },
+        {
+          "case": "host-denial-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "host-jwt-issuance",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "host-jwt-resource",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "jwt-expired",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-issuer",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-wrong-audience",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "jwt-missing-binding",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "refresh-other-key",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "same-key-refresh",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "old-access-invalidated",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "old-refresh-invalidated",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_grant"
+        },
+        {
+          "case": "rotated-access",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "refresh-eight-way-cas",
+          "result": "PASS",
+          "accepted": 1,
+          "invalid_grant": 7
+        },
+        {
+          "case": "isolation-session-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-alpha",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-session-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "isolation-prime-beta",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "64-requests-two-workers-identity-isolated",
+          "result": "PASS",
+          "requests": 64,
+          "workers": 2
+        },
+        {
+          "case": "24-way-identical-proof-race",
+          "result": "PASS",
+          "accepted": 1,
+          "rejected": 23
+        },
+        {
+          "case": "host-revocation",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "throwing-observer-does-not-change-authentication",
+          "result": "PASS"
+        }
+      ],
+      "observation": {
+        "p50_ms": 178.38,
+        "p95_ms": 192.64,
+        "meaning": "local test observation, not production capacity"
+      },
+      "failure": null
+    }
+  },
+  "suites": {
+    "cli": {
+      "cases": [
+        {
+          "case": "actual-skeleton-cold-production-doctor",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "actual-skeleton-warm-production-doctor",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "missing-nonce-key-rejected",
+          "result": "PASS",
+          "exit": 1
+        },
+        {
+          "case": "insecure-origin-rejected",
+          "result": "PASS",
+          "exit": 1
+        },
+        {
+          "case": "missing-resolver-rejected",
+          "result": "PASS",
+          "exit": 1
+        },
+        {
+          "case": "doctor-and-publishing-zero-authentication-writes",
+          "result": "PASS"
+        }
+      ],
+      "production_cache": true,
+      "authentication_writes": 0,
+      "publisher_available": false
+    },
+    "publishing": {
+      "cases": [
+        {
+          "case": "schema-exact-copy",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "gateway-exact-copy",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "gateway-preserves-existing",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "schema-preserves-existing",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "config-preserves-existing",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "config-explicit-force",
+          "result": "PASS",
+          "exit": 0
+        },
+        {
+          "case": "zero-authentication-writes-and-no-automatic-migration",
+          "result": "PASS"
+        }
+      ],
+      "devtool": "v3.2.0",
+      "workspace_autoload": false,
+      "authentication_writes": 0
+    },
+    "source_budget": [
+      {
+        "case": "limit-server-ready",
+        "result": "PASS"
+      },
+      {
+        "case": "source-budget-allowed-0",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "source-budget-allowed-1",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "source-budget-allowed-2",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "source-budget-shared-across-workers",
+        "result": "PASS",
+        "status": 429,
+        "expected": 429,
+        "error": "rate_limited"
+      },
+      {
+        "case": "untrusted-xff-does-not-evade-source-budget",
+        "result": "PASS",
+        "status": 429,
+        "expected": 429,
+        "error": "rate_limited"
+      },
+      {
+        "case": "retry-after-within-configured-window",
+        "result": "PASS",
+        "retry_after": "7"
+      },
+      {
+        "case": "preflight-bypasses-exhausted-budget",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      }
+    ],
+    "global_budget": [
+      {
+        "case": "limit-server-ready",
+        "result": "PASS"
+      },
+      {
+        "case": "global-token-category",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "global-resource-category",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "global-refresh-category",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "global-budget-shared-across-categories",
+        "result": "PASS",
+        "status": 429,
+        "expected": 429,
+        "error": "rate_limited"
+      },
+      {
+        "case": "retry-after-within-configured-window",
+        "result": "PASS",
+        "retry_after": "10"
+      },
+      {
+        "case": "preflight-bypasses-exhausted-budget",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      }
+    ],
+    "wire": {
+      "node": "v24.22.2",
+      "cases": [
+        {
+          "case": "h2-tls-peer-and-alpn",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-trailer-fixture-nonce",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "h2-trailer-fixture-issued",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-trailer-resource-nonce",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "use_dpop_nonce"
+        },
+        {
+          "case": "h2-hidden-auth-cannot-replace-invalid-header",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "h2-real-auth-trailer-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-hidden-auth-no-proof-consumption",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-trailers-cannot-corrupt-valid-initial-fields",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-real-multiple-trailers-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-streamed-success-proof-is-consumed",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "h2-trailer-only-credentials-not-authentication",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "h2-trailer-only-no-spurious-token-error",
+          "result": "PASS"
+        },
+        {
+          "case": "h2-forbidden-trailer-declaration",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-forbidden-declaration-dPoP",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-forbidden-declaration-X-Checksum, AUTHORIZATION",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "h2-harmless-trailer-remains-compatible",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h2-body-and-original-proof-preserved",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h1-auth-trailers-stripped-original-valid",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h1-tls-real-trailers-and-body-preserved",
+          "result": "PASS",
+          "trailersSent": true
+        },
+        {
+          "case": "h1-trailer-success-consumes-proof",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_dpop_proof"
+        },
+        {
+          "case": "h1-trailer-cannot-replace-invalid-initial",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": "invalid_token"
+        },
+        {
+          "case": "h1-real-auth-replacement-trailer-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h1-rejected-header-does-not-consume-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h1-trailer-only-not-authentication",
+          "result": "PASS",
+          "status": 401,
+          "expected": 401,
+          "error": null
+        },
+        {
+          "case": "h1-real-trailer-only-sent",
+          "result": "PASS"
+        },
+        {
+          "case": "h1-trailer-only-does-not-consume-proof",
+          "result": "PASS",
+          "status": 200,
+          "expected": 200,
+          "error": null
+        },
+        {
+          "case": "h1-forbidden-trailer-declaration",
+          "result": "PASS",
+          "status": 400,
+          "expected": 400,
+          "error": "invalid_request"
+        },
+        {
+          "case": "native-h2-tls-peer-and-alpn",
+          "result": "PASS"
+        },
+        {
+          "case": "native-h2-fails-closed-503",
+          "result": "PASS",
+          "status": 503,
+          "expected": 503,
+          "error": "dpop_security_unavailable"
+        }
+      ],
+      "failure": null,
+      "meaning": "Actual HTTP/2 trailing HEADERS with independent signer; no credentials in evidence"
+    },
+    "faults": [
+      {
+        "case": "fault-server-ready",
+        "result": "PASS"
+      },
+      {
+        "case": "fault-jwt-issued",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "fault-baseline",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "redis-down-fails-closed",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "error": "dpop_security_unavailable",
+        "elapsed_ms": 5518.07
+      },
+      {
+        "case": "redis-down-no-credential-leak",
+        "result": "PASS"
+      },
+      {
+        "case": "redis-restored-same-proof-retry",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "redis-restored-then-replay-rejected",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "mysql-down-fails-closed",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "error": "dpop_security_unavailable",
+        "elapsed_ms": 3011.68
+      },
+      {
+        "case": "mysql-down-no-credential-leak",
+        "result": "PASS"
+      },
+      {
+        "case": "mysql-restored-same-proof-retry",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "mysql-restored-then-replay-rejected",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_dpop_proof"
+      }
+    ]
+  },
+  "documentation_client": {
+    "result": "PASS",
+    "resource_responses": 2,
+    "subject": "fixture-main",
+    "tls_peer_verification": true,
+    "tls_hostname_verification": true,
+    "fixture_adaptations": [
+      "route paths",
+      "X-Tenant alpha",
+      "local DNS and CA"
+    ]
+  },
+  "ci": {
+    "run_id": 41568187402,
+    "url": "https://github.com/lowelllab/hyperf-dpop/actions/runs/41568187402",
+    "head_sha": "3a41fbc136d20423b1bb849faecd705bc900f426",
+    "conclusion": "success",
+    "job_id": 125694649738,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose build test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose up -d --wait mysql redis",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer install --no-interaction --prefer-dist",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/runtime.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer validate-packages",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/consumer-smoke.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/prepare-packages.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/verify-package-exports.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer check",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tests/http-e2e.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tests/tls-e2e.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait gateway",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml exec -T gateway-app php tests/gateway-e2e.php client",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml run --rm --no-deps gateway-wire",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml stop gateway gateway-app",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test composer audit --locked",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose run --rm test php tools/verify-docs.php",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run docker compose -f compose.yaml -f compose.gateway.yaml down --remove-orphans",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "ci_h2_wire": {
+    "node": "v24.22.2",
+    "cases": [
+      {
+        "case": "h2-tls-peer-and-alpn",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-trailer-fixture-nonce",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "h2-trailer-fixture-issued",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-trailer-resource-nonce",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "h2-hidden-auth-cannot-replace-invalid-header",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_token"
+      },
+      {
+        "case": "h2-real-auth-trailer-sent",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-hidden-auth-no-proof-consumption",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-trailers-cannot-corrupt-valid-initial-fields",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-real-multiple-trailers-sent",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-streamed-success-proof-is-consumed",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "h2-trailer-only-credentials-not-authentication",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "h2-trailer-only-no-spurious-token-error",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-forbidden-trailer-declaration",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-forbidden-declaration-dPoP",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-forbidden-declaration-X-Checksum, AUTHORIZATION",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-harmless-trailer-remains-compatible",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-body-and-original-proof-preserved",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      }
+    ],
+    "failure": null,
+    "meaning": "Actual HTTP/2 trailing HEADERS with independent signer; no credentials in evidence"
+  },
+  "public_verification": [
+    {
+      "name": "lowelllab/dpop-core",
+      "version": "v0.1.0",
+      "source": {
+        "url": "https://github.com/lowelllab/dpop-core.git",
+        "type": "git",
+        "reference": "f8fae1215edbeb4b80ec067f93f3a828708effb9"
+      },
+      "dist": {
+        "url": "https://api.github.com/repos/lowelllab/dpop-core/zipball/f8fae1215edbeb4b80ec067f93f3a828708effb9",
+        "type": "zip",
+        "shasum": "",
+        "reference": "f8fae1215edbeb4b80ec067f93f3a828708effb9"
+      },
+      "release": "https://github.com/lowelllab/dpop-core/releases/tag/v0.1.0",
+      "latest": "v0.1.0",
+      "prerelease": false,
+      "draft": false
+    },
+    {
+      "name": "lowelllab/hyperf-dpop",
+      "version": "v0.1.0",
+      "source": {
+        "url": "https://github.com/lowelllab/hyperf-dpop-package.git",
+        "type": "git",
+        "reference": "91026a2cea960be4315dbab3dcf63920d6ca3b0f"
+      },
+      "dist": {
+        "url": "https://api.github.com/repos/lowelllab/hyperf-dpop-package/zipball/91026a2cea960be4315dbab3dcf63920d6ca3b0f",
+        "type": "zip",
+        "shasum": "",
+        "reference": "91026a2cea960be4315dbab3dcf63920d6ca3b0f"
+      },
+      "release": "https://github.com/lowelllab/hyperf-dpop-package/releases/tag/v0.1.0",
+      "latest": "v0.1.0",
+      "prerelease": false,
+      "draft": false
+    }
+  ],
+  "github_releases": [
+    {
+      "repo": "dpop-core",
+      "id": 432225092,
+      "tag": "v0.1.0",
+      "url": "https://github.com/lowelllab/dpop-core/releases/tag/v0.1.0",
+      "latest": "v0.1.0",
+      "prerelease": false,
+      "draft": false,
+      "published_at": "2026-11-03T02:52:34Z"
+    },
+    {
+      "repo": "hyperf-dpop-package",
+      "id": 432225126,
+      "tag": "v0.1.0",
+      "url": "https://github.com/lowelllab/hyperf-dpop-package/releases/tag/v0.1.0",
+      "latest": "v0.1.0",
+      "prerelease": false,
+      "draft": false,
+      "published_at": "2026-11-03T02:52:36Z"
+    }
+  ],
+  "security_reporting": [
+    {
+      "repo": "hyperf-dpop",
+      "previously_enabled": false,
+      "enabled": true,
+      "report_url": "https://github.com/lowelllab/hyperf-dpop/security/advisories/new"
+    },
+    {
+      "repo": "dpop-core",
+      "previously_enabled": false,
+      "enabled": true,
+      "report_url": "https://github.com/lowelllab/dpop-core/security/advisories/new"
+    },
+    {
+      "repo": "hyperf-dpop-package",
+      "previously_enabled": false,
+      "enabled": true,
+      "report_url": "https://github.com/lowelllab/hyperf-dpop-package/security/advisories/new"
+    }
+  ],
+  "quality": {
+    "php_syntax_files": 43,
+    "composer_strict": "PASS",
+    "composer_audit_locked": "no advisories",
+    "publisher_strict": "PASS",
+    "publisher_audit": {
+      "advisories": [],
+      "abandoned": [],
+      "filter": [],
+      "cooldown": []
+    },
+    "markdown_files_checked": 34
+  },
+  "cleanup": {
+    "containers": [],
+    "networks": [],
+    "fault_credentials_removed": true,
+    "unrelated_business_containers_unchanged": true
+  },
+  "consumer_archive": {
+    "path": "build/hyperf-dpop-0.1.0-consumer-20261103.zip",
+    "files": 78,
+    "sha256": "4cb285ea6a4bd6696f45aa569acfef2bf31a9f030afc84c3051c18fa3f014f09",
+    "excluded": [
+      "vendor",
+      "runtime",
+      ".env",
+      "private keys",
+      "evidence"
+    ]
+  },
+  "input_sha256": {
+    "app/Acceptance/BindingResolver.php": "de47bc05bab147f119b76f271a2a95cb0bc8b900ad7721d4ad746dbd89f00dba",
+    "app/Acceptance/HostController.php": "16913279a0ee58364baefd2cb5dee6e400db1c7c90bf81533c1c78b40f4a7dd8",
+    "app/Acceptance/HostExceptionHandler.php": "2efdf4b47e90f8e54ad9ae195267fca2714242f1dc35b83435feb6fe29e77a4a",
+    "app/Acceptance/JwtService.php": "4cad41e652b33fb59f3adb757df5d340974f7c9c868bd327a1d3f29c44f417e6",
+    "app/Acceptance/SessionStore.php": "77f03d86988f097ee02645fefdd6d5aeceeb86607547f3adf2d046b2c18c4048",
+    "app/Acceptance/ThrowingObserver.php": "eef62c68f3abb183e869c6700ce71ebbed1cedb55d1f448f1e8c005b5961a976",
+    "app/Controller/AbstractController.php": "f138dce3fe67ef2fc7e1c81f8e5423bb516c5a27c1d8fda2869ba77264ec98e8",
+    "app/Controller/IndexController.php": "fa28e9eb95c62697f222690ed995cb294ff4dab40ad88bb8c0d00ad72b410e66",
+    "app/Exception/Handler/AppExceptionHandler.php": "ce5f10168f2b35d237189001a894dcf8f69b837ab03097ff58f7753eac0065d9",
+    "app/Listener/DbQueryExecutedListener.php": "2d37363ab19ebce5118eb6f4cbe30be857308d832454074a0c76b963904e4794",
+    "app/Listener/ResumeExitCoordinatorListener.php": "5756959edc228e48187d2944cf66aef8088057bd783c490cc36682be21ca9beb",
+    "app/Model/Model.php": "caa0cc9cace71082bd95c7fe0495e5a806f7603d89cb0b1c45f8b37edc6871a3",
+    "bin/hyperf.php": "0c5e41b29cdcd47234b5f825e338f910bfe32fffa55e4015e22e1b216dcdd590",
+    "config/config.php": "03e6aa817842b7cc5c45d39bd07e9a506e5dadd4c115da66600211bb42cce8bf",
+    "config/container.php": "fec7a7da3027e0d9796a9e2103bbe916fadb1675851255be1087dffbaa71172a",
+    "config/routes.php": "75f3a6b175b3e50fd21166ef0538515f1495062cf7a549137c07c737ff3299b4",
+    "config/autoload/annotations.php": "8ede1837aebd0acd19b9468de003c2db83d89898f06b01cd0a9c658789079045",
+    "config/autoload/aspects.php": "794945d3d64e3e5dcca63e57e3ed34e7a499f183aeda73ec51807e8d78a64067",
+    "config/autoload/cache.php": "738aa5a34014939826458e4f6067cee0e7bb5b5a6f3a5c7ea4ebfeffb88db75f",
+    "config/autoload/commands.php": "794945d3d64e3e5dcca63e57e3ed34e7a499f183aeda73ec51807e8d78a64067",
+    "config/autoload/databases.php": "db6d99b1ae145c4f721ee42ba4506eda8945dcfa3822189587d64b666728bf50",
+    "config/autoload/dependencies.php": "52d23304c3a803a0aa70efead7e36d558215ff292fd032c93919856bc904abdc",
+    "config/autoload/devtool.php": "41e756a9a33c31c75e027f79efe5964b5acc524e6099642ef18df393cef5ef1e",
+    "config/autoload/dpop.php": "db946d0dc2042d27be87cce4cdc19a00db74f1d09c2a9dfcaacf3c68f87c3e84",
+    "config/autoload/exceptions.php": "52fa563b72b8bc7d90e0c2d13ed28c485a2b317fb08c13c33acd2f33ad94fa00",
+    "config/autoload/listeners.php": "9daaaf42e09c3fb8f6c3aa2dabf7af0a4825b8e0838b24cf837d1b07963eeba6",
+    "config/autoload/logger.php": "6d977c1e09ffefb3473127b9a5dde03db1b5384ddfee6369f415b411d4327bd9",
+    "config/autoload/middlewares.php": "a2503f67e3dff6962d520fe2648aa53bd45e967f6259d6d7097d64b08ffef01e",
+    "config/autoload/processes.php": "794945d3d64e3e5dcca63e57e3ed34e7a499f183aeda73ec51807e8d78a64067",
+    "config/autoload/redis.php": "9662fa39523d3127d24e5e3aa30a8aec5225db7b9cc3856b6e1d0848740ea90c",
+    "config/autoload/server.php": "7672eb2e16f48cc46f11e1ee171bfdb19f64267be60490f793c4bec87f79534c",
+    "installer/config.php": "fc9e05f63ee7c54cc724739f7d883b54f247a97034150fa562d74c7347990081",
+    "installer/OptionalPackages.php": "997167f1d8dd944aab7d8af359255156eff17a0630396f6fdc479ea747c0e426",
+    "installer/Script.php": "259fd1913194cf9baa0bb9735197b84a33c4c95e14c9fa97900d701d5dc69712",
+    "installer/resources/amqp/amqp.php": "9886705eb37b650c9cb744d8ad9eb81053bce52a6e11370ae2d49a56f4ca4d22",
+    "installer/resources/async_queue/AsyncQueueConsumer.php": "11f523d4b9c43e4e5b3e3553453874098812c06b2d8a02e4c2389be5f799f755",
+    "installer/resources/async_queue/async_queue.php": "2255917b712394e9139c20ba4916fb80060157f9668f1ae2788c8e33fbf22c75",
+    "installer/resources/async_queue/QueueHandleListener.php": "04334813ef2a74b2bd1b23e078e582effcf69810f99c9faf0fa83dd80bb20e4c",
+    "installer/resources/bin/hyperf.stub": "d448c2cc7731bae398c2727d242036ab16eaca34a7f380953bb6079a81b7407c",
+    "installer/resources/config_center/config_acm.php": "d47d276bd07da361707c3b3d3fb9c6c777dce8855a9d24810b6291ad7c9dee37",
+    "installer/resources/config_center/config_apollo.php": "49215631c431e1ec288321b15d82af695d009d93954ec2b2480a96dc520f3bab",
+    "installer/resources/config_center/config_etcd.php": "0295e1842000fc1c53a15837d0e75823800c029c750fedaa9c5c38729c96f20c",
+    "installer/resources/config_center/config_nacos.php": "d3a580be0ad3383b6c708a2b55d24e226ec29c365b1a3695196a0615ce54cb5a",
+    "installer/resources/config_center/etcd.php": "ba5d9f41b036ff2c2ee9a0d254941d3990b1ae498beb5f271521189548d0faa5",
+    "installer/resources/config_center/nacos.php": "3abfbd29778fdfe89c24be294f05a495927d6cb22514184855aa06cf06f95073",
+    "installer/resources/constants/BusinessException.php": "dec258ce5b053de96d7b821eda4ef1f1d2f9b8f12eb81a4cdd35f4c7f5061bee",
+    "installer/resources/constants/ErrorCode.php": "2cee9db870526cc78c5a7db27038b2d83cc6945d02186c48c85550c74800aa67",
+    "installer/resources/database/databases.php": "615640c6ef05e10aed4bd2dff3bb1d0002396725f2de082c9b17290844d0fa58",
+    "installer/resources/database/redis.php": "79bd7d5432beb3fe87f69db036b1663e63d652c70a812a489d2b869d4cffdb92",
+    "installer/resources/jsonrpc/services.php": "3d0840603224582b46b899204f6959e5e37dc953bd91302934604c676ec7d4a7",
+    "installer/resources/model_cache/databases.php": "77089199e23802490e49f3fe830a6eed061d01a77cd3b9518e632413ed72a070",
+    "installer/resources/model_cache/Model.php": "d3ba84db20b4b84d8549c8901065858c2513a4947d2cd8e80ab549021833aa04",
+    "installer/resources/pest/Pest.php": "6a3f1309e9a152af87c94856fa32dfb1f4b4c82e92cc9930267b0e190f9768d9",
+    "installer/resources/pest/TestCase.php": "07ca8b4742ad19340bad4c1dc971912471ed987872f6adc4029e0c940d376c41",
+    "installer/resources/pest/Feature/ExampleTest.php": "5c3d9b044f19c4921dece26516f983fcf91a289f9dd97fe526250fefe07815b4",
+    "installer/resources/pest/Unit/ExampleTest.php": "5c3d9b044f19c4921dece26516f983fcf91a289f9dd97fe526250fefe07815b4",
+    "installer/resources/tracer/opentracing.php": "df139405479c88162765c46b354c55a1acdbd5bfd3a353eb79bbac2038a0f6f3",
+    "acceptance/accept-release.ps1": "55ca758397b13207d9e7abafea8055f6a41934c7f346fe3adc7ddf3e0200cb9f",
+    "acceptance/cli.php": "7d7d26301fcc76cbbb2af556bb158f013ea128f546928cf94e21add1d4ddb2b5",
+    "acceptance/doc-client.php": "33beca67efcc90dfcea1a1d7866a7bb50a1a6728b51c52f81ea659e353417c18",
+    "acceptance/doc-smoke.php": "f364f8dbaf55364813940088d9824100b2b2544bfdadb72b253fc18fe10f904f",
+    "acceptance/faults.php": "4a810eea65f864933bafb76c6709f917d66b3a2600df50ba024a799508fec65b",
+    "acceptance/limits.php": "ec9fb3985d566c89049b68dd047fbc088ebf6ee47f0c0a4c197dd7f60a3d6de7",
+    "acceptance/lint.php": "05d4544fe0ead6b5977d338fb15d8bd3a89747e2e063cbd9f8b4ef4547e81ad7",
+    "acceptance/NativeClient.php": "f97ae49ff131d4b5d2dcd3258b1039a4f655eb97bd05edbec70addbf45893df4",
+    "acceptance/prepare-publishing.php": "fb98fbfc9f0baf65dc4877c3e04ccf711b8a712715f3df89026322def3755b3c",
+    "acceptance/publishing.php": "a69b2f756136e1419c4fccc81ccc582c3f442033794dbab13f1e81c918eea31b",
+    "acceptance/retest-gateway.ps1": "cf74f66beb3fb9a43ab8c7e6b6f337040d27a96991305e8976e53168a5e80ea5",
+    "acceptance/run.php": "f97f23cc3688e415570682393a239348c60a423639f76cea0e4c63b616ed3c06",
+    "acceptance/setup.php": "2e42167f14797b9fe56f81cc56373a8cd976f564cb104a004dd3ebc93d22c023",
+    "acceptance/tls.php": "35da685a16549d027fa85b4a79c7426e30626809dea09d33fce0673d3649be70",
+    "acceptance/wire.mjs": "e94c43841a9e68a3a3239d9ceb5c9e6adc958e0fe642cd4af4e60b2f703fe11d",
+    "composer.json": "2c7fbb2b3072a3c84fe6bffa7248581d2a5c494057cbab70c41f0aaa262e7255",
+    "composer.lock": "7caf1815e8adb66510e42449a474afc4d3c3b86cdd915243eeeb1f2640e17bec",
+    "compose.yaml": "27cd74e395da6da95b382966d7eb4de15d439e9586323608cb544a89c7d363b6",
+    "README.md": "9718800501e7e397f15dacf888355de35ea217033ab1fc0561596976fef5b89e",
+    ".env.example": "45a8cd71e54f88f5bf0fdf761af769c96df4af0a85c76fbe5176b6c115fb792c",
+    ".gitignore": "09861a09d0e023c1b15fd2b4c00ae67409acb948cb1367246b65df039a32e699"
+  },
+  "production_acceptance": "NOT_COMPLETED",
+  "independent_security_audit": "NOT_COMPLETED",
+  "retained_limits": [
+    "native Swoole HTTP2 protected entry 503",
+    "native HTTP1 trailer framing may wait before PHP; gateway stripping and backend isolation required"
+  ],
+  "counting": "87 scenarios repeated in four modes; targeted suites counted separately, no unique-case inflation"
+}

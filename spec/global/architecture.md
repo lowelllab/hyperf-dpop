@@ -1,6 +1,6 @@
 # 架构全景
 
-本文描述当前本地工作区的实际组织，实施契约为 0.8，对应首次公开测试版0.1.0-beta.1；版本与验证见[发行记录](../../docs/release-0.1.0-beta.1.md)。规则要求另见[架构约束](./constraints.md)，具体证据见[最新复审](../../docs/review-deep-20261103.md)。
+本文描述当前本地工作区的实际组织，实施契约为 0.8，对应正式发行0.1.0；版本与验证见[发行记录](../../docs/release-0.1.0.md)。规则要求另见[架构约束](./constraints.md)，具体证据见[最新复审](../../docs/review-deep-20261103.md)。
 
 ![系统架构：客户端、网关、宿主 Hyperf、双包及外部状态](./images/03-system-architecture.png)
 
@@ -94,7 +94,7 @@ Swoole 原生 HTTP/2 无原始头，受保护入口返回 503；原生 HTTP/1 �
 
 开发主仓为 [hyperf-dpop](https://github.com/lowelllab/hyperf-dpop)，根 Composer 名是 `lowelllab/hyperf-dpop-workspace`、类型 `project`。两个包各自发布到 [dpop-core](https://github.com/lowelllab/dpop-core) 与 [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) 的 library 根目录。
 
-本地导出工具只生成文件与摘要；验证器在导出副本创建本地 VCS 仓库并执行干净消费，不自动推送、创建标签或提交 Packagist。0.1.0-beta.1已在两个发布仓创建标签及GitHub预发行，Packagist p2索引已核对：核心503fbfe、适配c92cd27。公开消费及远端CI状态以[发布记录](../../docs/release-0.1.0-beta.1.md)为准。
+本地导出工具只生成文件与摘要；验证器在导出副本创建本地 VCS 仓库并执行干净消费，不自动推送、创建标签或提交 Packagist。0.1.0已在两个发布仓创建正式标签及GitHub Latest发行，Packagist与独立消费核对：核心f8fae12、适配91026a2。公开消费及远端CI状态以[发布记录](../../docs/release-0.1.0.md)为准。
 
 ---
 *最后更新：2026-11-03 — 初始化生成。*
