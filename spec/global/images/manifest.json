@@ -1,15 +1,15 @@
 {
   "date": "2026-11-03",
   "project": "Hyperf DPoP",
-  "implementation_contract": "0.8，本地未发布修复候选",
+  "implementation_contract": "0.8；首次测试发行0.1.0-beta.1",
   "generator_capability": "image_gen 内置工具（未发现image2）",
   "generation_policy": "按确认大纲逐张同步生成；失败重试一次，仍失败再使用技能允许的本地PNG恢复路径",
   "source_documents": {
-    "spec/global/architecture.md": "14b1ebdda08fc82625611faae614d7be579a4f437010a13996131c13d0036c5e",
-    "spec/global/constraints.md": "a72c8e6ae293a66ea666061ec97cbc49953dc219d1bc650e6792058c6424f7a4",
-    "spec/global/features.md": "c9d09fd17b2916e6c7e5c00bab64f45e9867cb0826dd7bcdc3f69454240b43bc",
-    "spec/global/index.md": "b157c2297b76a6b965803e663d1ebcda2a2f9dba0e9d6beb007ff8305609d7b2",
-    "spec/global/overview.md": "f88dd60219b4f4b476976bb335ee1e3b596f6a5ab4673fb03f01aa35d48acfe8"
+    "spec/global/architecture.md": "a0c596862feaf0195b804ab7f2bde91fc63ce5ca21db9ac019533f11f70f168a",
+    "spec/global/constraints.md": "a72ad813e3e4ff9463554a4e645b8633722059a28d62a37a14e638263f8d8cdd",
+    "spec/global/features.md": "e318989d45adc57908ac2d148ff220cd2e688d2770f80aacbc123f89c9e8512a",
+    "spec/global/index.md": "9290025a7d5b0286a303b50ffa9d1632706aa21c418ab8fd7039bf5a92c8e99b",
+    "spec/global/overview.md": "5e8c7645e9affe8b0e2205145c821610d6f8bbfad8d89b7eaab1b19c7192a5bd"
   },
   "images": [
     {
@@ -124,5 +124,18 @@
     "local_links_utf8_code_fences": "通过",
     "business_code_tests": "本次未重复执行，引用既有复审证据",
     "git_operations": "未执行"
+  },
+  "generation_source_documents": {
+    "spec/global/architecture.md": "14b1ebdda08fc82625611faae614d7be579a4f437010a13996131c13d0036c5e",
+    "spec/global/constraints.md": "a72c8e6ae293a66ea666061ec97cbc49953dc219d1bc650e6792058c6424f7a4",
+    "spec/global/features.md": "c9d09fd17b2916e6c7e5c00bab64f45e9867cb0826dd7bcdc3f69454240b43bc",
+    "spec/global/index.md": "b157c2297b76a6b965803e663d1ebcda2a2f9dba0e9d6beb007ff8305609d7b2",
+    "spec/global/overview.md": "f88dd60219b4f4b476976bb335ee1e3b596f6a5ab4673fb03f01aa35d48acfe8"
+  },
+  "publication_update": {
+    "date": "2026-11-03",
+    "release_record": "docs/release-0.1.0-beta.1.md",
+    "images": "保留初始化发布前快照，正文显式图注说明；职责与数据流不变",
+    "source_documents": "当前正文SHA256；初始生成依据另存generation_source_documents"
   }
 }

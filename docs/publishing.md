@@ -1,82 +1,51 @@
 # 双包发布指南
 
-本项目发布两个 Composer 包：`lowelllab/dpop-core` 和 `lowelllab/hyperf-dpop`。PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`，Composer 包名与 PHP 命名空间相互独立。
+本项目维护 `lowelllab/dpop-core` 与 `lowelllab/hyperf-dpop` 两个 Composer 包；PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。首次测试版为 **0.1.0-beta.1**，详见[本次发布记录](release-0.1.0-beta.1.md)。测试版不表示生产部署与独立安全审计已完成。
 
-## 开发仓库与发布仓库
+## 三个仓库的用途
 
-当前 `lowelllab/hyperf-dpop` GitHub 仓库是双包开发工作区，根 `composer.json` 的名称为 `lowelllab/hyperf-dpop-workspace`，类型为 `project`。不要把这个 URL 作为扩展包提交给 Packagist，否则提交的将是工作区。
+| 用途 | GitHub 仓库 | Composer 名称 | 本次状态 |
+| --- | --- | --- | --- |
+| 开发、测试与文档 | [hyperf-dpop](https://github.com/lowelllab/hyperf-dpop) | lowelllab/hyperf-dpop-workspace（project） | 不作为扩展包安装入口、不打本次扩展标签 |
+| 核心包分发 | [dpop-core](https://github.com/lowelllab/dpop-core) | lowelllab/dpop-core（library） | v0.1.0-beta.1，503fbfe，17个文件 |
+| Hyperf适配分发 | [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | lowelllab/hyperf-dpop（library） | v0.1.0-beta.1，c92cd27，32个文件 |
 
-Packagist 读取提交仓库根目录的 `composer.json`；包名中的 vendor 需要使用你有权发布的命名空间，不能使用已被其他账号持有的 `acme`。[Packagist 提交规则](https://packagist.org/about)
+开发时改主仓对应子包；发布时只将该包白名单文件同步至对应发布仓库。业务项目安装扩展时只访问两个包的公开分发，不需要克隆三个Git仓库。已经登记的workspace条目不用于扩展安装，本次未删除。
 
-保留当前开发仓库，两个发布仓库各自只放对应包内容。两仓库均由用户创建并已同步源码。Composer 包名以各自根配置为准：
+Packagist读取仓库根composer.json并从Git标签推导版本，因此不能把主仓URL再次提交为扩展，也不填写composer.json的version字段。[官方发布及版本规则](https://packagist.org/about#managing-package-versions)
 
-| Composer 包 | GitHub 发布仓库 | 状态与仓库根内容 |
-| --- | --- | --- |
-| `lowelllab/dpop-core` | [lowelllab/dpop-core](https://github.com/lowelllab/dpop-core) | 已推送 main，提交 cb47754；根目录为核心包 |
-| `lowelllab/hyperf-dpop` | [lowelllab/hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | 已推送 main，提交 e0fd48c；根目录为适配包 |
+## 安装本次测试版
 
-第二个发布仓库使用 `-package` 后缀，是因为 `lowelllab/hyperf-dpop` 已用于开发工作区。两个发布仓库当前只有开发分支。2026-11-02 已通过 Packagist 公开元数据核实两个正式包均已登记 dev-main，并完成[Packagist 独立 Hyperf 深度测试](verification-packagist-consumer-20261102.md)。登记由用户完成；本助手未提交或创建版本标签。工作区包也曾被登记，但不作为扩展使用；本轮未执行删除。
+```bash
+composer require "lowelllab/hyperf-dpop:0.1.0-beta.1" "lowelllab/dpop-core:0.1.0-beta.1"
+```
 
-本地另已完成[重复认证头修复及网关验证](verification-duplicate-headers-20261102.md)，尚未推送至发布仓库，因此当前公开适配提交 e0fd48c 尚不包含此次修复。下一次发布需同步适配包的32个文件（含gateway模板），核心17个文件未改动，无需为此单独发核心版本。升级时先配置检查重复头的网关并转发HTTP/1.1，再更新适配包并复测；仅更新Composer不能替代网关部署。
+两个显式根约束允许本次beta，避免将整个宿主minimum-stability降为dev；其他依赖保持宿主稳定性策略。适配包要求核心 `^0.1.0-beta.1`。依赖包中的稳定性标记不能代替宿主根约束。[Composer稳定性规则](https://getcomposer.org/doc/04-schema.md#minimum-stability)
 
-2026-11-03[再次深度审核](review-deep-20261103.md)又维护了标准请求代理和认证尾部字段边界；当前本地候选已包含网关尾部剥离，仍未推送。适配包文件数保持32，核心仍无改动；部署时需同时更新应用和网关配置。
+无需path或自定义VCS仓库；安装后的lock应指向上表两个提交，不应继续选择dev-main。开发工作区仍使用path及0.1.x-dev别名，仅供开发测试。
 
-## 准备本地发布目录
-
-在本工作区执行：
+## 本地导出与验证
 
 ```bash
 docker compose run --rm --no-deps test php tools/prepare-packages.php
-```
-
-输出位于 `build/packagist/<批次>/dpop-core` 和 `build/packagist/<批次>/hyperf-dpop`；最新批次记录在 `build/packagist-latest.json`。每个目录的根配置均为 `library`，只包含自己的 composer.json、README、LICENSE、src，以及适用的 publish 模板，不包含工作区 vendor、测试凭据、运行目录或根项目依赖。
-
-`manifest.json` 保存每个导出文件的 SHA256。导出命令只生成本地目录，不提交代码、不创建远端、不创建版本标签，也不向 Packagist 提交。
-
-验证新导出的两个目录：
-
-```bash
 docker compose run --rm --no-deps test php tools/verify-package-exports.php
 ```
 
-验证器需要 Git。测试镜像已包含 Git；旧镜像先执行 `docker compose build test`。验证器对两个包执行 Composer strict 校验，为导出副本分别建立本地 main 分支，再在第三个干净消费项目中从两个 VCS 仓库安装扩展，验证核心自动引入、分支别名、既有 PHP 接口及 ConfigProvider。它不会给本地副本添加远端或推送。
+每次准备新批次，输出 `build/packagist/<批次>/dpop-core` 与 `hyperf-dpop`，指针为build/packagist-latest.json。只复制composer.json、README、LICENSE、src及适用publish模板，manifest保存逐文件SHA256；不包含测试目录、vendor、.env、runtime、私钥或主仓配置。
 
-每次验证应使用一个新导出批次，已有导出 Git 仓库不会被重置。验证结果写入该批次的 `verification.json` 和 `verification.log`；正式提交时可重新生成一份没有验证用 `.git` 的干净批次。
+验证器在全新导出副本建立本地main分支，执行strict及第三个干净VCS消费，确认别名/依赖和PHP API；拒绝重置已有验证仓库。它不会添加远端、推送、打公开标签或提交Packagist。正式发布还要用计划标签测试准确的预发布依赖解析。
 
-## 公开提交的顺序
+## 后续发行顺序
 
-两个仓库的首次源码推送已完成；两个正式包的 Packagist 登记亦已核实完成。以下保留首次登记顺序供维护参考，准备工具不自动执行这些外部操作。
+1. 在主仓修复并回归；维护CHANGELOG、兼容/升级说明及实施记录。检查导出白名单、许可与敏感文件。
+2. 核对两个发布检出无无关改动、远端main及目标标签；从新导出批次同步文件并比对SHA256。
+3. 先提交/推送核心，再提交/推送适配；创建未使用的新标签。两个包独立版本，核心源码不变时后续可以复用已满足约束的既有核心版，无须机械地同时加版本。
+4. 创建与发行阶段一致的GitHub Release；beta设置prerelease。禁止移动已发布标签来覆盖修复。
+5. 两仓已有Packagist push钩子；逐项核对 `https://repo.packagist.org/p2/lowelllab/<包名>.json` 的版本和source.reference，不能只凭Git推送成功宣称索引完成。
+6. 新建无path/VCS覆盖、无开发工作区挂载、独立lock/vendor的Hyperf宿主，从默认Packagist安装目标版本，逐文件核对并复跑真实认证/存储/并发/网关验证，记录远端CI结果。
 
-1. 两个发布仓库的创建、包根配置及首次推送已完成。后续维护从对应子包同步内容，不能把开发工作区推送到发布仓库。
-2. 确保公开 Packagist 可以访问这两个仓库，且提交账号有权使用 `lowelllab` vendor。
-3. 先提交核心包仓库 URL，确认 Packagist 将其识别为 `lowelllab/dpop-core`。
-4. 再提交适配包仓库 URL，确认识别为 `lowelllab/hyperf-dpop`，并能解析对核心包的依赖。
-5. 配置各仓库的 Packagist 同步；维护后从相应子包重新同步内容，不把开发工作区或另一个包提交进去。
+升级本次适配必须先按[网关接入](gateway.md)部署重复头检查、认证Trailer声明拒绝、实际尾部剥离及后端隔离，固定HTTP/1.1后端。仅更新Composer不能替代网关配置。发布项默认保留现有文件，应人工合并已有配置，勿无故使用force。
 
-两个包已声明 `dev-main` 到 `0.1.x-dev` 的分支别名，允许当前 `^0.1@dev` 依赖在尚未打版本标签时解析。消费项目仍需显式允许开发稳定性，不能把 main 分支称为稳定发行版。
+## 稳定版条件
 
-当前两个正式包已可从 Packagist 安装。消费项目可使用以下开发版本配置；本轮干净宿主已实际验证，无需本地 path 或自定义 VCS 仓库：
-
-```json
-{
-  "require": {"lowelllab/hyperf-dpop": "^0.1@dev"},
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}
-```
-
-## 已有开发项目迁移
-
-安装过 `acme` 占位包的消费项目，应把 Composer require、path versions 映射及命令中的包名改为 `lowelllab`。刷新锁文件和 vendor 后，确认旧包已移除；不要只手改 composer.lock。PHP 类名、ConfigProvider 和 DI 绑定仍使用原有 `Acme` 命名空间。
-
-```bash
-composer update --with-all-dependencies
-php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
-php bin/hyperf.php dpop:doctor
-```
-
-发布配置默认保留已有文件，不要无故加 `--force`。当安装使用文件副本而不是符号链接时，源码改变还需重新安装对应包。
-
-## 稳定版前的条件
-
-包名就绪和开发分支可安装不等于稳定版验收完成。生产网关重复头处理、目标容量、故障切换/备份恢复、独立安全审计与维护/漏洞渠道仍按[维护指南](maintenance.md)落实。正式版本标签应与实际发行阶段一致，并先确保核心包版本能满足适配包依赖。
+真实CDN/Ingress/网络策略、容量SLO、HA/状态丢失/恢复演练、独立安全审计及维护/漏洞渠道继续按[维护指南](maintenance.md)验收。测试版的标签、Packagist索引与本地通过结果不能关闭这些事项。原生Swoole HTTP/2的503保护及HTTP/1尾部等待限制保留。
