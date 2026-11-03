@@ -2,7 +2,7 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：未发布0.1开发版。Composer包名已确定为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`，尚未提交公共Packagist。开发时使用path仓库；两包独立发布步骤见[发布指南](publishing.md)。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
+状态：两个正式包已登记Packagist开发分支，尚未发布稳定版；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 
@@ -19,12 +19,14 @@ Hyperf从Composer extra读取ConfigProvider。宿主安装可选`hyperf/devtool 
 ```bash
 php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
 php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=schema
+php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=gateway
 ```
 
 schema只复制至应用根目录的`dpop-proofs.sql`，不执行SQL。已有配置默认保留；仅明确需要覆盖时使用`--force`，并先保存自己的配置。以上命令已在生产缓存模式验证。也可手动复制：
 
 - [配置模板](../packages/hyperf-dpop/publish/dpop.php)至宿主`config/autoload/dpop.php`。
 - [DDL模板](../packages/hyperf-dpop/publish/dpop-proofs.sql)交由宿主迁移流程执行，包不自动建表。
+- [网关模板](../packages/hyperf-dpop/publish/haproxy.cfg)复制为宿主`haproxy-dpop.cfg`，只复制、不启动网关；按[网关接入](gateway.md)配置证书、监听地址和后端。客户端HTTP/2由网关终止并转为HTTP/1.1；Swoole原生HTTP/2无法确认认证头唯一性，受保护接口返回503。
 
 必需配置：HTTPS公开origin、独立环境安全域、至少32字节随机nonce密钥、MySQL专用连接凭据、Redis连接和独立namespace。nonce密钥通过部署密钥管理注入，不写入源码。受信代理默认空；使用内部/外部前缀映射时，按组件模板显式填写，保留原始路径编码。
 

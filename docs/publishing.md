@@ -15,7 +15,11 @@ Packagist 读取提交仓库根目录的 `composer.json`；包名中的 vendor �
 | `lowelllab/dpop-core` | [lowelllab/dpop-core](https://github.com/lowelllab/dpop-core) | 已推送 main，提交 cb47754；根目录为核心包 |
 | `lowelllab/hyperf-dpop` | [lowelllab/hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | 已推送 main，提交 e0fd48c；根目录为适配包 |
 
-第二个发布仓库使用 `-package` 后缀，是因为 `lowelllab/hyperf-dpop` 已用于开发工作区。两个发布仓库当前只有开发分支，本助手未提交 Packagist 或创建版本标签；Packagist 登记状态需以提交页面为准。
+第二个发布仓库使用 `-package` 后缀，是因为 `lowelllab/hyperf-dpop` 已用于开发工作区。两个发布仓库当前只有开发分支。2026-11-02 已通过 Packagist 公开元数据核实两个正式包均已登记 dev-main，并完成[Packagist 独立 Hyperf 深度测试](verification-packagist-consumer-20261102.md)。登记由用户完成；本助手未提交或创建版本标签。工作区包也曾被登记，但不作为扩展使用；本轮未执行删除。
+
+本地另已完成[重复认证头修复及网关验证](verification-duplicate-headers-20261102.md)，尚未推送至发布仓库，因此当前公开适配提交 e0fd48c 尚不包含此次修复。下一次发布需同步适配包的32个文件（含gateway模板），核心17个文件未改动，无需为此单独发核心版本。升级时先配置检查重复头的网关并转发HTTP/1.1，再更新适配包并复测；仅更新Composer不能替代网关部署。
+
+2026-11-03[再次深度审核](review-deep-20261103.md)又维护了标准请求代理和认证尾部字段边界；当前本地候选已包含网关尾部剥离，仍未推送。适配包文件数保持32，核心仍无改动；部署时需同时更新应用和网关配置。
 
 ## 准备本地发布目录
 
@@ -41,7 +45,7 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 ## 公开提交的顺序
 
-两个仓库的首次源码推送已完成；Packagist 登记按以下顺序处理，准备工具不自动执行这些外部操作。
+两个仓库的首次源码推送已完成；两个正式包的 Packagist 登记亦已核实完成。以下保留首次登记顺序供维护参考，准备工具不自动执行这些外部操作。
 
 1. 两个发布仓库的创建、包根配置及首次推送已完成。后续维护从对应子包同步内容，不能把开发工作区推送到发布仓库。
 2. 确保公开 Packagist 可以访问这两个仓库，且提交账号有权使用 `lowelllab` vendor。
@@ -51,7 +55,7 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 两个包已声明 `dev-main` 到 `0.1.x-dev` 的分支别名，允许当前 `^0.1@dev` 依赖在尚未打版本标签时解析。消费项目仍需显式允许开发稳定性，不能把 main 分支称为稳定发行版。
 
-公共包提交成功后，可以在消费项目中使用以下开发版本配置，而不再使用本地 path 仓库：
+当前两个正式包已可从 Packagist 安装。消费项目可使用以下开发版本配置；本轮干净宿主已实际验证，无需本地 path 或自定义 VCS 仓库：
 
 ```json
 {

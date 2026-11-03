@@ -44,6 +44,11 @@ $writeDependencies([Acme\HyperfDpop\Admission\AdmissionBudgetInterface::class=>D
 $run('custom-budget-readonly-probe',['dpop:doctor']);$writeDependencies();
 $run('publish-ddl',['vendor:publish','lowelllab/hyperf-dpop','--id=schema']);
 if(hash_file('sha256',$app.'/dpop-proofs.sql')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/dpop-proofs.sql')){throw new RuntimeException('Published DDL differs');}
+$run('publish-gateway',['vendor:publish','lowelllab/hyperf-dpop','--id=gateway']);
+if(hash_file('sha256',$app.'/haproxy-dpop.cfg')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/haproxy.cfg')){throw new RuntimeException('Published gateway differs');}
+file_put_contents($app.'/haproxy-dpop.cfg', "# host-owned gateway\n");
+$run('publish-gateway-preserves-existing',['vendor:publish','lowelllab/hyperf-dpop','--id=gateway']);
+if(file_get_contents($app.'/haproxy-dpop.cfg')!=="# host-owned gateway\n"){throw new RuntimeException('Host gateway overwritten');}
 $original=file_get_contents($app.'/config/autoload/dpop.php');
 $run('publish-config-preserves-existing',['vendor:publish','lowelllab/hyperf-dpop','--id=config']);
 if(file_get_contents($app.'/config/autoload/dpop.php')!==$original){throw new RuntimeException('Config overwritten without force');}

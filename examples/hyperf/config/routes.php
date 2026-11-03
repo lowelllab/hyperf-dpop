@@ -9,6 +9,7 @@ Router::post('/refresh', [ExampleController::class, 'refresh']);
 Router::post('/jwt/token', [ExampleController::class, 'jwtToken']);
 Router::addGroup('', static function (): void {
     Router::get('/items', [ExampleController::class, 'resource']);
+    Router::post('/items', [ExampleController::class, 'resource']);
     Router::get('/Items', [ExampleController::class, 'resource']);
     Router::get('/jwt/items', [ExampleController::class, 'resource']);
     Router::get('/groups/{group}', [ExampleController::class, 'resource']);

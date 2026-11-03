@@ -37,6 +37,7 @@ final class ConfigProvider
             'publish' => [
                 ['id' => 'config', 'description' => 'DPoP configuration; fill keys and resolver before enabling', 'source' => __DIR__ . '/../publish/dpop.php', 'destination' => BASE_PATH . '/config/autoload/dpop.php'],
                 ['id' => 'schema', 'description' => 'Explicit MySQL DDL; never run automatically', 'source' => __DIR__ . '/../publish/dpop-proofs.sql', 'destination' => BASE_PATH . '/dpop-proofs.sql'],
+                ['id' => 'gateway', 'description' => 'HAProxy duplicate authentication header guard; configure and deploy explicitly', 'source' => __DIR__ . '/../publish/haproxy.cfg', 'destination' => BASE_PATH . '/haproxy-dpop.cfg'],
             ],
         ];
     }

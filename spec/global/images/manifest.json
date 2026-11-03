@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-03",
+  "project": "Hyperf DPoP",
+  "implementation_contract": "0.8，本地未发布修复候选",
+  "generator_capability": "image_gen 内置工具（未发现image2）",
+  "generation_policy": "按确认大纲逐张同步生成；失败重试一次，仍失败再使用技能允许的本地PNG恢复路径",
+  "source_documents": {
+    "spec/global/architecture.md": "14b1ebdda08fc82625611faae614d7be579a4f437010a13996131c13d0036c5e",
+    "spec/global/constraints.md": "a72c8e6ae293a66ea666061ec97cbc49953dc219d1bc650e6792058c6424f7a4",
+    "spec/global/features.md": "c9d09fd17b2916e6c7e5c00bab64f45e9867cb0826dd7bcdc3f69454240b43bc",
+    "spec/global/index.md": "b157c2297b76a6b965803e663d1ebcda2a2f9dba0e9d6beb007ff8305609d7b2",
+    "spec/global/overview.md": "f88dd60219b4f4b476976bb335ee1e3b596f6a5ab4673fb03f01aa35d48acfe8"
+  },
+  "images": [
+    {
+      "description": "Hyperf DPoP分层系统架构与系统边界",
+      "type": "architecture",
+      "style": "技术分层架构图、矢量风格",
+      "aspect_ratio": "16:9",
+      "resolution": "1K草稿",
+      "output_path": "spec/global/images/03-system-architecture.png",
+      "layout_requirements": "五层布局、包与宿主边界、定向请求/响应/存储箭头、配置/请求属性/诊断/观测侧栏",
+      "prompt": "用途：技术知识库配图。请生成真实PNG位图，横向16:9，约1K草稿尺寸。技术矢量风格，白底，深蓝文字，青蓝/绿色/橙色分组，细而清晰的方向箭头，所有标签以简体中文为主，保留必要技术标识。留出边距，文字清晰，避免装饰插画、3D、照片或水印。以本项目实际事实为准。 标题：Hyperf DPoP 系统架构。严格绘制5个从上到下的层，不能是单排卡片。\n第1层外部：一个“HTTPS 客户端”框，标注“HTTP/1.1 · HTTP/2”。\n第2层入口：“HAProxy 网关”，框内两行“认证头去重 · 尾部剥离”“转发 HTTP/1.1”；请求箭头向下，响应箭头向上。\n第3层明确大边界“宿主 Hyperf 应用”。内部左边“路由”，中部标注包边界“lowelllab/hyperf-dpop”包含“预算 / HeaderReader”“资源中间件”“TokenEndpoint”；右边标注“宿主责任”包含“可信令牌绑定”“账户 / 授权 / 刷新 CAS”。注意账户、JWT验证及刷新事务不属于扩展包。资源中间件取得可信绑定后验证证明，成功后才进入宿主业务。\n第4层明确包边界“lowelllab/dpop-core”，并列3框“ES256 / URI / 时间 / ath”“nonce 挑战”“防重放协调”；核心不直接实现数据库驱动。画与上一层的调用/结果箭头。\n第5层基础状态：在包外画“MySQL 权威账本”和“Redis 共享预算 / 可选重放”，经适配层存储驱动连到防重放协调；预算到Redis另有连接。不要画成核心依赖Hyperf或宿主账户表。\n右侧窄竖栏跨越宿主及适配层：“配置与 DI”“请求属性 DpopContext”“只读 doctor / 认证观测”。\n底部注释：“本地 0.8 候选 · 未同步发布 · 生产拓扑待验”。保留清晰边界和箭头，优先准确简洁，除上述内容不要添加组件。",
+      "status": "已生成并检查",
+      "attempts": 2,
+      "generation_calls": 1,
+      "edit_calls": 1,
+      "fallback_used": false,
+      "actual_width": 1672,
+      "actual_height": 941,
+      "bytes": 1700575,
+      "sha256": "6f98f97259526fe022b67cd1c0f60c30bcdbc5ff7e25ceaca7995a527c4f08e7",
+      "semantic_corrections": [
+        "将资源中间件与TokenEndpoint修正为并行入口",
+        "核心返回结果不包含预算状态",
+        "预算到Redis的连线从适配层发出",
+        "将去重标签改为重复头拒绝"
+      ],
+      "visual_checks": [
+        "分层/包边界清楚",
+        "资源中间件与TokenEndpoint并行入口",
+        "宿主负责可信绑定与账户/授权/刷新事务",
+        "预算连接Redis，不属于核心职责",
+        "本地候选未发布状态清楚"
+      ]
+    },
+    {
+      "description": "资源认证、挑战拒绝和宿主业务的数据流",
+      "type": "architecture",
+      "style": "技术数据流图、矢量风格",
+      "aspect_ratio": "16:9",
+      "resolution": "1K草稿",
+      "output_path": "spec/global/images/04-data-flow.png",
+      "layout_requirements": "自左向右主链，向下的nonce/拒绝分支，存储与宿主职责标明",
+      "prompt": "用途：技术知识库配图。请生成真实PNG位图，横向16:9，约1K草稿尺寸。技术矢量风格，白底，深蓝文字，青蓝/绿色/橙色分组，细而清晰的方向箭头，所有标签以简体中文为主，保留必要技术标识。留出边距，文字清晰，避免装饰插画、3D、照片或水印。以本项目实际事实为准。 标题：DPoP 资源请求数据流。用一条清晰的从左向右主流程，允许换行成两行：\n“HTTPS 请求”→“网关去重 / 剥离尾部”→“共享预算 / 原始头检查”→“宿主可信绑定”→“ES256 / URI / 时间 / ath”→“nonce 校验”→“原子重放登记”→“写入请求属性”→“释放认证槽位”→“宿主授权与业务”。\n将“共享预算”用细箭头连接外部“Redis”；“原子重放登记”用箭头连接“MySQL 默认 / Redis 可选”，标注“权威时间复核”。\n从“nonce 校验”画向下的橙色分支：“挑战：DPoP-Nonce”→“客户端重新签名”，说明“不登记 proof”。从“原子重放登记”画向下的红色分支：“重复 proof → 拒绝”。\n将“宿主可信绑定”和“宿主授权与业务”用同色边框明确标注“宿主责任”，不能画成包内账号服务。\n下方用一条独立说明带：“token / refresh：不使用访问令牌 ath；宿主在证明通过后签发，刷新须锁 / CAS 复核”。\n底部小注：“业务回滚不释放已登记 proof；body / query 不受 DPoP 完整性保护”。图中只列实际能力，不添加OAuth授权服务器或SDK。保持箭头方向清晰。",
+      "status": "已生成并检查",
+      "attempts": 2,
+      "generation_calls": 1,
+      "edit_calls": 1,
+      "fallback_used": false,
+      "actual_width": 1672,
+      "actual_height": 941,
+      "bytes": 1755830,
+      "sha256": "d52e0e7df0ef22dc7eb0a01e3e7f3b87596958990c28616c4e0e32153c706175",
+      "semantic_corrections": [
+        "将去重标签改为重复头拒绝",
+        "补充nonce通过/缺失失效分支标签",
+        "将不登记proof明确为本次挑战不登记proof"
+      ],
+      "visual_checks": [
+        "主链与nonce挑战/重放拒绝分支正确",
+        "重复头明确为拒绝",
+        "本次挑战不登记proof，后续重签重新验证",
+        "槽位释放在业务前；异常释放另有正文说明",
+        "宿主责任和body/query边界清楚"
+      ]
+    },
+    {
+      "description": "双包功能模块及宿主责任分组",
+      "type": "feature-relationship",
+      "style": "清晰扁平模块图",
+      "aspect_ratio": "16:9",
+      "resolution": "1K草稿",
+      "output_path": "spec/global/images/05-feature-modules.png",
+      "layout_requirements": "按核心/适配/宿主责任/验证工具分区，不把fixture当生产功能",
+      "prompt": "用途：技术知识库配图。请生成真实PNG位图，横向16:9，约1K草稿尺寸。技术矢量风格，白底，深蓝文字，青蓝/绿色/橙色分组，细而清晰的方向箭头，所有标签以简体中文为主，保留必要技术标识。留出边距，文字清晰，避免装饰插画、3D、照片或水印。以本项目实际事实为准。 标题：Hyperf DPoP 功能模块。画4个清晰分区，2×2布局，避免大量小字。\n左上蓝色区标题“协议核心 · dpop-core”，4个子模块：“严格解析与 ES256”“URI / 时间 / ath”“nonce 与密钥轮换”“重放协调接口”。\n右上绿色区标题“Hyperf 适配 · hyperf-dpop”，5个子模块：“DI / 中间件 / 请求属性”“签发与刷新辅助”“MySQL / Redis 驱动”“共享预算 / 取消清理”“doctor / 模板发布”。从右上到左上画依赖箭头，标注“依赖”。\n左下灰色区标题“宿主责任”，3个子模块：“账户与 JWT / 会话”“撤销与业务授权”“刷新事务 / CAS”。清楚标注“由业务应用实现”。\n右下浅橙色区标题“开发与验证”，4个子模块：“隔离 Hyperf 示例”“单元 / 存储 / 并发”“HTTP / TLS / 真实尾帧”“独立消费 / 双包导出”。清楚标注“测试与示例”。\n最下方单独状态条：“本地功能已验证；修复未发布；生产验收待完成”。另外用小字列出“不含 WebSocket 认证 / SDK / mTLS 管理”，不要画出这些功能已经实现。模块关系简洁、标签可读。",
+      "status": "已生成并检查",
+      "attempts": 1,
+      "generation_calls": 1,
+      "edit_calls": 0,
+      "fallback_used": false,
+      "actual_width": 1672,
+      "actual_height": 941,
+      "bytes": 1581285,
+      "sha256": "8fd5a9d560e1b82e50f2e7395da6def245ae64f2f80b25d30090156232d0d00f",
+      "semantic_corrections": [],
+      "visual_checks": [
+        "核心/适配/宿主/验证工具四区明确",
+        "适配依赖核心的箭头方向正确",
+        "密钥轮换和SDK含义有正文图注",
+        "未发布和待生产验收状态可读"
+      ]
+    }
+  ],
+  "generation_mode": "image_gen 内置生成与定向编辑；未使用CLI或本地绘图回退",
+  "approved_outline": "用户已选择按此大纲生成（2026-11-03）",
+  "summary": {
+    "required_images": 3,
+    "generated": 3,
+    "missing": 0,
+    "documents": 5,
+    "png_integrity": "PNG签名及全部chunk CRC检查通过",
+    "language": "中文，保留技术标识",
+    "git_operations": "未执行"
+  },
+  "validation": {
+    "date": "2026-11-03",
+    "project_markdown_files_checked": 28,
+    "global_documents_checked": 5,
+    "png_signature_and_chunk_crc": "通过",
+    "document_and_image_sha256": "通过",
+    "archive_table": "空表，无归档记录",
+    "domain_files": 0,
+    "local_links_utf8_code_fences": "通过",
+    "business_code_tests": "本次未重复执行，引用既有复审证据",
+    "git_operations": "未执行"
+  }
+}

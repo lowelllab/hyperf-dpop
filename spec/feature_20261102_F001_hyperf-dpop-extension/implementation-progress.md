@@ -1,6 +1,6 @@
 # Hyperf DPoP 实施进度与规则记录
 
-创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.6。当前阶段：核心和适配包源码均已推送用户创建的独立公开仓库；本助手未提交Packagist，稳定发行待后续执行。
+创建日期：2026-11-02（Asia/Shanghai）。当前版本：0.8。当前阶段：2026-11-03再次深度审核完成，两项入口问题已在本地维护；153测试/281断言、180网关检查、17项真实HTTP2尾帧及独立四组87项通过。原生网络尾部等待单列限制，公开分发及生产验收待后续。
 
 关联方案：[spec-design.md](spec-design.md)。本文件是后续实施的进度、规则索引、决策变更和验证证据记录入口。
 
@@ -25,14 +25,14 @@
 | --- | --- |
 | 项目位置 | 工作区 `hyperf-dpop`，与后端仓库同级 |
 | 已有交付物 | 双包源码、配置与DDL、示例、测试、CI配置、接入/维护文档及审查/执行/进度记录 |
-| 当前授权范围 | 用户先后提供自建公开核心与适配仓库截图，按双包发布上下文同步各自源码；未创建远端、修改可见性、提交Packagist或打标签 |
-| 设计状态 | 0.6，确定Composer vendor与双发布根目录，保留现有Acme PHP命名空间；冲突时以§19为准 |
-| 实现状态 | 未发布0.1开发版，通用核心、Hyperf适配、MySQL/Redis驱动和示例已实现 |
+| 当前授权范围 | 用户要求再次深度审核；按既有发现问题直接维护授权完成请求代理及尾部字段修复、差异复现和回归；未外部发布/部署 |
+| 设计状态 | 0.8，§19.15精化标准代理、原始/PSR凭据一致性及尾部字段剥离；双包名、Acme命名空间不变 |
+| 实现状态 | 本地适配包已修复重复头漏检并新增gateway发布项；核心未改。公开适配提交仍以发布指南快照为准，修复未推送，尚无稳定版 |
 | 依赖状态 | Composer锁定并实际运行PHP8.5.12、Hyperf3.2.0、Swoole6.2.4、JOSE4.2.4；依赖审计无已知公告 |
-| 测试状态 | 更名后108测试/169断言、静态、81文件语法、CLI15、HTTP27、TLS12及独立宿主85项通过；双导出VCS安装通过；既有2项重复头限制不变，见VAL-015 |
-| 仓库与发布 | 开发工作区已同步；核心lowelllab/dpop-core的main为cb47754，适配lowelllab/hyperf-dpop-package的main为e0fd48c；本助手未提交Packagist、版本标签或Release |
-| 实验环境 | 工作区和本轮独立消费项目的MySQL/Redis及网络均已关闭移除；消费者源码、独立vendor和脱敏证据保留，tmpfs数据已清除 |
-| 下一实施入口 | 先读LOG-016及docs/publishing.md；Packagist按核心、适配顺序登记两个独立仓库URL；继续生产容量、代理及恢复验收 |
+| 测试状态 | 基线128/228通过；新增25项旧15失败、新25通过；完整153测试/281断言、PHPStan6、84语法、CLI17、HTTP27/TLS12、网关180及真实H2尾帧17通过；完整宿主脚本四组87/0；原生尾部等待单列LIMITATION；VAL-020 |
+| 仓库与发布 | 开发工作区保留；core main cb47754、adapter main e0fd48c已从Packagist实际安装，dev-main别名有效；本助手未创建版本标签或Release |
+| 实验环境 | 根实验和hyperf-dpop-gateway-consumer-test两套容器/网络已移除，tmpfs清除；候选包、独立宿主、证据和源码归档保留，未操作其他业务项目 |
+| 下一实施入口 | 先读LOG-020及docs/review-deep-20261103.md；保留网关剥离尾部/后端隔离，适配仓库待同步后再从公开分发渠道复验；生产容量/HA/审计继续单列 |
 
 版本快照、文件存在与测试通过是不同事实。这里不将其他业务仓库的运行结果作为本扩展已经通过验收的依据。
 
@@ -132,6 +132,9 @@
 | TASK-013 | lowelllab双包命名与本地发布准备 | 已完成 | Composer名/依赖/文档/锁同步；两个根目录与ZIP、分支别名、独立VCS消费及回归通过；不含公开仓库/Packagist提交；VAL-015、LOG-014 |
 | TASK-014 | 核心公开仓库首次源码同步 | 已完成 | 用户提供空公开仓库；17个已验证文件摘要相同，根Composer strict及匿名远端安装通过，main提交cb47754已推送且远端一致；VAL-016、LOG-015 |
 | TASK-015 | 适配公开仓库首次源码同步 | 已完成 | 用户提供空公开适配仓库；31个已验证文件摘要相同，Composer strict与匿名双公开仓库安装通过，main提交e0fd48c已推送且远端一致；VAL-017、LOG-016 |
+| TASK-016 | Packagist分发后的独立Hyperf深度复测 | 已完成 | 无path/VCS与工作区挂载的新宿主；新锁/dist安装，六组85项及CLI/预算/故障恢复/生产缓存通过，2项重复头限制保留；VAL-018、LOG-017 |
+| TASK-017 | 重复认证头修复及网关回归 | 已完成 | 统一PSR/HTTP1原始头检查，原生HTTP2失败关闭，gateway模板及保留宿主文件；128/228、171网关、独立四组87/0通过，未外部发布；VAL-019、LOG-019 |
+| TASK-018 | 2026-11-03再次深度审核 | 已完成 | 两项入口问题维护；旧15失败、新25通过；153/281、180网关、17真实H2尾帧及完整独立四组87/0通过；原生尾部等待未计PASS；VAL-020、LOG-020 |
 
 原“仅文档、P0未开始”状态已被用户本次实施授权和LOG-003至LOG-005替代。下一步面向正式发行条件，不重复已通过的检查，除非代码变化或新问题需要回归。
 
@@ -154,13 +157,14 @@
 
 | 编号 | 问题或风险 | 状态 | 解决阶段或条件 |
 | --- | --- | --- | --- |
-| ISSUE-001 | Packagist登记与正式发行条件 | 部分解决 | 两独立公开仓库已同步；正式vendor为lowelllab，PHP命名空间保留Acme；本助手未提交Packagist，需核对账号权限及登记状态后发行 |
+| ISSUE-001 | Packagist登记与正式发行条件 | 部分解决 | 两个正式包已登记且从默认Packagist实际安装dev-main；稳定标签/维护与发行条件待完成，额外工作区条目本轮未删除 |
 | ISSUE-002 | 候选库严格解析、认证顺序、nonce及重放接口是否适合 | 已解决 | 通过源码审查否决直接复用，DEC-004确定JOSE路线 |
 | ISSUE-003 | 初始版本组合是否可运行 | 已解决 | VAL-002、003、005；仅声明实际验证组合 |
 | ISSUE-004 | 默认存储及发行配置选择 | 已解决 | DEC-005；MySQL默认，Redis预算必需，替换点及限制已说明 |
 | ISSUE-005 | 目标硬件、性能门槛及审计安排未确定 | 待确定 | P4前明确验收环境和标准 |
-| ISSUE-006 | 正式代理拓扑、原始重复头、故障切换和备份恢复尚未部署验证 | 部分验证，生产待验 | 新增独立宿主实际Redis停止/MySQL断网及恢复；Swoole丢弃重复头已实证，网关拒绝仍待真实拓扑验收；不替代主从切换/备份恢复 |
+| ISSUE-006 | 正式代理拓扑、原始重复头、故障切换和备份恢复尚未部署验证 | 本地链路已验证，生产待验 | 已含HTTP1/2重复头、代理、尾部字段拒绝/剥离；原生H1尾部网络等待单列ISSUE-008，生产CDN/Ingress/防火墙与HA/恢复仍待部署验收 |
 | ISSUE-007 | 远端CI运行结果尚未核对 | 待验证 | 已有私有远端及推送，不能据此推断CI通过；本轮聚焦本地独立消费测试 |
+| ISSUE-008 | Swoole原生HTTP1网络尾部报文在PHP前等待 | 保留运行时限制，网关路径已缓解 | 原生客户端8秒读超时且无响应，不计400/取消/PASS；HAProxy剥离尾部后的H1/H2链路正常，后端只能由网关访问；不是本中间件可修复的底层framing行为 |
 
 问题记录需区分“待确定”与“阻塞”。只有影响当前任务继续推进时才标为受阻，并写明阻塞对象、所需条件和可继续的独立工作。
 
@@ -185,6 +189,9 @@
 | VAL-015 | 2026-11-02 | 正式包名与双发布根目录 | Composer最小更新、strict、composer check、HTTP/TLS、消费迁移及双本地Git main分支安装 | 通过，既有部署限制保留 | 108测试/169断言、PHPStan6、81语法、CLI15、HTTP27、TLS12；独立宿主85通过/2限制；91个第三方包版本不变，核心17/适配31文件导出摘要一致、VCS别名/依赖及PHP接口通过；docs/verification-packaging-20261102.md |
 | VAL-016 | 2026-11-02 | 核心公开远端与消费 | 17文件SHA256、Composer strict、push/ls-remote、无凭据Docker消费者从公开Git URL安装 | 通过 | cb47754本地/远端一致；根library名称正确，^0.1@dev解析dev-main及别名，实际安装引用cb477548cea9ac63d557c04e6f999735dc6f339e，原PHP接口可加载；build/core-public-consumer |
 | VAL-017 | 2026-11-02 | 适配公开远端与双包消费 | 31文件SHA256、Composer strict、push/ls-remote、无凭据Docker消费者从两个公开Git URL安装 | 通过 | 仅要求适配包，自动引入核心；适配e0fd48c/core cb47754引用一致，别名、原PHP接口、ConfigProvider与发布模板通过，无根dev或旧包泄漏；build/public-package-consumer/result.json |
+| VAL-018 | 2026-11-02 | Packagist分发后的独立Hyperf复测 | 新宿主/无旧锁和vendor/默认Packagist新解析dist安装；完整retest.ps1实际执行 | 适用检查通过，2项部署限制保留 | 六组各85 PASS/2 LIMITATION；CLI8、来源8/全局7、故障11、平台/strict/41语法/依赖审计；48包文件一致、无第三方版本漂移；docs/verification-packagist-consumer-20261102.md及结构化JSON |
+| VAL-019 | 2026-11-02 | 重复认证头修复与网关 | 旧源码反证、composer check、HTTP/TLS、真实HAProxy/Hyperf显式两协议、独立候选镜像消费、导出VCS验证 | 适用检查通过 | 旧12失败；128测试/228断言、CLI17、HTTP27/TLS12、171网关检查及无dev四组87/0；49文件一致、无依赖版本漂移、审计空；docs/verification-duplicate-headers-20261102.md及结构化JSON |
+| VAL-020 | 2026-11-03 | 再次深度审核与维护 | 基线、旧源码回归反证、真实HTTP1/HTTP2尾部及代理、完整独立消费脚本和产物核对 | 适用检查通过；1原生观察限制 | 旧25中15失败、新25通过；153/281、PHPStan6、84语法、CLI17、HTTP27/TLS12、180网关及17真实H2尾帧；独立四组87/0与49文件一致；docs/review-deep-20261103.md及JSON |
 
 当前文档检查命令为`docker compose run --rm test php tools/verify-docs.php`，自动排除vendor/build/runtime。以下保留初期仅有文档、未安装依赖时的历史PowerShell命令，不再用于扫描已安装依赖的整个目录：
 
@@ -410,3 +417,63 @@ LOG-NNN · 日期/时间（Asia/Shanghai） · 本次任务
 - Composer strict通过，首次提交e0fd48c0df9fb90417dcbbfab395674e7898c339已推送main，git ls-remote与本地HEAD一致，工作区干净。未携带工作区、vendor、测试凭据或临时密钥，未创建版本标签。
 - 无凭据Docker消费者只要求lowelllab/hyperf-dpop ^0.1@dev，通过两个公开Git URL自动安装核心；引用分别为e0fd48c与cb47754，PHP类、ConfigProvider、可选命令隔离和DDL模板均正常，没有工作区dev或旧acme包混入。此次未修改包内容，不重复运行已通过的协议功能测试。
 - 发布指南更新两个实际公开仓库及源码提交状态；Packagist登记尚未由本助手执行，也未假定用户是否另行登记。19份Markdown编码、链接和围栏通过，开发工作区与两个发布checkout均保持同步。
+
+
+### LOG-017 · 2026-11-02 · Packagist 独立 Hyperf 深度复测
+
+- 用户在Packagist页面操作后要求重新在Hyperf项目深度测试；公开JSON已核实core/adapter及workspace均被登记。本轮测试两个正式包，不修改或删除Packagist条目，不创建标签或Release。
+- 同级新建hyperf-dpop-packagist-consumer，复用官方骨架和宿主验收源码，排除旧锁/vendor/.env/runtime/evidence。移除repositories与工作区挂载，仅要求适配^0.1@dev，默认Packagist新解析并实际下载dist；core cb47754和adapter e0fd48c、48文件SHA256及别名一致，第三方版本无漂移。
+- 完整retest.ps1在首次安装后以-SkipInstall实际运行至退出0。新增两驱动生产缓存冷/热覆盖，本轮共六组各85 PASS/2 LIMITATION；不是510个不同场景。每组64并发主体隔离、24路同proof竞争1成功23拒绝、8路refresh竞争1成功7拒绝。
+- CLI8、来源预算8、全局预算7、真实故障/恢复11、平台要求、strict、41宿主PHP语法和锁文件依赖公告审计通过。Redis停止503约5516.52ms、MySQL断网503约3012.70ms；恢复后未消费proof首次成功，再重放被拒。移除55开发依赖后剩88生产包，四组生产模式全部通过。
+- 既有2项原始重复认证头限制复现，不算通过；真实生产网关拒绝、容量SLO、HA/状态丢失/备份恢复、独立审计及稳定标签安装未验收。扩展源码未改；骨架installer/resources模板PSR-4提示保留为安装说明，不伪报包缺陷。
+- 新增docs/verification-packagist-consumer-20261102.md及结构化结果，发布指南更新实际Packagist状态；README继续仅保留功能介绍。源码归档build/packagist-consumer-project-20261102.zip含新宿主与独立锁，排除vendor/.env/runtime私钥及日志。
+- 脚本finally已关闭自身MySQL/Redis和网络，后续查询无本项目容器/网络；原业务项目未操作。本轮不推送功能代码、不重复未变化的包级测试，不冒称稳定版或远端CI验收。
+- 收尾验证：20份Markdown编码/本地链接/围栏通过，结构化结果计数与六组引用一致，源码ZIP完整性、无仓库覆盖和私钥排除检查通过，git diff --check通过。报告和证据保留本地工作区，未自动提交或推送。
+
+
+### LOG-018 · 2026-11-02 · 重复认证头限制可行性诊断
+
+- 用户追问两项限制能否解决，本轮只读检查适配HeaderReader、Hyperf请求转换和Swoole6.2.4源码，并启动一次性本地诊断端点，不修改扩展源码或发布仓库。
+- 显式TLS HTTP/1.1与HTTP/2共6次原始重复头检查：HTTP/1.1 Authorization覆盖但getData保留原始头、DPoP保留PSR多值；HTTP/2两者均覆盖且getData不可用。另以原生parse及真实HTTP/1.1请求交叉验证。纠正此前不区分协议的“Swoole丢弃原始头”宽泛结论；原六组业务请求未记录协议，不倒推逐请求协议。
+- HeaderReader已有PSR多值拒绝，HTTP/1.1可补查raw；HTTP/2需最早入口网关或运行时修复。建议网关两协议拒绝重复认证头、后端访问隔离、HTTP/1.1纵深防护及显式协议回归。只确认可行性，未将原2项LIMITATION改为PASS。
+- 精确结果补入docs/verification-packagist-consumer-20261102.md§6及结构化JSON followup_duplicate_header_diagnosis；历史业务计数和摘要保留。所有诊断容器--rm/禁网络、只读挂载，未启动数据库或操作其他业务服务。
+
+
+### 重复认证头与原生HTTP/2规则（0.7）
+
+| 编号 | 规则 | 来源及替代关系 |
+| --- | --- | --- |
+| RULE-063 | Swoole HTTP1按原始头及PSR多值共同检查，认证字段重复即400；只检查头块，64KiB上限并拒绝折叠/字段名空白 | 用户确认修复；§19.13，精化RULE-016/048，替代“应用只能检查PSR”的宽泛边界 |
+| RULE-064 | 无原始头的Swoole原生HTTP2受保护请求503；入口网关检查两协议完整字段及逗号列表，固定HTTP1后端并限制后端访问，无客户端跳过标记 | 用户确认方案；§19.14，本地真实链路验证；不冒称生产网关已部署 |
+
+### LOG-019 · 2026-11-02 · 重复认证头修复与独立网关回归
+
+- 用户在LOG-018根因和方案说明后明确“修复”；按既有直接维护授权实施，不增加二次门禁。HeaderReader统一PSR/HTTP1原始头检查，原生Swoole HTTP2或raw不可用503，业务及签名/重放核心未修改。
+- 新增gateway发布项和HAProxy3.2模板，只复制不部署/不覆盖宿主文件；检查原始完整字段数与逗号列表，两种客户端协议均固定HTTP1后端，文档说明后端仅网关访问和更早代理的责任。PHP命名空间不变。
+- 新20项回归在旧源码有12失败，修复后整体128测试/228断言通过；PHPStan6、83语法、两驱动各12进程竞争、取消、生产CLI17、HTTP27/TLS12通过。旧源码反证仅临时挂载，不覆盖源码。一次旧CLI参数弃用提示与功能失败区分。
+- compose.gateway.yaml及tests/gateway-e2e.php实际执行，HAProxy3.2.26 SHA256锁定，171项全部通过，逐请求验证TLS与协商协议；覆盖resource/token/refresh三入口重复字段顺序/同值/大小写/空值/逗号、正常nonce/签发/刷新/重放及无副作用；原生HTTP2单值/重复均503。CI命令同步，远端CI未核实。
+- 同级新建hyperf-dpop-gateway-consumer，无工作区挂载，候选适配镜像安装、核心仍来自Packagist cb47754；49包文件一致、第三方版本未变、无dev仅88包。MySQL/Redis分别HTTP1冷缓存/HTTP2热缓存，四组各87 PASS/0 LIMITATION；每组64并发身份隔离、24路proof1成功、8路refresh1成功通过，不将348次通过算作348不同场景。
+- 独立宿主37语法、strict及锁审计通过；底层命令逐项实跑，retest-gateway.ps1新汇总仅语法检查。导出core17/adapter32及独立本地VCS消费通过；扩展包ZIP和宿主/候选包ZIP排除.env/vendor/runtime私钥/日志。
+- 更新设计0.7、RULE-063/064、发布/错误/网关接入及功能README。旧Packagist e0fd48c的85/2记录保留历史，新结论只适用于本地修复及已测网关链路；未推送发布仓库、打标签、改Packagist或部署生产服务。
+- 两套Compose容器和网络已关闭移除、tmpfs数据清除；未操作其他业务项目。生产CDN/Ingress/防火墙、容量SLO、HA/恢复、独立审计及公开分发更新仍待后续。
+- 收尾：22份Markdown编码/链接/围栏、结构化计数、两归档完整性/SHA256及私钥排除通过，git diff --check通过；再次ls-remote确认公开适配main为e0fd48c，修复仍为本地候选。两实验项目容器/网络查询均为空。
+
+
+### 请求代理与尾部字段规则（0.8）
+
+| 编号 | 规则 | 来源及替代关系 |
+| --- | --- | --- |
+| RULE-065 | 标准Hyperf请求代理应解析到底层请求检查，不能被视为普通手工PSR而跳过raw/原生H2检查；不修改RequestContext；起始raw凭据与PSR须一致 | REV3-001；§19.15，精化RULE-063 |
+| RULE-066 | 拒绝认证Trailer声明及实际字段；按chunk长度跳过body并检查尾部；网关剥离全部请求尾部，保留body；原生网络解析等待不计PASS、不等于取消 | REV3-002；§19.15，精化RULE-063/064，ISSUE-008 |
+
+### LOG-020 · 2026-11-03 · 再次深度审核与维护
+
+- 用户要求再次深度审核，按既有直接维护授权审查入口、代理、原始HTTP、签发/刷新、nonce/URI、两种存储、预算及产物。先复跑基线128测试/228断言，通过；保留0.7 HeaderReader与网关配置快照。
+- REV3-001：标准Hyperf请求代理被instanceof筛选跳过raw和原生HTTP2防护；用不可变同版本PSR操作取得底层请求，不改协程Context。REV3-002：Request::parse可使尾部Authorization覆盖起始字段；新增初始raw/PSR一致性、认证尾部/声明拒绝及HAProxy实际尾部剥离。载荷按chunk长度跳过，不靠body正则；核心17文件不改。
+- 新25项回归在旧源码15失败、修复后全通过；整体153测试/281断言、PHPStan6、84语法、两驱动各12进程竞争、取消、CLI17、HTTP27/TLS12通过。中途修正空header fixture的多余CRLF；最终旧失败来自正确fixture，未冒称工具问题为包漏洞。
+- 真实网关180检查通过，另1项原生H1尾部网络等待单列LIMITATION；带/不带chunk extension均可能在PHP前等待，客户端超时不证明400/取消/认证通过。旧H2转H1尾帧链路同样超时；开启剥离后正常。不得把Request::parse的检查接受写成真实网络认证200。
+- 新Node24.22.2容器锁定SHA256，以原生crypto独立ES256签名并实际发送HTTP2 trailing HEADERS，17项通过；声明字段提前400的用例避免在RST后再发送尾帧，未声明真实尾帧另有发送标记。网关配置/CI加入该验证，非生产依赖。
+- 独立候选宿主显式composer reinstall适配镜像，核心仍锁Packagist cb47754，49源码文件与vendor一致，锁/第三方版本未变，无dev仅88包。实际完整执行retest-gateway.ps1 -SkipInstall，四组各87/0、37语法、strict与锁定依赖公告审计通过；不再只是脚本语法检查。
+- 导出core17/adapter32、strict及本地VCS消费通过。新增docs/review-deep-20261103.md/JSON、源码包与独立宿主归档；旧记录及归档保留历史。设计0.8、RULE-065/066及网关/安全/错误文档同步；README继续功能介绍。
+- 两套实验服务和网络已关闭移除，tmpfs清除，未操作其他业务项目。修复仍留本地，无push/tag/Packagist修改/生产部署；实际CDN/Ingress/网络策略、容量SLO、HA/恢复及独立安全审计继续单列。
+- 最终核对：23份Markdown编码/本地链接/围栏及变更fixture语法通过，JSON计数与两归档完整性/SHA256一致，git diff --check通过。两套实验容器/网络查询为空；公开适配main再次核实为e0fd48c，本地0.8未发布。

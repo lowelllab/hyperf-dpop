@@ -18,8 +18,12 @@ jobs:
       - run: docker compose run --rm test composer check
       - run: docker compose run --rm test php tests/http-e2e.php
       - run: docker compose run --rm test php tests/tls-e2e.php
+      - run: docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait gateway
+      - run: docker compose -f compose.yaml -f compose.gateway.yaml exec -T gateway-app php tests/gateway-e2e.php client
+      - run: docker compose -f compose.yaml -f compose.gateway.yaml run --rm --no-deps gateway-wire
+      - run: docker compose -f compose.yaml -f compose.gateway.yaml stop gateway gateway-app
       - run: docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor
       - run: docker compose run --rm test composer audit --locked
       - run: docker compose run --rm test php tools/verify-docs.php
       - if: always()
-        run: docker compose down
+        run: docker compose -f compose.yaml -f compose.gateway.yaml down --remove-orphans

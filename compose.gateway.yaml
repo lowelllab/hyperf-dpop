@@ -1,0 +1,41 @@
+# Isolated verification overlay; no host ports or production credentials.
+services:
+  gateway-app:
+    image: hyperf-dpop-lab:php8.5
+    working_dir: /workspace
+    volumes: [.:/workspace]
+    command: [php, tests/gateway-e2e.php, serve]
+    environment:
+      DPOP_EXAMPLE_ORIGIN: https://api.example:9511
+      DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
+      DPOP_TEST_MYSQL_USER: dpop
+      DPOP_TEST_MYSQL_PASSWORD: isolated-test-only
+      DPOP_TEST_REDIS_HOST: redis
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, php, -r, "exit(@fsockopen('127.0.0.1', 9509) ? 0 : 1);"]
+      interval: 2s
+      timeout: 2s
+      retries: 40
+  gateway:
+    image: haproxy@sha256:5893840576071e6217cd52ebdcc14f454c6f7a631056fa6f4e0f40d3cac4215b
+    # Test fixture reads a temporary private key from a host-mounted directory.
+    user: '0:0'
+    network_mode: service:gateway-app
+    volumes: [.:/workspace:ro]
+    environment:
+      DPOP_GATEWAY_BIND: 127.0.0.1:9511
+      DPOP_GATEWAY_CERT: /workspace/build/gateway/tls.pem
+      DPOP_BACKEND_ADDR: 127.0.0.1:9509
+    command: [haproxy, -W, -db, -f, /workspace/packages/hyperf-dpop/publish/haproxy.cfg]
+    depends_on:
+      gateway-app: {condition: service_healthy}
+  gateway-wire:
+    image: node@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85
+    working_dir: /workspace
+    network_mode: service:gateway-app
+    volumes: [.:/workspace:ro]
+    command: [node, tests/gateway-trailers.mjs]
+    profiles: [wire]

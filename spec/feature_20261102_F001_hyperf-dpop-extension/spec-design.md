@@ -1,6 +1,6 @@
 # Feature: 20261102_F001 - Hyperf DPoP 标准扩展
 
-创建日期：2026-11-02（Asia/Shanghai）。版本：0.6。状态：Composer vendor确定为lowelllab，保留双包及现有PHP命名空间；生产容量、真实代理拓扑、独立安全审计和稳定发行仍待后续完成。
+创建日期：2026-11-02（Asia/Shanghai）。版本：0.8。状态：双包命名不变；再次审核补齐标准请求代理、认证尾部字段及网关剥离策略；生产容量、真实部署拓扑、独立安全审计和发行同步仍待后续完成。
 
 审查依据与修订：[首轮审查](review-20261102.md)、[整体功能复审](review-functional-20261102.md)。第18、19节为修订后的精确实施契约，冲突时以最新第19节为准。用户已授权直接修订并实施，不再设置方案二次确认门禁。
 
@@ -399,3 +399,9 @@ mTLS 在传输层处理客户端证书认证。后续可从受信网关传递经
 10. **验证扩展**：固定Node原生ES256向量由PHP验证；直连TLS使用专属临时CA且同时校验证书和主机名，覆盖保留字符编码及同proof跨Worker竞争。无系统信任库修改，无真实账号凭据。真实代理头处理、故障切换、恢复及目标容量仍须部署验收，不能用本地直连TLS替代。
 11. **独立消费者与超时（0.5补充）**：官方骨架消费项目使用独立锁文件/vendor及非符号链接的包副本验证接入；客户端由原生OpenSSL签名，覆盖MySQL/Redis、生产缓存冷/热及无开发依赖。实际停止Redis发现仅设池等待参数不能保证及时503，宿主必须显式设置Redis顶层timeout/read_timeout，并按DNS、重连及请求期限验收总耗时。HTTP客户端超时不构成服务端协程已取消或业务未执行的证明。原始重复认证头的丢失按既有第18.13条处理，独立消费者已实测复现，不计为通过场景；完整依据见docs/verification-consumer-20261102.md。
 12. **正式包名与双仓发布（0.6补充）**：用户明确采用lowelllab/dpop-core和lowelllab/hyperf-dpop双包；保留Acme PHP命名空间，不增加类名迁移。工作区根为lowelllab/hyperf-dpop-workspace、type=project，不能提交成扩展。每个子包须另有根composer.json为对应library的发布仓库，保留现有开发仓库。两包main分支别名为0.1.x-dev；本地导出只包含包源码、元信息、许可及发布模板，不带环境凭据或工作区依赖。公开创建仓库、推送发布仓库、Packagist提交和版本标签不由准备工具执行。既有审查报告及摘要保留原命名的历史快照；当前规则替代RULE-007/046/047等条款中的acme占位包名，不改写历史事实。
+
+13. **重复认证头修复（0.7补充）**：用户确认修复LOG-018诊断。HeaderReader在token/refresh/resource共用检查：先拒绝PSR多值，再对附带Swoole原生对象的HTTP/1.0/1.1读取getData，只解析首个CRLFCRLF之前的请求头；64KiB头块上限、字段名token检查、禁止obsolete folding及冒号前空白；Authorization/DPoP按不区分大小写计数，重复即400 invalid_request。手工PSR请求保留既有多值契约，不靠客户端标记跳过检查。
+
+14. **原生HTTP/2与网关契约（0.7补充）**：Swoole6.2.4原生HTTP/2覆盖字段且getData不可用，无法核验唯一性的受保护请求503 dpop_security_unavailable；不存在允许静默接受已覆盖单值的开关。入口HAProxy在任何字段归并/转发前通过完整字段计数拒绝重复Authorization/DPoP及逗号列表，客户端HTTP/1.1和HTTP/2均适用；后端强制HTTP/1.1，只允许网关连接。提供gateway发布项，仅复制haproxy.cfg不部署；保留无force不覆盖宿主文件行为。更早代理若已丢弃字段，仍须在该入口拒绝。实际生产拓扑、容量和网络策略验收独立于本地测试。
+
+15. **请求代理与尾部字段（0.8补充）**：标准Hyperf\HttpServer\Request代理通过相同protocol version的不可变PSR操作获得底层请求，不修改RequestContext；不能将它当作没有原生来源的手工PSR请求而跳过检查。Swoole HTTP/1起始原始认证字段应与当前PSR字段完全一致；禁止解析后改写凭据、认证Trailer声明及实际认证尾部字段。按chunk长度与CRLF边界跳过载荷，检查真正的trailers，避免扫描body文本误判；长度溢出、边界错误或不可核验时拒绝。网关拒绝认证Trailer声明，并以HAProxy http-drop-request-trailers在发送后端前剥离所有实际HTTP/1和HTTP/2尾部字段，正常body保留。原生Swoole网络解析尾部报文的等待发生于应用前，不能计作应用400或客户端超时即取消；后端隔离和入口剥离是该部署契约的组成部分。

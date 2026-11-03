@@ -73,3 +73,22 @@
 - [x] `docker compose run --rm test php tools/consumer-smoke.php`：独立消费项目和新PHP进程安装加载正常，开发稳定性显式允许，不借工作区dev依赖。失败回查Task1、4。
 - [x] `docker compose run --rm test php tools/verify-docs.php`：内部文档链接有效，状态与实施证据同步。失败回查Task5。
 - [x] 更新阶段、规则、任务与遗留问题；明确仅完成本地开发验证，未发布稳定版及未完成独立审计。
+
+
+### Task 7：重复认证头修复与入口网关（用户已确认修复）
+
+- [x] HeaderReader统一检查PSR多值及Swoole HTTP/1原始字段，原生HTTP/2无法证明头唯一时503，不以单值猜测安全；保留纯PSR请求兼容。
+- [x] 发布HAProxy3.2模板，HTTP/1和HTTP/2入口检查完整字段重复及逗号列表，固定HTTP/1后端；网关部署与后端网络隔离写入接入文档。
+- [x] 新增真实native请求回归，先记录旧版本失败，再验证修复：`docker compose run --rm test vendor/bin/phpunit tests/HeaderReaderTest.php`。
+- [x] 隔离HAProxy+独立Hyperf宿主，显式强制两协议验证认证/签发/刷新/nonce/重放/非法头，原生HTTP/2拒绝服务；正常并发与主体隔离不退化。
+- [x] `docker compose run --rm test composer check`、HTTP/TLS、导出消费验证和文档检查通过，保存证据并关闭自身环境；不擅自发布标签或删除包。
+
+
+### Task 8：2026-11-03再次审核与维护
+
+- [x] 基线与旧源码反证：128/228通过；新增25项在旧0.7中15失败，新实现25通过。
+- [x] 代理/尾部修复：HeaderReader、HAProxy模板及§19.15同步；标准代理不改Context，认证尾部拒绝且载荷不误判。
+- [x] 完整检查：composer check为153/281，HTTP27/TLS12、CLI17与依赖审计通过。
+- [x] 真实协议：gateway-e2e.php为180通过，原生网络尾部等待另记LIMITATION；gateway-trailers.mjs实际H2尾帧17通过。
+- [x] 独立消费：完整retest-gateway.ps1实跑四组各87/0，49文件一致、无dev、锁不漂移；导出消费通过。
+- [x] 报告、源码归档、文档与隔离服务收尾完成；不外部发布，不把生产未验或原生观察算作通过。

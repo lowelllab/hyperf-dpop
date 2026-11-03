@@ -1,0 +1,3859 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Asia/Shanghai",
+  "scope": "deep review of local unpublished candidate; fixes authorized by existing maintenance instruction",
+  "findings": [
+    {
+      "id": "REV3-001",
+      "priority": "P1",
+      "issue": "Standard Hyperf request proxy skipped native/raw header guard",
+      "evidence": "25 new regressions have 15 failures on prior 0.7 HeaderReader; native duplicate Authorization accepted through proxy",
+      "repair": "Unwrap known proxy through immutable same-version PSR call, inspect underlying native request; keep RequestContext unchanged",
+      "status": "fixed and tested"
+    },
+    {
+      "id": "REV3-002",
+      "priority": "P1",
+      "issue": "Authentication trailers could overwrite parsed credentials; gateway forwarded actual trailers",
+      "evidence": "Native Request::parse accepted overwritten Authorization; actual old H2-to-H1 trailer path timed out before application; no claim of old network authentication success",
+      "repair": "Reject credential Trailer declarations and actual authentication trailers; compare initial/raw and parsed credential fields; gateway drops all request trailers",
+      "status": "fixed in parser/adapter and checked gateway path"
+    }
+  ],
+  "baseline": {
+    "tests": 128,
+    "assertions": 228,
+    "result": "PASS"
+  },
+  "new_regressions_before": {
+    "tests": 25,
+    "assertions": 53,
+    "failures": 15,
+    "evidence_sha256": "79e37ac2afc440ee363fc67e6246e268e16b6ba3db14dfca47f6d1f4f4ed181d"
+  },
+  "final_regression": {
+    "tests": 153,
+    "assertions": 281,
+    "phpstan_level": 6,
+    "php_syntax_files": 84,
+    "mysql_and_redis_race": "each 12 contenders, 1 accepted, 11 rejected",
+    "cancellation": "PASS",
+    "production_cli": 17,
+    "http_scenarios": 27,
+    "tls_scenarios": 12,
+    "check_log_sha256": "1d0e5213aa0e5f433eece0c11c969c5017d26d230561486466ae310b540e4965"
+  },
+  "gateway": {
+    "cases": [
+      {
+        "case": "gateway-ready",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-nonce",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "http1-issuance",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-resource-nonce",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "http1-resource-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-resource-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-resource-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-token-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-token-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-refresh-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-refresh-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-duplicate-token-no-issuance",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-hidden-auth-cannot-replace-initial",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_token"
+      },
+      {
+        "case": "http1-initial-auth-and-proof-preserved",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-trailer-only-credentials-rejected",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-forbidden-trailer-declaration",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "native-http1-alive-after-forbidden-trailer",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-rejected-proof-still-usable",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-successful-proof-replay",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "http1-refresh-after-rejections",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-rotated-resource",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-subject-preserved",
+        "result": "PASS"
+      },
+      {
+        "case": "http1-old-access-invalid",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_token"
+      },
+      {
+        "case": "http1-native-single",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-native-duplicate-auth",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-native-duplicate-proof",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http1-native-proxy-single",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": null
+      },
+      {
+        "case": "http1-native-proxy-duplicate",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 2,
+        "expected_http_version": 2,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-nonce",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "http2-issuance",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": null
+      },
+      {
+        "case": "http2-resource-nonce",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "http2-resource-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-resource-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-resource-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-token-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-token-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-auth-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-auth-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-same",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-same-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-valid-last",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-valid-last-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-valid-first",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-valid-first-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-case",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-case-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-empty",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-empty-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-refresh-proof-comma",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_request"
+      },
+      {
+        "case": "http2-refresh-proof-comma-no-store",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-duplicate-token-no-issuance",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-rejected-proof-still-usable",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": null
+      },
+      {
+        "case": "http2-successful-proof-replay",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "http2-refresh-after-rejections",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": null
+      },
+      {
+        "case": "http2-rotated-resource",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": null
+      },
+      {
+        "case": "http2-subject-preserved",
+        "result": "PASS"
+      },
+      {
+        "case": "http2-old-access-invalid",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "invalid_token"
+      },
+      {
+        "case": "http2-native-single",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "dpop_security_unavailable"
+      },
+      {
+        "case": "http2-native-duplicate-auth",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "dpop_security_unavailable"
+      },
+      {
+        "case": "http2-native-duplicate-proof",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "dpop_security_unavailable"
+      },
+      {
+        "case": "http2-native-proxy-single",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "dpop_security_unavailable"
+      },
+      {
+        "case": "http2-native-proxy-duplicate",
+        "result": "PASS",
+        "status": 503,
+        "expected": 503,
+        "negotiated_http_version": 3,
+        "expected_http_version": 3,
+        "error": "dpop_security_unavailable"
+      }
+    ],
+    "observations": [
+      {
+        "case": "native-http1-trailer-framing",
+        "result": "LIMITATION",
+        "status": 0,
+        "timed_out": true,
+        "mitigation": "gateway drops trailers; backend must not be publicly reachable"
+      }
+    ],
+    "failure": null,
+    "gateway_config_sha256": "87e6ebe4409c21499e811feed2795e929428257e8cede44221962be70abf1336",
+    "backend_protocol": "HTTP/1.1",
+    "scope": "isolated actual Hyperf + HAProxy; no production deployment"
+  },
+  "http2_trailing_frames": {
+    "node": "v24.22.2",
+    "cases": [
+      {
+        "case": "h2-tls-peer-and-alpn",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-trailer-fixture-nonce",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "h2-trailer-fixture-issued",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-trailer-resource-nonce",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "use_dpop_nonce"
+      },
+      {
+        "case": "h2-hidden-auth-cannot-replace-invalid-header",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_token"
+      },
+      {
+        "case": "h2-real-auth-trailer-sent",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-hidden-auth-no-proof-consumption",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-trailers-cannot-corrupt-valid-initial-fields",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-real-multiple-trailers-sent",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-streamed-success-proof-is-consumed",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": "invalid_dpop_proof"
+      },
+      {
+        "case": "h2-trailer-only-credentials-not-authentication",
+        "result": "PASS",
+        "status": 401,
+        "expected": 401,
+        "error": null
+      },
+      {
+        "case": "h2-trailer-only-no-spurious-token-error",
+        "result": "PASS"
+      },
+      {
+        "case": "h2-forbidden-trailer-declaration",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-forbidden-declaration-dPoP",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-forbidden-declaration-X-Checksum, AUTHORIZATION",
+        "result": "PASS",
+        "status": 400,
+        "expected": 400,
+        "error": "invalid_request"
+      },
+      {
+        "case": "h2-harmless-trailer-remains-compatible",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      },
+      {
+        "case": "h2-body-and-original-proof-preserved",
+        "result": "PASS",
+        "status": 200,
+        "expected": 200,
+        "error": null
+      }
+    ],
+    "failure": null,
+    "meaning": "Actual HTTP/2 trailing HEADERS with independent signer; no credentials in evidence"
+  },
+  "independent_consumer": {
+    "full_wrapper_executed": true,
+    "run_log_sha256": "83942351392016b2ffd4d77f8e55a05e6cc3898f87bd2e91b01666d41f37fc12",
+    "production_packages": 88,
+    "composer_lock_unchanged": true,
+    "lock_sha256": "4fecad59799e414cef581d9f113bfcc70241ef7965919ebfca094ce91df3f1f5",
+    "syntax_php_files": 37,
+    "composer_strict": "PASS",
+    "runs": [
+      {
+        "driver": "mysql",
+        "label": "mysql-http1-cold",
+        "client_protocol": 2,
+        "php": "8.5.12",
+        "swoole": "6.2.4",
+        "framework": "v3.2.0",
+        "di": "v3.2.2",
+        "dev_dependencies": false,
+        "scan_cacheable": "true",
+        "cases": [
+          {
+            "case": "official-skeleton-real-server-starts",
+            "result": "PASS"
+          },
+          {
+            "case": "independent-vendor-without-workspace-test-autoload",
+            "result": "PASS"
+          },
+          {
+            "case": "tls-ca-and-host-verified",
+            "result": "PASS"
+          },
+          {
+            "case": "unknown-ca-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "wrong-host-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "options-bypasses-proof",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "missing-auth",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": null
+          },
+          {
+            "case": "missing-auth-challenge-without-spurious-error",
+            "result": "PASS"
+          },
+          {
+            "case": "bearer-downgrade-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "malformed-auth",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_request"
+          },
+          {
+            "case": "missing-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "token-missing-proof",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "nonce-before-issuance",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "challenge-no-session-side-effect",
+            "result": "PASS"
+          },
+          {
+            "case": "nonce-response-no-store",
+            "result": "PASS"
+          },
+          {
+            "case": "opaque-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "token-type-and-response-cache",
+            "result": "PASS"
+          },
+          {
+            "case": "native-openssl-proof-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "request-subject",
+            "result": "PASS"
+          },
+          {
+            "case": "successful-proof-replay",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "query-not-part-of-target",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "method-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-method",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "path-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-origin",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-query-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-fragment-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "old-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "iat-string",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "expired-exp",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-nbf",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "short-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-client-key",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "tenant-binding-rejects-cross-tenant",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "invalid-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "cross-purpose-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "wrong-typ",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-alg",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "remote-jku",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "critical-extension",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "private-jwk",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "null-jwk-use",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-jwk-curve",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "duplicate-json-claim",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "missing-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "signature-tampering",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "oversized-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "raw-duplicate-authorization",
+            "result": "PASS",
+            "invalid_last_status": 400,
+            "valid_last_status": 400
+          },
+          {
+            "case": "raw-duplicate-dpop",
+            "result": "PASS",
+            "valid_last_status": 400
+          },
+          {
+            "case": "encoded-path-/groups/team%40chat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/team%2Fchat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/%7Eteam",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "reserved-encoding-distinct",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "failed-proof-does-not-reserve-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "corrected-proof-same-jti-accepted",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "same-jti-across-path-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-transaction-rollback",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-action-rolled-back",
+            "result": "PASS"
+          },
+          {
+            "case": "host-rollback-does-not-release-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "resolver-exception-is-503",
+            "result": "PASS",
+            "status": 503,
+            "expected": 503,
+            "error": "dpop_security_unavailable"
+          },
+          {
+            "case": "host-exception-propagates",
+            "result": "PASS",
+            "status": 500,
+            "expected": 500,
+            "error": "host_failure"
+          },
+          {
+            "case": "host-exception-handler-used",
+            "result": "PASS"
+          },
+          {
+            "case": "host-exception-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-authorization-remains-403",
+            "result": "PASS",
+            "status": 403,
+            "expected": 403,
+            "error": "host_forbidden"
+          },
+          {
+            "case": "host-denial-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-jwt-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-jwt-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "jwt-expired",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-issuer",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-audience",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-missing-binding",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "refresh-other-key",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "same-key-refresh",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "old-access-invalidated",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "old-refresh-invalidated",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_grant"
+          },
+          {
+            "case": "rotated-access",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "refresh-eight-way-cas",
+            "result": "PASS",
+            "accepted": 1,
+            "invalid_grant": 7
+          },
+          {
+            "case": "isolation-session-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-session-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "64-requests-two-workers-identity-isolated",
+            "result": "PASS",
+            "requests": 64,
+            "workers": 2
+          },
+          {
+            "case": "24-way-identical-proof-race",
+            "result": "PASS",
+            "accepted": 1,
+            "rejected": 23
+          },
+          {
+            "case": "host-revocation",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "throwing-observer-does-not-change-authentication",
+            "result": "PASS"
+          }
+        ],
+        "observation": {
+          "p50_ms": 282.56,
+          "p95_ms": 301.12,
+          "meaning": "local test observation, not production capacity"
+        },
+        "counts": {
+          "PASS": 87,
+          "FAIL": 0,
+          "LIMITATION": 0
+        },
+        "sha256": "aade652973970597c70bfc6eaf14820e61ff8a8e46c6210aa80b6eac68861121"
+      },
+      {
+        "driver": "mysql",
+        "label": "mysql-http2-warm",
+        "client_protocol": 3,
+        "php": "8.5.12",
+        "swoole": "6.2.4",
+        "framework": "v3.2.0",
+        "di": "v3.2.2",
+        "dev_dependencies": false,
+        "scan_cacheable": "true",
+        "cases": [
+          {
+            "case": "official-skeleton-real-server-starts",
+            "result": "PASS"
+          },
+          {
+            "case": "independent-vendor-without-workspace-test-autoload",
+            "result": "PASS"
+          },
+          {
+            "case": "tls-ca-and-host-verified",
+            "result": "PASS"
+          },
+          {
+            "case": "unknown-ca-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "wrong-host-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "options-bypasses-proof",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "missing-auth",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": null
+          },
+          {
+            "case": "missing-auth-challenge-without-spurious-error",
+            "result": "PASS"
+          },
+          {
+            "case": "bearer-downgrade-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "malformed-auth",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_request"
+          },
+          {
+            "case": "missing-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "token-missing-proof",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "nonce-before-issuance",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "challenge-no-session-side-effect",
+            "result": "PASS"
+          },
+          {
+            "case": "nonce-response-no-store",
+            "result": "PASS"
+          },
+          {
+            "case": "opaque-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "token-type-and-response-cache",
+            "result": "PASS"
+          },
+          {
+            "case": "native-openssl-proof-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "request-subject",
+            "result": "PASS"
+          },
+          {
+            "case": "successful-proof-replay",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "query-not-part-of-target",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "method-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-method",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "path-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-origin",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-query-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-fragment-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "old-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "iat-string",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "expired-exp",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-nbf",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "short-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-client-key",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "tenant-binding-rejects-cross-tenant",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "invalid-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "cross-purpose-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "wrong-typ",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-alg",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "remote-jku",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "critical-extension",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "private-jwk",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "null-jwk-use",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-jwk-curve",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "duplicate-json-claim",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "missing-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "signature-tampering",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "oversized-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "raw-duplicate-authorization",
+            "result": "PASS",
+            "invalid_last_status": 400,
+            "valid_last_status": 400
+          },
+          {
+            "case": "raw-duplicate-dpop",
+            "result": "PASS",
+            "valid_last_status": 400
+          },
+          {
+            "case": "encoded-path-/groups/team%40chat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/team%2Fchat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/%7Eteam",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "reserved-encoding-distinct",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "failed-proof-does-not-reserve-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "corrected-proof-same-jti-accepted",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "same-jti-across-path-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-transaction-rollback",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-action-rolled-back",
+            "result": "PASS"
+          },
+          {
+            "case": "host-rollback-does-not-release-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "resolver-exception-is-503",
+            "result": "PASS",
+            "status": 503,
+            "expected": 503,
+            "error": "dpop_security_unavailable"
+          },
+          {
+            "case": "host-exception-propagates",
+            "result": "PASS",
+            "status": 500,
+            "expected": 500,
+            "error": "host_failure"
+          },
+          {
+            "case": "host-exception-handler-used",
+            "result": "PASS"
+          },
+          {
+            "case": "host-exception-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-authorization-remains-403",
+            "result": "PASS",
+            "status": 403,
+            "expected": 403,
+            "error": "host_forbidden"
+          },
+          {
+            "case": "host-denial-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-jwt-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-jwt-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "jwt-expired",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-issuer",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-audience",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-missing-binding",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "refresh-other-key",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "same-key-refresh",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "old-access-invalidated",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "old-refresh-invalidated",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_grant"
+          },
+          {
+            "case": "rotated-access",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "refresh-eight-way-cas",
+            "result": "PASS",
+            "accepted": 1,
+            "invalid_grant": 7
+          },
+          {
+            "case": "isolation-session-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-session-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "64-requests-two-workers-identity-isolated",
+            "result": "PASS",
+            "requests": 64,
+            "workers": 2
+          },
+          {
+            "case": "24-way-identical-proof-race",
+            "result": "PASS",
+            "accepted": 1,
+            "rejected": 23
+          },
+          {
+            "case": "host-revocation",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "throwing-observer-does-not-change-authentication",
+            "result": "PASS"
+          }
+        ],
+        "observation": {
+          "p50_ms": 207.45,
+          "p95_ms": 218.84,
+          "meaning": "local test observation, not production capacity"
+        },
+        "counts": {
+          "PASS": 87,
+          "FAIL": 0,
+          "LIMITATION": 0
+        },
+        "sha256": "ffc4f555c28fc699ea177338d1975b2b49e89379a7249bd339247d4ab12dabbb"
+      },
+      {
+        "driver": "redis",
+        "label": "redis-http1-cold",
+        "client_protocol": 2,
+        "php": "8.5.12",
+        "swoole": "6.2.4",
+        "framework": "v3.2.0",
+        "di": "v3.2.2",
+        "dev_dependencies": false,
+        "scan_cacheable": "true",
+        "cases": [
+          {
+            "case": "official-skeleton-real-server-starts",
+            "result": "PASS"
+          },
+          {
+            "case": "independent-vendor-without-workspace-test-autoload",
+            "result": "PASS"
+          },
+          {
+            "case": "tls-ca-and-host-verified",
+            "result": "PASS"
+          },
+          {
+            "case": "unknown-ca-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "wrong-host-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "options-bypasses-proof",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "missing-auth",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": null
+          },
+          {
+            "case": "missing-auth-challenge-without-spurious-error",
+            "result": "PASS"
+          },
+          {
+            "case": "bearer-downgrade-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "malformed-auth",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_request"
+          },
+          {
+            "case": "missing-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "token-missing-proof",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "nonce-before-issuance",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "challenge-no-session-side-effect",
+            "result": "PASS"
+          },
+          {
+            "case": "nonce-response-no-store",
+            "result": "PASS"
+          },
+          {
+            "case": "opaque-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "token-type-and-response-cache",
+            "result": "PASS"
+          },
+          {
+            "case": "native-openssl-proof-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "request-subject",
+            "result": "PASS"
+          },
+          {
+            "case": "successful-proof-replay",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "query-not-part-of-target",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "method-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-method",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "path-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-origin",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-query-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-fragment-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "old-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "iat-string",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "expired-exp",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-nbf",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "short-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-client-key",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "tenant-binding-rejects-cross-tenant",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "invalid-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "cross-purpose-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "wrong-typ",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-alg",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "remote-jku",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "critical-extension",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "private-jwk",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "null-jwk-use",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-jwk-curve",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "duplicate-json-claim",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "missing-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "signature-tampering",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "oversized-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "raw-duplicate-authorization",
+            "result": "PASS",
+            "invalid_last_status": 400,
+            "valid_last_status": 400
+          },
+          {
+            "case": "raw-duplicate-dpop",
+            "result": "PASS",
+            "valid_last_status": 400
+          },
+          {
+            "case": "encoded-path-/groups/team%40chat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/team%2Fchat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/%7Eteam",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "reserved-encoding-distinct",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "failed-proof-does-not-reserve-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "corrected-proof-same-jti-accepted",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "same-jti-across-path-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-transaction-rollback",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-action-rolled-back",
+            "result": "PASS"
+          },
+          {
+            "case": "host-rollback-does-not-release-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "resolver-exception-is-503",
+            "result": "PASS",
+            "status": 503,
+            "expected": 503,
+            "error": "dpop_security_unavailable"
+          },
+          {
+            "case": "host-exception-propagates",
+            "result": "PASS",
+            "status": 500,
+            "expected": 500,
+            "error": "host_failure"
+          },
+          {
+            "case": "host-exception-handler-used",
+            "result": "PASS"
+          },
+          {
+            "case": "host-exception-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-authorization-remains-403",
+            "result": "PASS",
+            "status": 403,
+            "expected": 403,
+            "error": "host_forbidden"
+          },
+          {
+            "case": "host-denial-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-jwt-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-jwt-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "jwt-expired",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-issuer",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-audience",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-missing-binding",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "refresh-other-key",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "same-key-refresh",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "old-access-invalidated",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "old-refresh-invalidated",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_grant"
+          },
+          {
+            "case": "rotated-access",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "refresh-eight-way-cas",
+            "result": "PASS",
+            "accepted": 1,
+            "invalid_grant": 7
+          },
+          {
+            "case": "isolation-session-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-session-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "64-requests-two-workers-identity-isolated",
+            "result": "PASS",
+            "requests": 64,
+            "workers": 2
+          },
+          {
+            "case": "24-way-identical-proof-race",
+            "result": "PASS",
+            "accepted": 1,
+            "rejected": 23
+          },
+          {
+            "case": "host-revocation",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "throwing-observer-does-not-change-authentication",
+            "result": "PASS"
+          }
+        ],
+        "observation": {
+          "p50_ms": 194.73,
+          "p95_ms": 207.77,
+          "meaning": "local test observation, not production capacity"
+        },
+        "counts": {
+          "PASS": 87,
+          "FAIL": 0,
+          "LIMITATION": 0
+        },
+        "sha256": "73a8dc0514572a5513912c0319bfe8c9f63b69e0b540a9f9b94acbe636ad54e3"
+      },
+      {
+        "driver": "redis",
+        "label": "redis-http2-warm",
+        "client_protocol": 3,
+        "php": "8.5.12",
+        "swoole": "6.2.4",
+        "framework": "v3.2.0",
+        "di": "v3.2.2",
+        "dev_dependencies": false,
+        "scan_cacheable": "true",
+        "cases": [
+          {
+            "case": "official-skeleton-real-server-starts",
+            "result": "PASS"
+          },
+          {
+            "case": "independent-vendor-without-workspace-test-autoload",
+            "result": "PASS"
+          },
+          {
+            "case": "tls-ca-and-host-verified",
+            "result": "PASS"
+          },
+          {
+            "case": "unknown-ca-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "wrong-host-rejected",
+            "result": "PASS"
+          },
+          {
+            "case": "options-bypasses-proof",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "missing-auth",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": null
+          },
+          {
+            "case": "missing-auth-challenge-without-spurious-error",
+            "result": "PASS"
+          },
+          {
+            "case": "bearer-downgrade-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "malformed-auth",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_request"
+          },
+          {
+            "case": "missing-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "token-missing-proof",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "nonce-before-issuance",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "challenge-no-session-side-effect",
+            "result": "PASS"
+          },
+          {
+            "case": "nonce-response-no-store",
+            "result": "PASS"
+          },
+          {
+            "case": "opaque-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "token-type-and-response-cache",
+            "result": "PASS"
+          },
+          {
+            "case": "native-openssl-proof-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "request-subject",
+            "result": "PASS"
+          },
+          {
+            "case": "successful-proof-replay",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "query-not-part-of-target",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "method-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-method",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "path-case",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-origin",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-query-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "proof-fragment-forbidden",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "old-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-iat",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "iat-string",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "expired-exp",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "future-nbf",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "short-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-client-key",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "tenant-binding-rejects-cross-tenant",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "invalid-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "cross-purpose-nonce",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "use_dpop_nonce"
+          },
+          {
+            "case": "wrong-typ",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-alg",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "remote-jku",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "critical-extension",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "private-jwk",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "null-jwk-use",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "wrong-jwk-curve",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "duplicate-json-claim",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "missing-ath",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "signature-tampering",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "oversized-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "raw-duplicate-authorization",
+            "result": "PASS",
+            "invalid_last_status": 400,
+            "valid_last_status": 400
+          },
+          {
+            "case": "raw-duplicate-dpop",
+            "result": "PASS",
+            "valid_last_status": 400
+          },
+          {
+            "case": "encoded-path-/groups/team%40chat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/team%2Fchat",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "encoded-path-/groups/%7Eteam",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "reserved-encoding-distinct",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "failed-proof-does-not-reserve-jti",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "corrected-proof-same-jti-accepted",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "same-jti-across-path-rejected",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-transaction-rollback",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-action-rolled-back",
+            "result": "PASS"
+          },
+          {
+            "case": "host-rollback-does-not-release-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "resolver-exception-is-503",
+            "result": "PASS",
+            "status": 503,
+            "expected": 503,
+            "error": "dpop_security_unavailable"
+          },
+          {
+            "case": "host-exception-propagates",
+            "result": "PASS",
+            "status": 500,
+            "expected": 500,
+            "error": "host_failure"
+          },
+          {
+            "case": "host-exception-handler-used",
+            "result": "PASS"
+          },
+          {
+            "case": "host-exception-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-authorization-remains-403",
+            "result": "PASS",
+            "status": 403,
+            "expected": 403,
+            "error": "host_forbidden"
+          },
+          {
+            "case": "host-denial-consumes-proof",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "host-jwt-issuance",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "host-jwt-resource",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "jwt-expired",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-issuer",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-wrong-audience",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "jwt-missing-binding",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "refresh-other-key",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_dpop_proof"
+          },
+          {
+            "case": "same-key-refresh",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "old-access-invalidated",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "old-refresh-invalidated",
+            "result": "PASS",
+            "status": 400,
+            "expected": 400,
+            "error": "invalid_grant"
+          },
+          {
+            "case": "rotated-access",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "refresh-eight-way-cas",
+            "result": "PASS",
+            "accepted": 1,
+            "invalid_grant": 7
+          },
+          {
+            "case": "isolation-session-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-alpha",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-session-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "isolation-prime-beta",
+            "result": "PASS",
+            "status": 200,
+            "expected": 200,
+            "error": null
+          },
+          {
+            "case": "64-requests-two-workers-identity-isolated",
+            "result": "PASS",
+            "requests": 64,
+            "workers": 2
+          },
+          {
+            "case": "24-way-identical-proof-race",
+            "result": "PASS",
+            "accepted": 1,
+            "rejected": 23
+          },
+          {
+            "case": "host-revocation",
+            "result": "PASS",
+            "status": 401,
+            "expected": 401,
+            "error": "invalid_token"
+          },
+          {
+            "case": "throwing-observer-does-not-change-authentication",
+            "result": "PASS"
+          }
+        ],
+        "observation": {
+          "p50_ms": 165.81,
+          "p95_ms": 179.63,
+          "meaning": "local test observation, not production capacity"
+        },
+        "counts": {
+          "PASS": 87,
+          "FAIL": 0,
+          "LIMITATION": 0
+        },
+        "sha256": "756b154bba6a68e2c8bf265857a9094ad7140b1578e5de1e898156eaea8bcca4"
+      }
+    ]
+  },
+  "audit": {
+    "advisories": [],
+    "abandoned": [],
+    "filter": [],
+    "cooldown": []
+  },
+  "source_manifest": {
+    "packages/dpop-core/composer.json": "6f26b15f2175062ab805ceccbb54e8645735ff5a1ab84aaeed1312355df38dfe",
+    "packages/dpop-core/LICENSE": "7a46f96d8310300551e1bd3a3c28e2269e410e93383c4ba806053684d30b0023",
+    "packages/dpop-core/README.md": "ba4305b4508096ea6625d63099ce8d77e710698bbf88ab07c905a0f1d745cb86",
+    "packages/dpop-core/src/Authenticator.php": "419511ae4417db2da442c32566a5b57aaeb7c382c5f85cb7f37f55f0328f7a0a",
+    "packages/dpop-core/src/SystemClock.php": "0c6065b84309d33853c00d46545f9ae224e11bfba6c121ec4ebff86d0c89f211",
+    "packages/dpop-core/src/Contract/NonceManagerInterface.php": "05f343bbe9db129360460d8bda695cf6ec113af292cd43962de7b53a67b11e0b",
+    "packages/dpop-core/src/Contract/ReplayStoreInterface.php": "561e5ce8d51c529b4af072d19d5bac4e7a1f2acec43401520ce2f3e2f890630e",
+    "packages/dpop-core/src/Exception/DpopException.php": "844cbdc977f9e4887b9df77cedc2b59be13b00c4c1d84b3b9bdc0cf48add21e6",
+    "packages/dpop-core/src/Nonce/HmacNonceManager.php": "3c259e2d9a2c77f5dbeb3b9c09b5b392257f0d7f1a88c3370d640b2a8f2eff31",
+    "packages/dpop-core/src/Protocol/Base64Url.php": "18d4b68f222fe953c10c316f416190863caf8f0101657f374b6ec8ca71527188",
+    "packages/dpop-core/src/Protocol/JwkThumbprint.php": "edd7276f27d3027fc1fad6a1ce5fd088d389bf8f643f0ec10584ecc4bed45376",
+    "packages/dpop-core/src/Protocol/ProofVerifier.php": "0984097cdee5b903cbba55ff85127d003b46d64fb94f55bd4e0fcbc280b95881",
+    "packages/dpop-core/src/Protocol/StrictJson.php": "6362b5c1a60448049b633c2b116f887f0448e414c038642ea19460f1d4729bd2",
+    "packages/dpop-core/src/Protocol/UriCanonicalizer.php": "47a21ed9843a5932e67fb2e4ab49a8e3b926abe008f807a3daab6857ecefd1d3",
+    "packages/dpop-core/src/ValueObject/SecurityPolicy.php": "d76684f31c89b4d46786a4ce78c92b01940e1ace5b87cfe24545ea46b30b6c81",
+    "packages/dpop-core/src/ValueObject/TokenBinding.php": "0f2741c7a566708001714b57bf7fdc475c300bf0fe8a4016049b5446432f8e83",
+    "packages/dpop-core/src/ValueObject/VerifiedProof.php": "02f37b508441e469f1db03b3fc413a9cb28d402d769b63cbcc7c955d4e0fa819",
+    "packages/hyperf-dpop/composer.json": "4fb40e5598027b555b0e8ad12384f3e457c613f3011a4ea7e4ffb5a7decd91aa",
+    "packages/hyperf-dpop/LICENSE": "7a46f96d8310300551e1bd3a3c28e2269e410e93383c4ba806053684d30b0023",
+    "packages/hyperf-dpop/README.md": "7117d6a7cea0e4fea931ab15c50f39a1a87bc3e4b575096e565973737f93680c",
+    "packages/hyperf-dpop/publish/dpop-proofs.sql": "8679aa6ad2e795e1601921ab04604ab85aa4a50df1fcecdeeed6043dfac7b14f",
+    "packages/hyperf-dpop/publish/dpop.php": "336d173b6565366c3237b81ff138eb31261f10db7604f47851152399762cfa9b",
+    "packages/hyperf-dpop/publish/haproxy.cfg": "87e6ebe4409c21499e811feed2795e929428257e8cede44221962be70abf1336",
+    "packages/hyperf-dpop/src/AuthenticationObserver.php": "3a6a073b9bd935783f89945c333e337afd42914157364a31469b83480b3f088f",
+    "packages/hyperf-dpop/src/BootstrapValidator.php": "40d1c981201238ce5644cb7a03eea3b1253826d22fd2d8759313e04b80308d1a",
+    "packages/hyperf-dpop/src/Cancellation.php": "453a3811825b2e6ffa4f8cf1a80abad81221a41daff933ef7cd894cf5a7baff7",
+    "packages/hyperf-dpop/src/ConfigProvider.php": "5792ca665c121f75fba5a9f9f53554c49f11a07fcfe4391aecc7752227ca1396",
+    "packages/hyperf-dpop/src/DpopContext.php": "8f6f1a1eb503dff53cd048c5e314f9a41a1c91eaea19b7b208cf9581b4be23ac",
+    "packages/hyperf-dpop/src/Factory.php": "13c0f5b863dee0b32fa575abcae8ca0a591d198b7144473f2a2365c7b75d9773",
+    "packages/hyperf-dpop/src/TokenEndpoint.php": "3a28b87dc9392e0cdc21926b1f4e72a4160f06916c6fa21bc201f18694c4c7b2",
+    "packages/hyperf-dpop/src/Admission/AdmissionBudgetInterface.php": "5263c79e2795b1f0eba2cb688e522abfc7a2f6c64ca7210cc7a936d1de9d4dd6",
+    "packages/hyperf-dpop/src/Admission/AdmissionBudgetProbeInterface.php": "bca838a2e9279c948e0f99fb4765047d8c98de2a1a169713bb89bad20b1f4a18",
+    "packages/hyperf-dpop/src/Admission/RedisAdmissionBudget.php": "0ac6423039b8e639f5f9b548a3002499ebeeafc72ab2ab796d6d27c3b9d11c7e",
+    "packages/hyperf-dpop/src/Command/DoctorCommand.php": "6fc13632f918a3a84845b9bebf2559c22e8581855d6587ea0d7776051bc1a308",
+    "packages/hyperf-dpop/src/Contract/AuthenticationObserverInterface.php": "b19c1113c930043d5d5af15fbf78df1dd922cb57d08eea764dfd5c00ded259e7",
+    "packages/hyperf-dpop/src/Contract/ErrorResponseFactoryInterface.php": "f6cfb27b1fe4a2a391900bc5316706d15d21b398a07afd91ca471bd8dcbac507",
+    "packages/hyperf-dpop/src/Contract/ExternalUriResolverInterface.php": "49f40f6648cf2ac19a2d34159c5d536f39e99cf64703d15e98d994faab496fa9",
+    "packages/hyperf-dpop/src/Contract/RefreshBindingResolverInterface.php": "3ffc32b107dc918e616496100319eac489af692ff1dcb93f3a24145f1753255b",
+    "packages/hyperf-dpop/src/Contract/TokenBindingResolverInterface.php": "bf62d53bfca68fc39e342e77bab770984252b17e0158864edd824feda6e87397",
+    "packages/hyperf-dpop/src/Http/ClientSource.php": "0a8e60231e3a0e8c496da1d31611eced3b80798d87a0f1a3bf8479638ff9f642",
+    "packages/hyperf-dpop/src/Http/ErrorResponseFactory.php": "9d890cde691439c8d77d2fe3b983018678f13d3b8786b9b648e72817b0bc15db",
+    "packages/hyperf-dpop/src/Http/ExternalUriResolver.php": "4afc9582586d0b62ba8f947a538527b99cf7615e35995d1d951babb2874eb796",
+    "packages/hyperf-dpop/src/Http/HeaderReader.php": "e288cbd2178a542401fd8e2a96ce5edf566f939f99a9123f0cacb953fb69790a",
+    "packages/hyperf-dpop/src/Middleware/DpopMiddleware.php": "6f0e720d39963ff6e6b79ff5541cf44cffa66b5047ada71e060d0ba8489113df",
+    "packages/hyperf-dpop/src/Store/HyperfRedisExecutor.php": "5f24b8f7f76af11362adc3fc112ce7307ec1808c335c4953a804506b01a66e64",
+    "packages/hyperf-dpop/src/Store/MySqlReplayStore.php": "68123adede53003d73ec72850fa2b9ac625b3a174acdf6802ff8da5442849c8d",
+    "packages/hyperf-dpop/src/Store/RedisExecutorInterface.php": "23c9c468a5e93b8fa64ae41a516a132bb99842a72094039a3f805b85806d096f",
+    "packages/hyperf-dpop/src/Store/RedisReplayStore.php": "60d46e2664ac6157f47f9267eec969a8b451967f2146558fdfa86186fe681485",
+    "packages/hyperf-dpop/src/Store/ReplayStoreProbeInterface.php": "726ceebe23b94954fcdb49367bea66371bfb8988799e2b4c85c73a440abf058a"
+  },
+  "export_consumer_verification": "PASS; core17/adapter32, strict and clean local VCS install",
+  "remaining": [
+    "Native Swoole HTTP/1 trailer wire input can wait before PHP handler; observed separately as LIMITATION, gateway stripping/isolated backend required",
+    "Actual production CDN/Ingress/network policy validation",
+    "Production capacity/SLO, HA/backup recovery, independent security audit",
+    "Sync/release candidate and revalidate public package installation"
+  ],
+  "publication": "No push, tag, Packagist edit or production deployment performed",
+  "test_fixture_notes": [
+    "Initial empty-header native fixture had an extra CRLF and was corrected; retained final old-source failures are from corrected fixture",
+    "Early HTTP2 forbidden-declaration response can reset stream; declaration-only cases use completed streams, actual unannounced trailing HEADERS are independently verified",
+    "Raw native wire timeout is not authentication acceptance, 400 response, cancellation proof or PASS"
+  ],
+  "archives": {
+    "hyperf-dpop-review3-consumer-20261103.zip": "fc1a5ed12c91a4badd11ab97d1a357a35f4c505f5f84b4d206e8919c7e5d6feb",
+    "hyperf-dpop-review3-package-20261103.zip": "484e5f212c9fc2d528eae0bda65b8c47b36d9baa0b9094c3001211027d5cff24"
+  },
+  "final_checks": {
+    "markdown_documents": 23,
+    "utf8_local_links_fences": "PASS",
+    "final_changed_fixture_syntax": "PASS",
+    "archive_integrity_and_sha256": "PASS",
+    "git_diff_check": "PASS",
+    "test_containers_and_networks_remaining": 0,
+    "public_adapter_main": "e0fd48c0df9fb90417dcbbfab395674e7898c339",
+    "candidate_published": false
+  }
+}
