@@ -4,4 +4,3 @@
 /.phpunit.cache/
 /composer.phar
 /.env
-tests/

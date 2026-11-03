@@ -4,7 +4,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": "^8.5", "lowelllab/dpop-core": "^0.1@dev", "ext-pdo": "*",
+    "php": "^8.5", "lowelllab/dpop-core": "^0.1.0-beta.1", "ext-pdo": "*",
     "hyperf/config": "~3.2.0", "hyperf/http-server": "~3.2.0", "hyperf/framework": "~3.2.0",
     "hyperf/contract": "~3.2.0", "hyperf/event": "~3.2.0", "hyperf/http-message": "~3.2.0",
     "psr/http-server-middleware": "^1.0"

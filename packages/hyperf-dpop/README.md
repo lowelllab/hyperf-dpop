@@ -1,6 +1,14 @@
 # Hyperf DPoP
 
-未发布开发版，Composer包名`lowelllab/hyperf-dpop`，依赖lowelllab/dpop-core ^0.1。PHP ^8.5，Hyperf ~3.2.0；首期验证运行引擎为Swoole6.2，PHP命名空间为`Acme\HyperfDpop`。
+`0.1.0-beta.1` 测试版，Composer包名`lowelllab/hyperf-dpop`，依赖lowelllab/dpop-core ^0.1.0-beta.1。PHP ^8.5，Hyperf ~3.2.0；首期验证运行引擎为Swoole6.2，PHP命名空间为`Acme\HyperfDpop`。
+
+## 安装测试版
+
+```bash
+composer require "lowelllab/hyperf-dpop:0.1.0-beta.1" "lowelllab/dpop-core:0.1.0-beta.1"
+```
+
+两个根约束显式允许本次 beta，其他依赖保持宿主的稳定性要求；无需 path 或自定义 VCS 仓库。测试版尚未完成生产拓扑验收及独立安全审计。接入前按[网关说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/gateway.md)部署入口检查、剥离请求尾部并隔离后端。
 
 ConfigProvider自动发现提供依赖工厂、启动配置检查、可选doctor命令和配置/DDL/网关模板发布。业务项目仍须显式实现TokenBindingResolverInterface并挂载DpopMiddleware到目标路由。
 

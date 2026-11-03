@@ -4,7 +4,7 @@
 
 ## 版本与依赖
 
-当前双包为lowelllab/dpop-core及lowelllab/hyperf-dpop，在Composer path工作区按0.1.x-dev解析，尚未发布。PHP命名空间保持Acme\Dpop及Acme\HyperfDpop。使用[发布指南](publishing.md)准备两个独立包根目录，不将开发工作区提交为扩展包。
+当前双包为lowelllab/dpop-core及lowelllab/hyperf-dpop；首次测试版为0.1.0-beta.1，分发与安装证据见[发布记录](release-0.1.0-beta.1.md)。开发工作区仍按0.1.x-dev解析。PHP命名空间保持Acme\Dpop及Acme\HyperfDpop。使用[发布指南](publishing.md)准备两个独立包根目录，不将开发工作区提交为扩展包。
 
 首版许可MIT；第三方依赖保持各自许可。更新依赖时重新执行协议边界、存储竞争、协程取消和HTTP端到端，不以composer约束满足替代兼容性结果。
 
@@ -35,7 +35,7 @@ docker compose run --rm test php tools/verify-docs.php
 
 PHPStan级别6，仅不要求所有数组列出元素类型，不忽略协议逻辑错误。CI同时执行语法、单元/集成、MySQL/Redis跨进程、取消、生产CLI发布与缓存、Hyperf多Worker HTTP及直连TLS测试。
 
-`composer check`内包含`tests/package-cli.php`，会在容器/tmp独立应用目录发布模板并检查生产缓存冷/热启动，不覆盖工作区示例配置。TLS测试仅将临时CA交给本次curl连接，不修改系统信任库。Node互操作向量由`node tools/generate-interop.mjs`生成，只有合成公钥、证明和测试token进入fixture；私钥不导出。常规CI直接消费固定向量，不依赖Node运行时。
+`composer check`内包含`tests/package-cli.php`，会在容器/tmp独立应用目录发布模板并检查生产缓存冷/热启动，不覆盖工作区示例配置。TLS测试仅将临时CA交给本次curl连接，不修改系统信任库。Node互操作向量由`node tools/generate-interop.mjs`生成，只有合成公钥、证明和测试token进入fixture；私钥不导出。固定向量由PHP测试消费；网关尾帧CI另使用固定摘要的Node容器实际发送HTTP/2 trailing HEADERS。
 
 CLI只读检查会比较安全账本数量；不要与写入同一测试数据库的其他测试脚本并行执行。HTTP/TLS脚本各自启动和关闭临时Hyperf服务，独立Compose服务最后使用`docker compose down`清理。
 
@@ -47,4 +47,4 @@ HTTP并发脚本报告的32请求延迟仅为本地烟测观测；不等于峰�
 - 完成独立安全审查及目标部署验收，明确已支持的运行时矩阵。
 - 以真实TLS/代理、实际拓扑和故障切换验证配置契约。
 - 审查两包导出内容、第三方许可、兼容变更和升级说明。
-- 外部发布、Git提交或推送依照届时用户授权执行。2026-11-02已按用户提供的仓库完成私有仓库首次提交与推送；尚未发布Composer包、版本标签或Release。
+- 外部发布、Git提交或推送依照届时用户授权执行。2026-11-03用户明确要求发布版本；本次按0.1.0-beta.1测试版执行，不能据此标记稳定版验收完成。

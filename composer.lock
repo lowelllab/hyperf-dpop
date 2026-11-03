@@ -2261,7 +2261,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/hyperf-dpop",
-                "reference": "9a4d2351c76d2a3390f5a25ed36f2285376d69dd"
+                "reference": "a80b67fff94341c12f846d3aa6d2154b834e7697"
             },
             "require": {
                 "ext-pdo": "*",
@@ -2271,7 +2271,7 @@
                 "hyperf/framework": "~3.2.0",
                 "hyperf/http-message": "~3.2.0",
                 "hyperf/http-server": "~3.2.0",
-                "lowelllab/dpop-core": "^0.1@dev",
+                "lowelllab/dpop-core": "^0.1.0-beta.1",
                 "php": "^8.5",
                 "psr/http-server-middleware": "^1.0"
             },

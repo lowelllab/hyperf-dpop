@@ -29,6 +29,14 @@
 - OpenSSL 扩展；默认 MySQL 防重放驱动需要 PDO MySQL 扩展。
 - 默认存储组合为 MySQL 防重放账本与 Redis 共享准入预算。
 
+## 安装测试版
+
+```bash
+composer require "lowelllab/hyperf-dpop:0.1.0-beta.1" "lowelllab/dpop-core:0.1.0-beta.1"
+```
+
+两个根约束显式允许本次 beta，其他依赖保持宿主的稳定性要求；无需 path 或自定义 VCS 仓库。测试版尚未完成生产拓扑验收及独立安全审计。接入前按[网关说明](docs/gateway.md)部署入口检查、剥离请求尾部并隔离后端。
+
 ## 使用边界
 
 扩展负责 HTTP DPoP 证明验证。账号认证、令牌签发、会话撤销和业务权限由宿主应用实现，通信仍需使用 HTTPS。DPoP 证明不保护请求 body 和 query 的完整性。
