@@ -54,6 +54,8 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 合并 [配置模板](../packages/hyperf-dpop/publish/dpop.php)中的新增键。mTLS 默认关闭，原有配置键继续生效。启用 mTLS 时先准备客户端 CA 和受信网关地址，再用 `dpop:gateway-config` 生成候选 HAProxy 配置，按[包能力与配置](configuration.md)部署。
 
+公开 Packagist 安装、文件校验及 mTLS 开关的双协议验证见 [0.2.0 发布与验收](release-0.2.0.md)。
+
 ## 从beta升级
 
 先部署/合并网关配置并隔离后端。消费项目移除path/VCS覆盖及原beta精确根约束，再运行`composer require "lowelllab/hyperf-dpop:^0.2" --with-all-dependencies`；若原先直接要求核心0.1.0-beta.1，将它改为^0.1或在确认仅供扩展传递使用后移除该根约束，再由Composer更新。不要只改lock；安装后核对两个正式版本和source.reference。
