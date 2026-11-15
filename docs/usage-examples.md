@@ -597,3 +597,18 @@ DEMO_CLIENT_KEY="$TLS_DIR/client-trusted.key" \
 预期客户端完成 `POST /auth/token`、`GET /api/me`、`POST /auth/refresh` 和刷新后的 `GET /api/me`，输出两次当前用户信息。示例会自动处理签发和第一次访问资源时的 nonce 挑战。
 
 上线入口必须在重复头被折叠前拒绝重复 `Authorization` / `DPoP`。DPoP 不签名 body 和 query，HTTPS、业务权限、刷新事务及业务幂等仍由宿主负责。详细约束见[接入指南](integration.md)与[安全说明](security.md)。仓库中的[示例控制器](../examples/hyperf/app/ExampleController.php)、[会话实现](../examples/hyperf/app/State.php)和[JWT 示例](../examples/hyperf/app/JwtTokens.php)可以辅助理解接口，但其中的合成身份不能直接用于生产登录。
+
+### Packagist 全新安装复测
+
+2026-11-15 使用全新的 Hyperf 3.2.0 骨架和空 Composer 缓存，从 Packagist 安装了 `lowelllab/hyperf-dpop v0.2.1` 及其依赖 `lowelllab/dpop-core v0.1.0`。两个包共 54 个文件的 SHA-256 与对应标签一致。测试环境使用 PHP 8.5.12、Swoole 6.2.4、HAProxy 3.2.26，以及独立 MySQL、Redis 和宿主测试账号。 [复测使用的文档版本](https://github.com/lowelllab/hyperf-dpop/blob/3817b7ed269390d68046a5521b9dcaa532badc85/docs/usage-examples.md#9-mtls-本地验收)
+
+文档命令生成了测试 CA、服务端证书、各类客户端证书和吊销列表。OpenSSL 验证了服务端证书的 `localhost` 主机名和证书链，以及有效客户端证书的用途和吊销状态。
+
+| mTLS 开关 | 网关配置 | `/health` 证书准入 |
+| --- | --- | --- |
+| `false` | `--output` 生成成功，`haproxy -c` 退出码为 `0` | 无客户端证书返回 HTTP `200` |
+| `true` | `--output` 生成成功，`haproxy -c` 退出码为 `0` | 受信客户端证书返回 HTTP `200`。无证书、不受信任、已过期和已吊销的证书均在 TLS 层被拒绝 |
+
+`config/config.php` 和 `config/autoload/logger.php` 的哈希与原始骨架一致。启动 DEBUG 日志仍写入终端，生成的 HAProxy 配置文件没有混入日志。
+
+两种模式下，文档的 PHP 客户端均完成签发、资源访问、刷新及用新令牌再次访问。签发和首次资源访问先收到带 `DPoP-Nonce` 的 `400` 和 `401`，重试后成功。刷新及刷新后的资源访问均返回 `200`，客户端输出两次当前用户信息。
