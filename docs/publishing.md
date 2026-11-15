@@ -54,6 +54,8 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 将适配包更新到 0.2.1 后，使用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成配置。宿主可以使用原有日志配置。已有安装若精确锁定 0.2.0，先调整 Composer 版本约束。
 
+公开安装及默认日志配置下的网关复测见 [0.2.1 发布与验收](release-0.2.1.md)。
+
 ## 从 0.1.0 升级
 
 合并 [配置模板](../packages/hyperf-dpop/publish/dpop.php)中的新增键。mTLS 默认关闭，原有配置键继续生效。启用 mTLS 时先准备客户端 CA 和受信网关地址，再用 `dpop:gateway-config` 生成候选 HAProxy 配置，按[包能力与配置](configuration.md)部署。
