@@ -24,7 +24,7 @@ foreach($manifest['packages'] as $name=>$package){
     $repositories[]=['type'=>'vcs','url'=>$path];
 }
 $consumer=$directory.'/consumer';mkdir($consumer,0700);
-$metadata=['name'=>'fixture/export-consumer','require'=>['php'=>'^8.5','lowelllab/hyperf-dpop'=>'^0.1@dev'],'minimum-stability'=>'dev','prefer-stable'=>true,'repositories'=>$repositories,'config'=>['allow-plugins'=>new stdClass()]];
+$metadata=['name'=>'fixture/export-consumer','require'=>['php'=>'^8.5','lowelllab/hyperf-dpop'=>'^0.2@dev'],'minimum-stability'=>'dev','prefer-stable'=>true,'repositories'=>$repositories,'config'=>['allow-plugins'=>new stdClass()]];
 file_put_contents($consumer.'/composer.json',json_encode($metadata,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 $run([PHP_BINARY,'/usr/local/bin/composer','install','--no-dev','--no-interaction','--prefer-dist'],$consumer);
 $check=<<<'PHP'
@@ -45,5 +45,5 @@ if(!isset($config['dependencies']) || $config['commands']!==[]){throw new Runtim
 echo "Two exported VCS main branches install under lowelllab; core dependency, branch aliases and PHP APIs valid\n";
 PHP;
 file_put_contents($consumer.'/check.php',$check);$run([PHP_BINARY,$consumer.'/check.php'],$consumer);
-file_put_contents($directory.'/verification.json',json_encode(['result'=>'PASS','composer_names'=>array_keys($manifest['packages']),'vcs_branches'=>'main','branch_aliases'=>'0.1.x-dev','core_transitive_dependency'=>true,'workspace_dev_autoload'=>false,'remote_push'=>false],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");
+file_put_contents($directory.'/verification.json',json_encode(['result'=>'PASS','composer_names'=>array_keys($manifest['packages']),'vcs_branches'=>'main','branch_aliases'=>['lowelllab/dpop-core'=>'0.1.x-dev','lowelllab/hyperf-dpop'=>'0.2.x-dev'],'core_transitive_dependency'=>true,'workspace_dev_autoload'=>false,'remote_push'=>false],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");
 echo "Two-package exports, strict metadata and clean VCS consumer verified; no remote push\n";

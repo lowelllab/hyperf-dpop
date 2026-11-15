@@ -11,4 +11,5 @@ return array_replace($options, [
     'mysql_user' => (string) getenv('DPOP_TEST_MYSQL_USER'),
     'mysql_password' => (string) getenv('DPOP_TEST_MYSQL_PASSWORD'),
     'global_limit' => 10000, 'source_limit' => 5000,
+    'mtls_trusted_proxies' => ['127.0.0.1'],
 ]);

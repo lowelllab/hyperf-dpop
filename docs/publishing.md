@@ -1,6 +1,6 @@
 # 双包发布指南
 
-本项目维护 `lowelllab/dpop-core` 与 `lowelllab/hyperf-dpop` 两个 Composer 包；PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。正式发行版本为 **0.1.0**，详见[本次发布记录](release-0.1.0.md)。[首次beta](release-0.1.0-beta.1.md)与[本地验收](acceptance-beta-20261103.md)保留历史；正式分发不等于独立审计或目标生产环境验收已完成。
+本项目维护 `lowelllab/dpop-core` 与 `lowelllab/hyperf-dpop` 两个 Composer 包；PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。正式版本为 Hyperf 适配 **0.2.0** 和协议核心 **0.1.0**。[0.1.0 发布记录](release-0.1.0.md)保留首次正式发行证据。[首次beta](release-0.1.0-beta.1.md)与[本地验收](acceptance-beta-20261103.md)保留历史；正式分发不等于独立审计或目标生产环境验收已完成。
 
 ## 三个仓库的用途
 
@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | 开发、测试与文档 | [hyperf-dpop](https://github.com/lowelllab/hyperf-dpop) | lowelllab/hyperf-dpop-workspace（project） | 不作为扩展包安装入口、不打本次扩展标签 |
 | 核心包分发 | [dpop-core](https://github.com/lowelllab/dpop-core) | lowelllab/dpop-core（library） | v0.1.0，f8fae12，18个文件（含SECURITY.md） |
-| Hyperf适配分发 | [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | lowelllab/hyperf-dpop（library） | v0.1.0，91026a2，33个文件（含SECURITY.md） |
+| Hyperf适配分发 | [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | lowelllab/hyperf-dpop（library） | v0.2.0，74e79f2，36 个文件（含 SECURITY.md） |
 
 开发时改主仓对应子包；发布时只将该包白名单文件同步至对应发布仓库。业务项目安装扩展时只访问两个包的公开分发，不需要克隆三个Git仓库。已经登记的workspace条目不用于扩展安装，本次未删除。
 
@@ -17,12 +17,12 @@ Packagist读取仓库根composer.json并从Git标签推导版本，因此不能�
 ## 安装正式版
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.1"
+composer require "lowelllab/hyperf-dpop:^0.2"
 ```
 
 默认稳定性会选择正式适配版并自动引入核心；不再需要为两个beta逐包设置根稳定性标记。适配依赖核心`^0.1.0`；Composer版本由标签推导，不在包里填写version字段。
 
-无需path或自定义VCS仓库；安装后的lock应指向上表两个提交，不应继续选择dev-main。开发工作区仍使用path及0.1.x-dev别名，仅供开发测试。
+无需path或自定义VCS仓库；安装后的lock应指向上表两个提交，不应继续选择dev-main。开发工作区使用 path 及各包的开发别名，仅供开发测试。
 
 ## 本地导出与验证
 
@@ -50,8 +50,12 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 真实CDN/Ingress/网络策略、容量SLO、HA/状态丢失/恢复演练、独立安全审计及维护/漏洞渠道继续按[维护指南](maintenance.md)验收。0.1.0的正式标签、Packagist索引与本地通过结果不能关闭这些事项；发行决策依据用户最新正式版指令，见DEC-009。原生Swoole HTTP/2的503保护及HTTP/1尾部等待限制保留。
 
+## 从 0.1.0 升级
+
+合并 [配置模板](../packages/hyperf-dpop/publish/dpop.php)中的新增键。mTLS 默认关闭，原有配置键继续生效。启用 mTLS 时先准备客户端 CA 和受信网关地址，再用 `dpop:gateway-config` 生成候选 HAProxy 配置，按[包能力与配置](configuration.md)部署。
+
 ## 从beta升级
 
-先部署/合并网关配置并隔离后端。消费项目移除path/VCS覆盖及原beta精确根约束，再运行`composer require "lowelllab/hyperf-dpop:^0.1" --with-all-dependencies`；若原先直接要求核心0.1.0-beta.1，将它改为^0.1或在确认仅供扩展传递使用后移除该根约束，再由Composer更新。不要只改lock；安装后核对两个正式版本和source.reference。
+先部署/合并网关配置并隔离后端。消费项目移除path/VCS覆盖及原beta精确根约束，再运行`composer require "lowelllab/hyperf-dpop:^0.2" --with-all-dependencies`；若原先直接要求核心0.1.0-beta.1，将它改为^0.1或在确认仅供扩展传递使用后移除该根约束，再由Composer更新。不要只改lock；安装后核对两个正式版本和source.reference。
 
 维护与私密漏洞报告见[SECURITY.md](../SECURITY.md)，三个仓库已启用报告功能。

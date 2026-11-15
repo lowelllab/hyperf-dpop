@@ -29,7 +29,16 @@ final class HeaderReader
         return $match[1];
     }
 
-    private static function assertUnambiguous(ServerRequestInterface $request): void
+    public static function assertGatewayMtls(ServerRequestInterface $request): void
+    {
+        self::assertUnambiguous($request, [strtolower(MtlsGuard::HEADER)]);
+        if ($request->getHeaderLine(MtlsGuard::HEADER) !== '1') {
+            throw new DpopException('dpop_security_unavailable');
+        }
+    }
+
+    /** @param list<string> $authenticationFields Lowercase HTTP field names. */
+    private static function assertUnambiguous(ServerRequestInterface $request, array $authenticationFields = ['authorization', 'dpop']): void
     {
         if ($request instanceof \Hyperf\HttpServer\Request) {
             // The standard coroutine proxy delegates immutable PSR operations
@@ -38,12 +47,12 @@ final class HeaderReader
             catch (\Throwable) { throw new DpopException('dpop_security_unavailable'); }
             if ($request instanceof \Hyperf\HttpServer\Request) { throw new DpopException('dpop_security_unavailable'); }
         }
-        foreach (['Authorization', 'DPoP'] as $name) {
+        foreach ($authenticationFields as $name) {
             if (count($request->getHeader($name)) > 1) { throw new DpopException('invalid_request'); }
         }
         foreach ($request->getHeader('Trailer') as $declaration) {
             foreach (explode(',', $declaration) as $name) {
-                if (in_array(strtolower(trim($name)), ['authorization', 'dpop'], true)) { throw new DpopException('invalid_request'); }
+                if (in_array(strtolower(trim($name)), $authenticationFields, true)) { throw new DpopException('invalid_request'); }
             }
         }
         if (!$request instanceof Request) { return; }
@@ -64,20 +73,21 @@ final class HeaderReader
         if ($end === false || $end > 65536) { throw new DpopException('invalid_request'); }
         $lines = explode("\r\n", substr($raw, 0, $end));
         array_shift($lines);
-        [$fields, $chunked] = self::readFields($lines);
-        foreach (['authorization', 'dpop'] as $name) {
+        [$fields, $chunked] = self::readFields($lines, $authenticationFields);
+        foreach ($authenticationFields as $name) {
             if (count($request->getHeader($name)) !== (isset($fields[$name]) ? 1 : 0)
                 || (isset($fields[$name]) && trim($request->getHeaderLine($name), " \t") !== $fields[$name])) {
                 throw new DpopException('invalid_request');
             }
         }
-        if ($chunked) { self::assertNoAuthenticationTrailers($raw, $end + 4); }
+        if ($chunked) { self::assertNoAuthenticationTrailers($raw, $end + 4, $authenticationFields); }
     }
 
     /** @param list<string> $lines
+     *  @param list<string> $authenticationFields
      *  @return array{array<string, string>, bool}
      */
-    private static function readFields(array $lines, bool $trailers = false): array
+    private static function readFields(array $lines, array $authenticationFields, bool $trailers = false): array
     {
         $fields = []; $chunked = false;
         foreach ($lines as $line) {
@@ -88,7 +98,7 @@ final class HeaderReader
             }
             $name = strtolower(substr($line, 0, $colon));
             $value = trim(substr($line, $colon + 1), " \t");
-            if (in_array($name, ['authorization', 'dpop'], true)) {
+            if (in_array($name, $authenticationFields, true)) {
                 if ($trailers || isset($fields[$name])) { throw new DpopException('invalid_request'); }
                 $fields[$name] = $value;
             }
@@ -97,7 +107,8 @@ final class HeaderReader
         return [$fields, $chunked];
     }
 
-    private static function assertNoAuthenticationTrailers(string $raw, int $offset): void
+    /** @param list<string> $authenticationFields */
+    private static function assertNoAuthenticationTrailers(string $raw, int $offset, array $authenticationFields): void
     {
         // Walk framing, skipping payload by size; header-looking body text is
         // never scanned as a trailer. Offsets advance within the existing data.
@@ -114,7 +125,7 @@ final class HeaderReader
                 if (substr($raw, $offset, 2) === "\r\n") { return; }
                 $end = strpos($raw, "\r\n\r\n", $offset);
                 if ($end === false || $end - $offset > 65536) { throw new DpopException('invalid_request'); }
-                self::readFields(explode("\r\n", substr($raw, $offset, $end - $offset)), true);
+                self::readFields(explode("\r\n", substr($raw, $offset, $end - $offset)), $authenticationFields, true);
                 return;
             }
             if ($size > $length - $offset - 2 || substr($raw, $offset + $size, 2) !== "\r\n") {

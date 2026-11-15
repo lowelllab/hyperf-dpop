@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2507a93f28c2857b868731ff0f4c2c7c",
+    "content-hash": "8782875a3070403f629840712fd9b31c",
     "packages": [
         {
             "name": "brick/math",
@@ -2227,7 +2227,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/dpop-core",
-                "reference": "18f0bfb8fef7013abbc2bf5f586eafe8c8aa70f7"
+                "reference": "6ad3d9acc79fe5933c1ecf474e530aed1d26b28e"
             },
             "require": {
                 "ext-openssl": "*",
@@ -2263,11 +2263,11 @@
         },
         {
             "name": "lowelllab/hyperf-dpop",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/hyperf-dpop",
-                "reference": "d7eae2b79adaf0368177cafa3ec7bab5bc3c132f"
+                "reference": "c5c788409c1810b4e418d70275989ddb33462d19"
             },
             "require": {
                 "ext-pdo": "*",
@@ -2283,7 +2283,7 @@
             },
             "suggest": {
                 "ext-pdo_mysql": "Required by the default MySQL replay store.",
-                "hyperf/command": "Required for the read-only dpop:doctor command.",
+                "hyperf/command": "Provides the dpop:doctor and dpop:gateway-config commands.",
                 "hyperf/devtool": "Provides vendor:publish for configuration and opt-in DDL templates.",
                 "hyperf/redis": "Required by the default shared admission budget and the optional Redis replay store."
             },
@@ -2293,7 +2293,7 @@
                     "config": "Acme\\HyperfDpop\\ConfigProvider"
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {

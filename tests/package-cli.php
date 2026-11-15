@@ -30,6 +30,28 @@ $before=(int)Environment::pdo()->query('SELECT COUNT(*) FROM dpop_proofs')->fetc
 $run('production-cold-doctor',['dpop:doctor']);
 if(count(glob($app.'/runtime/container/*.cache'))===0){throw new RuntimeException('Production cache not produced');}
 $run('production-warm-doctor',['dpop:doctor']);
+$redisOptions = require $root . '/examples/hyperf/config/autoload/redis.php';
+$redisOptions['dpop-test'] = $redisOptions['default'];
+file_put_contents($app . '/config/autoload/redis.php', '<?php return ' . var_export($redisOptions, true) . ';');
+$writeOptions(['redis_pool' => 'dpop-test', 'replay_driver' => 'redis']);
+$run('doctor-with-named-redis-pool', ['dpop:doctor']);
+$writeOptions(['redis_pool' => 'unknown-pool']);
+$run('doctor-rejects-unknown-redis-pool', ['dpop:doctor'], 1);
+$gateway = ['gateway_bind' => '127.0.0.1:443', 'gateway_cert' => '/tls/server.pem', 'gateway_backend' => '127.0.0.1:9509'];
+$writeOptions($gateway);
+$rendered = $run('render-gateway-without-mtls', ['dpop:gateway-config']);
+if (str_contains($rendered, 'verify required') || !str_contains($rendered, 'proto h1')) { throw new RuntimeException('Unexpected default gateway config'); }
+$mtls = ['mtls_enabled' => true, 'mtls_trusted_proxies' => ['127.0.0.1']];
+$writeOptions($gateway + $mtls);
+$run('render-mtls-gateway-without-client-ca', ['dpop:gateway-config'], 1);
+$writeOptions($gateway + $mtls + ['mtls_client_ca' => '/tls/client CA.pem', 'mtls_client_crl' => '/tls/client.crl']);
+$rendered = $run('render-mtls-gateway', ['dpop:gateway-config']);
+if (!str_contains($rendered, 'verify required ca-file "/tls/client CA.pem" crl-file "/tls/client.crl"')
+    || !str_contains($rendered, 'set-header X-DPoP-MTLS-Verified 1')) { throw new RuntimeException('mTLS gateway config is missing certificate verification'); }
+foreach (['mtls_enabled' => 'yes', 'mtls_trusted_proxies' => ['127.0.0.0/8']] as $key => $value) {
+    $writeOptions(array_replace($mtls, [$key => $value]));
+    $run('invalid-config-' . $key, ['dpop:doctor'], 1);
+}
 foreach(['nonce_key'=>'','origin'=>'http://insecure.example','replay_ttl'=>10,'internal_prefix'=>'//ambiguous','domain'=>''] as $key=>$value){$writeOptions([$key=>$value]);$run('invalid-config-'.$key,['dpop:doctor'],1);}$writeOptions();
 $writeDependencies(removeToken:true);$run('missing-token-resolver',['dpop:doctor'],1);$writeDependencies();
 $writeDependencies([Acme\Dpop\Contract\ReplayStoreInterface::class=>DpopTest\Support\MemoryReplay::class]);

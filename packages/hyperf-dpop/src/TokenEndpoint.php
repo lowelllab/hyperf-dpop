@@ -7,12 +7,12 @@ use Acme\Dpop\Exception\DpopException;
 use Acme\Dpop\ValueObject\{SecurityPolicy, VerifiedProof};
 use Acme\HyperfDpop\Admission\AdmissionBudgetInterface;
 use Acme\HyperfDpop\Contract\{RefreshBindingResolverInterface, AuthenticationObserverInterface, ExternalUriResolverInterface};
-use Acme\HyperfDpop\Http\{ClientSource, HeaderReader};
+use Acme\HyperfDpop\Http\{ClientSource, HeaderReader, MtlsGuard};
 use Psr\Http\Message\ServerRequestInterface;
 
 final readonly class TokenEndpoint
 {
-    public function __construct(private Authenticator $auth, private SecurityPolicy $policy, private ExternalUriResolverInterface $uris, private ClientSource $source, private AdmissionBudgetInterface $budget, private AuthenticationObserverInterface $observer) {}
+    public function __construct(private Authenticator $auth, private SecurityPolicy $policy, private ExternalUriResolverInterface $uris, private ClientSource $source, private AdmissionBudgetInterface $budget, private AuthenticationObserverInterface $observer, private ?MtlsGuard $mtls = null) {}
 
     public function issuance(ServerRequestInterface $request): VerifiedProof { return $this->verify($request, null, null); }
     public function refresh(ServerRequestInterface $request, #[\SensitiveParameter] string $refreshToken, RefreshBindingResolverInterface $resolver): VerifiedProof { return $this->verify($request, $refreshToken, $resolver); }
@@ -21,6 +21,7 @@ final readonly class TokenEndpoint
     {
         $release = null; $started = hrtime(true); $outcome = 'dpop_security_unavailable'; $category = $resolver === null ? 'token' : 'refresh';
         try {
+            $this->mtls?->assertVerified($request);
             $release = $this->budget->enter($this->source->resolve($request), $category);
             $jwt = HeaderReader::proof($request, $this->policy->proofMaxBytes);
             $jkt = $resolver?->resolveRefresh($refresh ?? '', $request)->jkt;

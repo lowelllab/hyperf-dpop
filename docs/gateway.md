@@ -1,6 +1,6 @@
 # 网关接入与重复认证头防护
 
-本页描述0.1.0正式版的入口契约；公开版本及验证见[发布记录](release-0.1.0.md)。此前e0fd48c开发快照不含gateway发布项，需升级至本次版本。升级时先部署网关规则、固定后端HTTP/1.1并限制后端访问，再更新适配包，以免旧的原生HTTP/2访问直接进入503保护。
+本页描述 HAProxy 入口契约。初次发布见 [0.1.0 发布记录](release-0.1.0.md)。此前e0fd48c开发快照不含gateway发布项，需升级至本次版本。升级时先部署网关规则、固定后端HTTP/1.1并限制后端访问，再更新适配包，以免旧的原生HTTP/2访问直接进入503保护。
 
 Swoole 6.2.4在HTTP/1中覆盖Authorization，但保留原始报文及DPoP多值；HTTP/2中两种字段均覆盖，getData不可用。扩展会检查PSR多值及HTTP/1原始字段，对无法核验原始头的原生Swoole HTTP/2受保护请求返回503 dpop_security_unavailable。客户端仍可通过下述网关使用HTTP/2。
 
@@ -35,6 +35,8 @@ haproxy -W -db -f haproxy-dpop.cfg
 正式服务由宿主进程管理器管理，环境变量也应注入该服务。证书私钥仅授权网关进程读取，不写入源码或镜像。本机loopback后端使用HTTP；跨主机部署应使用受限网络并配置后端TLS及证书校验，模板的默认loopback配置不能直接视为跨主机安全部署。
 
 网关删除客户端Forwarded/X-Forwarded-*并覆盖X-Real-IP。公开URI仍由扩展的固定origin和前缀配置计算，不根据这些头自动改变origin。字段重复检查覆盖所有方法及token/refresh/resource入口；应用层OPTIONS原有无认证预检行为保持不变。
+
+适配包从 0.2.0 起可从统一配置生成 HAProxy 配置，并在 TLS 握手时要求客户端证书。启用步骤和网关信任边界见[包能力与配置](configuration.md)。
 
 ## 3. 应用行为与升级
 

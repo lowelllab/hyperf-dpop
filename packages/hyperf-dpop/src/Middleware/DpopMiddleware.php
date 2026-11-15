@@ -8,16 +8,19 @@ use Acme\Dpop\ValueObject\SecurityPolicy;
 use Acme\HyperfDpop\Admission\AdmissionBudgetInterface;
 use Acme\HyperfDpop\Contract\{TokenBindingResolverInterface, ErrorResponseFactoryInterface, AuthenticationObserverInterface, ExternalUriResolverInterface};
 use Acme\HyperfDpop\DpopContext;
-use Acme\HyperfDpop\Http\{HeaderReader, ClientSource};
+use Acme\HyperfDpop\Http\{HeaderReader, ClientSource, MtlsGuard};
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 
 final readonly class DpopMiddleware implements MiddlewareInterface
 {
-    public function __construct(private Authenticator $auth, private SecurityPolicy $policy, private TokenBindingResolverInterface $resolver, private ExternalUriResolverInterface $uris, private ClientSource $source, private AdmissionBudgetInterface $budget, private ErrorResponseFactoryInterface $responses, private AuthenticationObserverInterface $observer) {}
+    public function __construct(private Authenticator $auth, private SecurityPolicy $policy, private TokenBindingResolverInterface $resolver, private ExternalUriResolverInterface $uris, private ClientSource $source, private AdmissionBudgetInterface $budget, private ErrorResponseFactoryInterface $responses, private AuthenticationObserverInterface $observer, private ?MtlsGuard $mtls = null) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        try { $this->mtls?->assertVerified($request); }
+        catch (DpopException $e) { return $this->responses->create($e); }
+        catch (\Throwable) { return $this->responses->create(new DpopException('dpop_security_unavailable')); }
         if ($request->getMethod() === 'OPTIONS') { return $handler->handle($request); }
         $release = null; $started = hrtime(true); $outcome = 'dpop_security_unavailable';
         try {

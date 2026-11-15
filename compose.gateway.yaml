@@ -7,6 +7,11 @@ services:
     command: [php, tests/gateway-e2e.php, serve]
     environment:
       DPOP_EXAMPLE_ORIGIN: https://api.example:9511
+      DPOP_MTLS_ENABLED: ${DPOP_MTLS_ENABLED:-false}
+      DPOP_GATEWAY_BIND: 127.0.0.1:9511
+      DPOP_GATEWAY_CERT: /workspace/build/gateway/tls.pem
+      DPOP_BACKEND_ADDR: 127.0.0.1:9509
+      DPOP_MTLS_CLIENT_CA: /workspace/build/gateway/ca.pem
       DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
       DPOP_TEST_MYSQL_USER: dpop
       DPOP_TEST_MYSQL_PASSWORD: isolated-test-only
@@ -25,11 +30,7 @@ services:
     user: '0:0'
     network_mode: service:gateway-app
     volumes: [.:/workspace:ro]
-    environment:
-      DPOP_GATEWAY_BIND: 127.0.0.1:9511
-      DPOP_GATEWAY_CERT: /workspace/build/gateway/tls.pem
-      DPOP_BACKEND_ADDR: 127.0.0.1:9509
-    command: [haproxy, -W, -db, -f, /workspace/packages/hyperf-dpop/publish/haproxy.cfg]
+    command: [haproxy, -W, -db, -f, /workspace/build/gateway/haproxy.cfg]
     depends_on:
       gateway-app: {condition: service_healthy}
   gateway-wire:

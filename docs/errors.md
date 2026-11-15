@@ -14,6 +14,7 @@
 | refresh真正失效 | 400 invalid_grant | 不适用 | no-store |
 | 安全依赖不可用/时钟偏差超预算 | 503 dpop_security_unavailable | 同左 | no-store |
 | Swoole原生HTTP/2或原始头不可读，无法检查认证头唯一性 | 503 dpop_security_unavailable | 同左 | no-store；通过检查重复头的网关转发为HTTP/1.1 |
+| mTLS 已启用，Hyperf 收到缺少验证标记或来自非受信网关的请求 | 503 dpop_security_unavailable | 同左 | no-store；客户端证书在网关 TLS 握手期间验证 |
 | 入口预算耗尽 | 429 rate_limited | 同左 | Redis窗口预算返回权威时钟计算的剩余秒数；本地并发槽耗尽建议1秒 |
 
 业务权限不足、业务校验失败、消息幂等等不属于本包认证错误。扩展不会自动发起客户端续期或重试，使用方须区分invalid_token与invalid_dpop_proof，不因临时503清理refresh凭据。

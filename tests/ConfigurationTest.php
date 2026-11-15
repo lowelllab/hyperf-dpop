@@ -9,9 +9,9 @@ use Acme\Dpop\Nonce\HmacNonceManager;
 use Acme\Dpop\Protocol\Base64Url;
 use Acme\Dpop\ValueObject\TokenBinding;
 use Acme\HyperfDpop\ConfigProvider;
-use Acme\HyperfDpop\Contract\{TokenBindingResolverInterface, ExternalUriResolverInterface};
+use Acme\HyperfDpop\Contract\{TokenBindingResolverInterface, ExternalUriResolverInterface, RefreshBindingResolverInterface};
 use Acme\HyperfDpop\Admission\{AdmissionBudgetInterface, RedisAdmissionBudget};
-use Acme\HyperfDpop\Http\ErrorResponseFactory;
+use Acme\HyperfDpop\Http\{ErrorResponseFactory, MtlsGuard};
 use Acme\HyperfDpop\Middleware\DpopMiddleware;
 use Acme\HyperfDpop\TokenEndpoint;
 use DpopTest\Support\{ProofFactory, TrackingBudget, MemoryReplay, Environment};
@@ -21,6 +21,7 @@ use Hyperf\Di\{Container, Definition\DefinitionSource};
 use Hyperf\HttpMessage\Server\{Request,Response};
 use Hyperf\HttpMessage\Uri\Uri;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Http\Message\{ServerRequestInterface,ResponseInterface};
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -59,6 +60,55 @@ final class ConfigurationTest extends TestCase
     public function testUnsafePolicyFailsThroughActualFactory():void
     {
         $this->expectException(\InvalidArgumentException::class);$this->container(new ProofFactory(),['replay_ttl'=>10])->get(Authenticator::class);
+    }
+
+    public static function rejectedMtlsRequests(): iterable
+    {
+        yield 'trusted peer without verification' => ['127.0.0.1', [], null, 'dpop_security_unavailable'];
+        yield 'untrusted peer with forged verification' => ['192.0.2.10', ['1'], null, 'dpop_security_unavailable'];
+        yield 'duplicate verification' => ['127.0.0.1', ['1', '1'], null, 'invalid_request'];
+        yield 'comma-separated values' => ['127.0.0.1', ['1,1'], null, 'dpop_security_unavailable'];
+        yield 'verification in trailer declaration' => ['127.0.0.1', ['1'], MtlsGuard::HEADER, 'invalid_request'];
+    }
+
+    #[DataProvider('rejectedMtlsRequests')]
+    public function testMtlsProtectsResourceIssuanceAndRefresh(string $peer, array $headers, ?string $trailer, string $error): void
+    {
+        $container = $this->container(new ProofFactory(), ['mtls_enabled' => true, 'mtls_trusted_proxies' => ['127.0.0.1']]);
+        $request = (new Request('OPTIONS', new Uri('https://edge.example/items')))->withServerParams(['remote_addr' => $peer]);
+        if ($headers !== []) { $request = $request->withHeader(MtlsGuard::HEADER, $headers); }
+        if ($trailer !== null) { $request = $request->withHeader('Trailer', $trailer); }
+        $handler = new class implements RequestHandlerInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                throw new \LogicException('mTLS rejection must occur before the handler');
+            }
+        };
+        $response = $container->get(DpopMiddleware::class)->process($request, $handler);
+        self::assertSame($error === 'invalid_request' ? 400 : 503, $response->getStatusCode());
+        self::assertSame($error, json_decode((string) $response->getBody(), true)['error']);
+
+        $endpoint = $container->get(TokenEndpoint::class);
+        $resolver = new class implements RefreshBindingResolverInterface {
+            public function resolveRefresh(string $refreshToken, ServerRequestInterface $request): TokenBinding
+            {
+                throw new \LogicException('mTLS rejection must occur before resolving the refresh token');
+            }
+        };
+        foreach ([fn () => $endpoint->issuance($request), fn () => $endpoint->refresh($request, 'refresh', $resolver)] as $verify) {
+            try {
+                $verify();
+                self::fail('mTLS verification should fail');
+            } catch (DpopException $exception) {
+                self::assertSame($error, $exception->error);
+            }
+        }
+    }
+
+    public function testMtlsRequiresAnExplicitTrustedPeer(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->container(new ProofFactory(), ['mtls_enabled' => true])->get(MtlsGuard::class);
     }
 
     public function testEmptyNonceKeyFailsThroughActualFactory():void

@@ -3,17 +3,20 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 use Acme\Dpop\Protocol\Base64Url;
+use Acme\HyperfDpop\Http\MtlsGuard;
 use DpopTest\Support\{Environment, ProofFactory};
 
 $root = dirname(__DIR__);
 $dir = $root . '/build/gateway';
 $origin = 'https://api.example:9511';
 $action = $argv[1] ?? 'client';
+$mtls = Hyperf\Support\env('DPOP_MTLS_ENABLED', false) === true;
 
 if ($action === 'serve') {
     require $root . '/tools/setup-example.php';
     if (!is_dir($dir)) { mkdir($dir, 0700, true); }
     $config = "[req]\ndistinguished_name=dn\nprompt=no\n[dn]\nCN=api.example\n[ca]\nbasicConstraints=critical,CA:true\nkeyUsage=critical,keyCertSign,cRLSign\n[server]\nbasicConstraints=critical,CA:false\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:api.example\n";
+    $config .= "[client]\nbasicConstraints=critical,CA:false\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=clientAuth\n";
     file_put_contents($dir . '/openssl.cnf', $config);
     $options = ['config' => $dir . '/openssl.cnf', 'digest_alg' => 'sha256'];
     $caKey = openssl_pkey_new(['private_key_bits' => 2048]);
@@ -25,6 +28,21 @@ if ($action === 'serve') {
     }
     file_put_contents($dir . '/tls.pem', file_get_contents($dir . '/server.pem') . file_get_contents($dir . '/server.key'));
     chmod($dir . '/tls.pem', 0600); chmod($dir . '/server.key', 0600);
+    if ($mtls) {
+        foreach (['trusted' => [$ca, $caKey], 'untrusted' => [null, null]] as $name => [$issuer, $issuerKey]) {
+            $clientKey = openssl_pkey_new(['private_key_bits' => 2048]);
+            $clientCsr = openssl_csr_new(['commonName' => "$name gateway fixture client"], $clientKey, $options);
+            $client = openssl_csr_sign($clientCsr, $issuer, $issuerKey ?? $clientKey, 1, $options + ['x509_extensions' => 'client']);
+            if (!$client || !openssl_x509_export_to_file($client, "$dir/$name.pem") || !openssl_pkey_export_to_file($clientKey, "$dir/$name.key")) {
+                throw new RuntimeException('Cannot create temporary mTLS client fixture');
+            }
+            chmod("$dir/$name.key", 0600);
+        }
+    }
+    $render = proc_open([PHP_BINARY, $root . '/examples/hyperf/bin/hyperf.php', 'dpop:gateway-config'], [1 => ['file', $dir . '/haproxy.cfg', 'w'], 2 => STDERR], $pipes, $root);
+    if (!is_resource($render) || proc_close($render) !== 0) {
+        throw new RuntimeException('Cannot render gateway configuration from dpop.php');
+    }
     $nativeCode = <<<'PHP'
 require '/workspace/vendor/autoload.php';
 $s = new Swoole\Http\Server('127.0.0.1', 9512, SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
@@ -66,18 +84,23 @@ $check = static function (string $name, bool $ok, array $details = []) use (&$ca
     $cases[] = ['case'=>$name, 'result'=>$ok?'PASS':'FAIL'] + $details;
     if (!$ok) { throw new RuntimeException('Gateway case failed: ' . $name . ' ' . json_encode($details)); }
 };
-$request = static function (string $method, string $path, array $headers, ?array $body, int $protocol, int $port = 9511) use ($dir): array {
+$request = static function (string $method, string $path, array $headers, ?array $body, int $protocol, int $port = 9511, ?string $client = 'trusted') use ($dir, $mtls): array {
     $curl = curl_init('https://api.example:' . $port . $path); $out = [];
     curl_setopt_array($curl, [CURLOPT_RETURNTRANSFER=>true,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_HTTP_VERSION=>$protocol,CURLOPT_RESOLVE=>['api.example:'.$port.':127.0.0.1'],CURLOPT_PROXY=>'',CURLOPT_CAINFO=>$dir.'/ca.pem',CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_TIMEOUT=>8,CURLOPT_PATH_AS_IS=>true,CURLOPT_HTTPHEADER=>array_merge(['Content-Type: application/json'],$headers),CURLOPT_HEADERFUNCTION=>static function($curl,$line)use(&$out){$colon=strpos($line,':');if($colon!==false){$out[strtolower(substr($line,0,$colon))]=trim(substr($line,$colon+1));}return strlen($line);}]);
     if ($body !== null) { curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR)); }
+    if ($mtls && $port === 9511 && $client !== null) {
+        curl_setopt_array($curl, [CURLOPT_SSLCERT => "$dir/$client.pem", CURLOPT_SSLKEY => "$dir/$client.key"]);
+    }
     $raw = curl_exec($curl);
     return ['status'=>curl_getinfo($curl,CURLINFO_RESPONSE_CODE),'protocol'=>curl_getinfo($curl,CURLINFO_HTTP_VERSION),'curl_error'=>curl_errno($curl),'verify'=>curl_getinfo($curl,CURLINFO_SSL_VERIFYRESULT),'headers'=>$out,'data'=>is_string($raw)?json_decode($raw,true):null];
 };
 $expect = static function (string $name, array $response, int $status, int $protocol, ?string $error = null) use ($check): void {
     $check($name, $response['status']===$status && $response['protocol']===$protocol && $response['curl_error']===0 && $response['verify']===0 && ($error===null || ($response['data']['error']??null)===$error), ['status'=>$response['status'],'expected'=>$status,'negotiated_http_version'=>$response['protocol'],'expected_http_version'=>$protocol,'error'=>$response['data']['error']??null]);
 };
-$rawRequest = static function (string $path, array $headers, string $trailers, string $body = '{}', int $port = 9511) use ($dir): array {
-    $context = stream_context_create(['ssl'=>['verify_peer'=>true,'verify_peer_name'=>true,'peer_name'=>'api.example','cafile'=>$dir.'/ca.pem','alpn_protocols'=>'http/1.1']]);
+$rawRequest = static function (string $path, array $headers, string $trailers, string $body = '{}', int $port = 9511) use ($dir, $mtls): array {
+    $ssl = ['verify_peer'=>true,'verify_peer_name'=>true,'peer_name'=>'api.example','cafile'=>$dir.'/ca.pem','alpn_protocols'=>'http/1.1'];
+    if ($mtls && $port === 9511) { $ssl += ['local_cert' => "$dir/trusted.pem", 'local_pk' => "$dir/trusted.key"]; }
+    $context = stream_context_create(['ssl' => $ssl]);
     $socket = stream_socket_client('tls://127.0.0.1:'.$port,$errno,$error,3,STREAM_CLIENT_CONNECT,$context);
     if (!is_resource($socket)) { throw new RuntimeException('Raw TLS client unavailable'); }
     stream_set_timeout($socket, 8);
@@ -95,6 +118,14 @@ try {
     do { $health=$request('GET','/health',[],null,CURL_HTTP_VERSION_1_1); if($health['status']===200){$ready=true;break;} usleep(100000); } while(microtime(true)<$deadline);
     $check('gateway-ready', $ready);
     foreach (['http1'=>CURL_HTTP_VERSION_1_1, 'http2'=>CURL_HTTP_VERSION_2_0] as $label=>$protocol) {
+        if ($mtls) {
+            foreach ([null, 'untrusted'] as $client) {
+                $response = $request('GET', '/health', [MtlsGuard::HEADER . ': 1'], null, $protocol, client: $client);
+                $check($label . '-mtls-rejects-' . ($client ?? 'no-certificate'), $response['status'] === 0 && $response['curl_error'] !== 0);
+            }
+            $expect($label . '-mtls-cert-does-not-replace-dpop', $request('GET', '/items', [], null, $protocol), 401, $protocol);
+            $expect($label . '-mtls-marker-cannot-be-supplied-as-trailer', $request('GET', '/items', ['Trailer: ' . MtlsGuard::HEADER], null, $protocol), 400, $protocol, 'invalid_request');
+        }
         $f = new ProofFactory();
         $tokenProof = fn(?string $nonce=null, string $path='/token') => $f->make(array_filter(['htm'=>'POST','htu'=>$origin.$path,'nonce'=>$nonce],static fn($v)=>$v!==null));
         $challenge=$request('POST','/token',['DPoP: '.$tokenProof()],['subject'=>'fixture-gateway'],$protocol);
@@ -147,6 +178,7 @@ try {
             $expect('native-http1-alive-after-forbidden-trailer',$request('GET','/guard',['Authorization: DPoP fixture','DPoP: a.b.c'],null,$protocol,9512),200,$protocol);
         }
         $headers=['Authorization: DPoP '.$access,'DPoP: '.$good];
+        if ($mtls) { $headers[] = strtolower(MtlsGuard::HEADER) . ': client-supplied'; }
         $expect($label.'-rejected-proof-still-usable',$request('GET','/items',$headers,null,$protocol),200,$protocol);
         $expect($label.'-successful-proof-replay',$request('GET','/items',$headers,null,$protocol),401,$protocol,'invalid_dpop_proof');
         $rotated=$request('POST','/refresh',['DPoP: '.$tokenProof($tokenNonce,'/refresh')],['refresh_token'=>$refresh],$protocol);
@@ -165,7 +197,7 @@ try {
         $expect($label.'-native-proxy-single',$request('GET','/guard-proxy',$nativeHeaders,null,$protocol,9512),$label==='http1'?200:503,$protocol,$label==='http1'?null:'dpop_security_unavailable');
         $expect($label.'-native-proxy-duplicate',$request('GET','/guard-proxy',['Authorization: DPoP first','Authorization: DPoP last','DPoP: a.b.c'],null,$protocol,9512),$label==='http1'?400:503,$protocol,$label==='http1'?'invalid_request':'dpop_security_unavailable');
     }
-    echo count($cases) . " gateway/native checks passed with explicit HTTP/1.1 and HTTP/2; " . count($observations) . " native runtime observations (not PASS)\n";
+    echo count($cases) . " gateway/native checks passed with explicit HTTP/1.1 and HTTP/2 (mTLS " . ($mtls ? 'on' : 'off') . '); ' . count($observations) . " native runtime observations (not PASS)\n";
 } catch (Throwable $e) { $failure=$e; fwrite(STDERR,$e->getMessage()."\n"); }
-finally { file_put_contents($dir.'/result.json',json_encode(['cases'=>$cases,'observations'=>$observations,'failure'=>$failure?->getMessage(),'gateway_config_sha256'=>hash_file('sha256',$root.'/packages/hyperf-dpop/publish/haproxy.cfg'),'backend_protocol'=>'HTTP/1.1','scope'=>'isolated actual Hyperf + HAProxy; no production deployment'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)); }
+finally { file_put_contents($dir.'/result.json',json_encode(['cases'=>$cases,'observations'=>$observations,'failure'=>$failure?->getMessage(),'gateway_config_sha256'=>hash_file('sha256',$dir.'/haproxy.cfg'),'backend_protocol'=>'HTTP/1.1','mtls'=>$mtls,'scope'=>'isolated actual Hyperf + HAProxy; no production deployment'],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)); }
 if ($failure !== null) { exit(1); }

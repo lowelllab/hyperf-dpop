@@ -2,17 +2,19 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：两个正式包的正式发行版本为0.1.0；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
+状态：正式发行版本为核心 0.1.0、适配 0.2.0；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 
 业务项目安装`lowelllab/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
 
-正式接入使用`composer require "lowelllab/hyperf-dpop:^0.1"`，核心自动引入，保持宿主默认稳定性。开发工作区仍使用0.1.x-dev path别名；它是开发检查入口，不作为业务安装来源。发行与干净公开安装证据见[0.1.0发布记录](release-0.1.0.md)。
+正式接入使用`composer require "lowelllab/hyperf-dpop:^0.2"`，核心自动引入，保持宿主默认稳定性。开发工作区使用各包的 path 别名；它是开发检查入口，不作为业务安装来源。发行与公开安装证据见[发布指南](publishing.md)。
 
 默认方案需要pdo_mysql及共享Redis：MySQL负责权威防重放，Redis负责跨Worker/实例认证预算。切换Redis重放驱动不会消除预算，也不会获得数据库同等的恢复保证。
 
 ## 2. 配置与显式DDL
+
+完整选项见[包能力与配置](configuration.md)。适配包从 0.2.0 起可以用 `dpop:gateway-config` 从同一份配置生成 HAProxy 配置，并通过 `mtls_enabled` 控制客户端证书准入。
 
 Hyperf从Composer extra读取ConfigProvider。宿主安装可选`hyperf/devtool ~3.2.0`后，可以显式发布模板：
 
@@ -30,7 +32,7 @@ schema只复制至应用根目录的`dpop-proofs.sql`，不执行SQL。已有配
 
 必需配置：HTTPS公开origin、独立环境安全域、至少32字节随机nonce密钥、MySQL专用连接凭据、Redis连接和独立namespace。nonce密钥通过部署密钥管理注入，不写入源码。受信代理默认空；使用内部/外部前缀映射时，按组件模板显式填写，保留原始路径编码。
 
-在宿主`config/autoload/redis.php`中显式配置Redis连接的顶层`timeout`和`read_timeout`为有限正值，同时设置连接池`wait_timeout`；连接池参数不能替代套接字连接/读取超时。按部署的DNS、框架重连和HTTP请求期限验收总耗时，不把单次超时当成全链路上限。客户端HTTP超时不等于服务端协程已取消，不能据此推断proof或业务操作尚未发生。独立宿主的实际中断结果见[消费项目测试报告](verification-consumer-20261102.md)。
+用 `redis_pool` 选择 Hyperf Redis 连接池，默认 `default`。在宿主`config/autoload/redis.php`中显式配置对应连接的顶层`timeout`和`read_timeout`为有限正值，同时设置连接池`wait_timeout`；连接池参数不能替代套接字连接/读取超时。按部署的DNS、框架重连和HTTP请求期限验收总耗时，不把单次超时当成全链路上限。客户端HTTP超时不等于服务端协程已取消，不能据此推断proof或业务操作尚未发生。独立宿主的实际中断结果见[消费项目测试报告](verification-consumer-20261102.md)。
 
 MySQL表要求InnoDB，必需列非空且不是生成列：security_domain为VARCHAR(96) ascii_bin，jkt为CHAR(43) ascii_bin，jti_hash为BINARY(32)，两个时间列为BIGINT UNSIGNED。唯一索引必须完整且按security_domain、jkt、jti_hash顺序覆盖，不接受前缀索引或其他唯一限制。以发布DDL为准，不能缩短时间/摘要字段。驱动在每个进程首次登记时核验schema；doctor同样只读核验。管理员修改DDL后重新运行doctor并重启Worker。
 

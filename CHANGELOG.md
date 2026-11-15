@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 · 2026-11-15
+
+- Hyperf 适配包新增默认关闭的 mTLS 开关。开启后，HAProxy 验证客户端证书，Hyperf 核验受信网关的验证标记，再执行现有 DPoP 流程。
+- 从 `config/autoload/dpop.php` 生成 HAProxy 配置，旧配置键继续生效。新增 Redis 池选择和 MySQL 连接超时，详见[包能力与配置](docs/configuration.md)。
+- 协议核心沿用 0.1.0。
+
 ## 0.1.0 · 2026-11-03
 
 - 首次正式双包发行，协议、适配PHP实现与发布模板沿用已验收的0.1.0-beta.1，无业务行为变更。

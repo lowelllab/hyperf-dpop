@@ -8,7 +8,7 @@ use Acme\Dpop\Nonce\HmacNonceManager;
 use Acme\Dpop\Protocol\ProofVerifier;
 use Acme\Dpop\ValueObject\SecurityPolicy;
 use Acme\HyperfDpop\Admission\{AdmissionBudgetInterface, RedisAdmissionBudget};
-use Acme\HyperfDpop\Http\{ClientSource, ExternalUriResolver};
+use Acme\HyperfDpop\Http\{ClientSource, ExternalUriResolver, MtlsGuard};
 use Acme\HyperfDpop\Store\{HyperfRedisExecutor, RedisExecutorInterface, RedisReplayStore, MySqlReplayStore};
 use Hyperf\Contract\ConfigInterface;
 use Psr\Clock\ClockInterface;
@@ -65,7 +65,10 @@ final class Factory
     public static function redis(ContainerInterface $c): RedisExecutorInterface
     {
         if (!class_exists(\Hyperf\Redis\Redis::class)) { throw new \RuntimeException('Install hyperf/redis for the shared admission budget'); }
-        return new HyperfRedisExecutor($c->get(\Hyperf\Redis\Redis::class));
+        $pool = self::config($c)['redis_pool'] ?? 'default';
+        if (!is_string($pool) || $pool === '') { throw new \InvalidArgumentException('Invalid redis_pool'); }
+        $redis = $pool === 'default' ? $c->get(\Hyperf\Redis\Redis::class) : $c->get(\Hyperf\Redis\RedisFactory::class)->get($pool);
+        return new HyperfRedisExecutor($redis);
     }
 
     public static function replay(ContainerInterface $c): ReplayStoreInterface
@@ -76,13 +79,31 @@ final class Factory
         $dsn = (string) ($o['mysql_dsn'] ?? '');
         $user = (string) ($o['mysql_user'] ?? '');
         $password = (string) ($o['mysql_password'] ?? '');
+        $timeout = self::number($o, 'mysql_connect_timeout', 3);
+        if ($timeout < 1) { throw new \InvalidArgumentException('mysql_connect_timeout must be positive'); }
         if (!str_starts_with($dsn, 'mysql:') || $user === '') { throw new \InvalidArgumentException('Configure dedicated MySQL replay credentials'); }
-        return new MySqlReplayStore(static fn (): \PDO => new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_PERSISTENT => false, \PDO::ATTR_EMULATE_PREPARES => false, \PDO::ATTR_TIMEOUT => 3]), (string) ($o['mysql_table'] ?? 'dpop_proofs'));
+        return new MySqlReplayStore(static fn (): \PDO => new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_PERSISTENT => false, \PDO::ATTR_EMULATE_PREPARES => false, \PDO::ATTR_TIMEOUT => $timeout]), (string) ($o['mysql_table'] ?? 'dpop_proofs'));
     }
 
     public static function budget(ContainerInterface $c): AdmissionBudgetInterface
     {
         $o = self::config($c);
         return new RedisAdmissionBudget($c->get(RedisExecutorInterface::class), (string) ($o['namespace'] ?? 'dpop'), self::number($o, 'global_limit', 2000), self::number($o, 'source_limit', 120), self::number($o, 'budget_window', 60), self::number($o, 'max_concurrency', 16));
+    }
+
+    public static function mtls(ContainerInterface $c): MtlsGuard
+    {
+        $options = self::config($c);
+        $enabled = array_key_exists('mtls_enabled', $options) ? $options['mtls_enabled'] : false;
+        $peers = $options['mtls_trusted_proxies'] ?? [];
+        if (!is_bool($enabled) || !is_array($peers)) {
+            throw new \InvalidArgumentException('Configure mtls_enabled as a boolean and mtls_trusted_proxies as an array');
+        }
+        return new MtlsGuard($enabled, $peers);
+    }
+
+    public static function gatewayConfig(ContainerInterface $c): string
+    {
+        return GatewayConfig::render(self::config($c), $c->get(MtlsGuard::class)->enabled);
     }
 }
