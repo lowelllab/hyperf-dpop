@@ -8,27 +8,26 @@
 
 业务项目安装`lowelllab/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
 
-正式接入使用`composer require "lowelllab/hyperf-dpop:^0.2"`，核心自动引入，保持宿主默认稳定性。开发工作区使用各包的 path 别名；它是开发检查入口，不作为业务安装来源。发行与公开安装证据见[发布指南](publishing.md)。
+正式接入使用 `composer require "lowelllab/hyperf-dpop:^0.2.1"`，核心自动引入，保持宿主默认稳定性。默认准入预算需要 `hyperf/redis`，`dpop:doctor` 和 `dpop:gateway-config` 需要 `hyperf/command`。 [完整安装示例](usage-examples.md) · [发布指南](publishing.md)
 
 默认方案需要pdo_mysql及共享Redis：MySQL负责权威防重放，Redis负责跨Worker/实例认证预算。切换Redis重放驱动不会消除预算，也不会获得数据库同等的恢复保证。
 
 ## 2. 配置与显式DDL
 
-完整选项见[包能力与配置](configuration.md)。适配包从 0.2.0 起可以用 `dpop:gateway-config` 从同一份配置生成 HAProxy 配置，并通过 `mtls_enabled` 控制客户端证书准入。
+将扩展配置集中在 `config/autoload/dpop.php`。用 `dpop:gateway-config --output` 从同一份配置生成 HAProxy 文件，`mtls_enabled` 控制客户端证书准入，默认关闭。 [配置项](configuration.md) · [生成与校验步骤](gateway.md)
 
 Hyperf从Composer extra读取ConfigProvider。宿主安装可选`hyperf/devtool ~3.2.0`后，可以显式发布模板：
 
 ```bash
 php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
 php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=schema
-php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=gateway
 ```
 
 schema只复制至应用根目录的`dpop-proofs.sql`，不执行SQL。已有配置默认保留；仅明确需要覆盖时使用`--force`，并先保存自己的配置。以上命令已在生产缓存模式验证。也可手动复制：
 
 - [配置模板](../packages/hyperf-dpop/publish/dpop.php)至宿主`config/autoload/dpop.php`。
 - [DDL模板](../packages/hyperf-dpop/publish/dpop-proofs.sql)交由宿主迁移流程执行，包不自动建表。
-- [网关模板](../packages/hyperf-dpop/publish/haproxy.cfg)复制为宿主`haproxy-dpop.cfg`，只复制、不启动网关；按[网关接入](gateway.md)配置证书、监听地址和后端。客户端HTTP/2由网关终止并转为HTTP/1.1；Swoole原生HTTP/2无法确认认证头唯一性，受保护接口返回503。
+- 网关通过 `dpop:gateway-config --output haproxy-dpop.next.cfg` 生成候选文件，通过 `haproxy -c -f haproxy-dpop.next.cfg` 后再部署。需要手工维护模板时可使用 `vendor:publish lowelllab/hyperf-dpop --id=gateway`。客户端 HTTP/2 由网关终止并以 HTTP/1.1 转发。 [网关接入](gateway.md)
 
 必需配置：HTTPS公开origin、独立环境安全域、至少32字节随机nonce密钥、MySQL专用连接凭据、Redis连接和独立namespace。nonce密钥通过部署密钥管理注入，不写入源码。受信代理默认空；使用内部/外部前缀映射时，按组件模板显式填写，保留原始路径编码。
 

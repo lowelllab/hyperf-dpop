@@ -1,6 +1,6 @@
 # 网关接入与重复认证头防护
 
-本页描述 HAProxy 入口契约。初次发布见 [0.1.0 发布记录](release-0.1.0.md)。此前e0fd48c开发快照不含gateway发布项，需升级至本次版本。升级时先部署网关规则、固定后端HTTP/1.1并限制后端访问，再更新适配包，以免旧的原生HTTP/2访问直接进入503保护。
+本页适用于 Hyperf DPoP v0.2.1 和 HAProxy 3.2。升级时先落实网关规则、固定后端 HTTP/1.1 并限制后端访问。 [v0.2.1 发布与验收](release-0.2.1.md)
 
 Swoole 6.2.4在HTTP/1中覆盖Authorization，但保留原始报文及DPoP多值；HTTP/2中两种字段均覆盖，getData不可用。扩展会检查PSR多值及HTTP/1原始字段，对无法核验原始头的原生Swoole HTTP/2受保护请求返回503 dpop_security_unavailable。客户端仍可通过下述网关使用HTTP/2。
 
@@ -12,31 +12,29 @@ Swoole 6.2.4在HTTP/1中覆盖Authorization，但保留原始报文及DPoP多值
 
 网关拒绝在Trailer声明Authorization/DPoP，并通过`option http-drop-request-trailers`剥离实际请求尾部字段，包括未声明的HTTP/1尾部及HTTP/2 trailing HEADERS。普通请求体字节保留；需要在尾部传输校验值的业务应调整协议，由宿主在常规header/body中独立校验，不能依赖本模板继续转发尾部字段。DPoP本身不提供body完整性保证。
 
-## 2. 发布与启动
+## 2. 生成、检查和部署配置
 
-安装可选hyperf/devtool后，在宿主执行：
+以下示例将 HAProxy 和 Hyperf 部署在同一台主机。Hyperf 监听 `127.0.0.1:9501`。在 `config/autoload/dpop.php` 中设置以下字段，证书路径以 HAProxy 运行环境为准：
 
-```bash
-php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=gateway
+```php
+'gateway_bind' => '0.0.0.0:443',
+'gateway_cert' => '/etc/haproxy/tls/api.example.pem',
+'gateway_backend' => '127.0.0.1:9501',
+'mtls_enabled' => false,
 ```
 
-只将[模板](../packages/hyperf-dpop/publish/haproxy.cfg)复制为应用根haproxy-dpop.cfg，不创建证书、不改变路由或启动服务；已有文件无force不覆盖。也可手动复制模板。先配置Hyperf在127.0.0.1:9501提供HTTP/1.1服务，并保持公开origin为实际HTTPS地址，示例为https://api.example。根据业务配置来源预算的精确trusted_proxies；网关覆盖X-Real-IP，扩展默认仍不信任代理。
-
-HAProxy3.2示例（证书路径为你部署的完整证书链和私钥合并PEM文件）：
+`gateway_cert` 指向包含服务端证书链和私钥的 PEM 文件。公开 `origin` 应为客户端实际访问的 HTTPS 地址，例如 `https://api.example`。启用 mTLS 时填入客户端 CA 与 `mtls_trusted_proxies`，再生成配置。 [mTLS 配置](configuration.md#开启-mtls)
 
 ```bash
-export DPOP_GATEWAY_BIND='0.0.0.0:443'
-export DPOP_GATEWAY_CERT='/etc/haproxy/tls/api.example.pem'
-export DPOP_BACKEND_ADDR='127.0.0.1:9501'
-haproxy -c -f haproxy-dpop.cfg
-haproxy -W -db -f haproxy-dpop.cfg
+php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg && \
+  haproxy -c -f haproxy-dpop.next.cfg
 ```
 
-正式服务由宿主进程管理器管理，环境变量也应注入该服务。证书私钥仅授权网关进程读取，不写入源码或镜像。本机loopback后端使用HTTP；跨主机部署应使用受限网络并配置后端TLS及证书校验，模板的默认loopback配置不能直接视为跨主机安全部署。
+命令需要 `hyperf/command`。用 `--output` 写入文件时，Hyperf 可以继续使用默认日志配置。在实际 HAProxy 环境校验通过后，通过宿主进程管理器启用候选文件。证书私钥只授权网关进程读取。跨主机部署应使用受限网络，并配置后端 TLS 及证书校验。
 
-网关删除客户端Forwarded/X-Forwarded-*并覆盖X-Real-IP。公开URI仍由扩展的固定origin和前缀配置计算，不根据这些头自动改变origin。字段重复检查覆盖所有方法及token/refresh/resource入口；应用层OPTIONS原有无认证预检行为保持不变。
+如需手工维护配置，可用 `php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=gateway` 复制模板。该命令需要 `hyperf/devtool`，默认保留已有文件。 [原始模板](../packages/hyperf-dpop/publish/haproxy.cfg)
 
-适配包从 0.2.0 起可从统一配置生成 HAProxy 配置，并在 TLS 握手时要求客户端证书。启用步骤和网关信任边界见[包能力与配置](configuration.md)。
+网关删除客户端提供的 `Forwarded` 和相关 `X-Forwarded-*` 字段，并覆盖 `X-Real-IP`。需要按真实客户端地址应用来源预算时，在 `trusted_proxies` 填入受信网关的确切 IP。开启 mTLS 后，OPTIONS 和健康检查同样需要客户端证书。
 
 ## 3. 应用行为与升级
 

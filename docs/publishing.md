@@ -17,10 +17,10 @@ Packagist读取仓库根composer.json并从Git标签推导版本，因此不能�
 ## 安装正式版
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2"
+composer require "lowelllab/hyperf-dpop:^0.2.1"
 ```
 
-默认稳定性会选择正式适配版并自动引入核心；不再需要为两个beta逐包设置根稳定性标记。适配依赖核心`^0.1.0`；Composer版本由标签推导，不在包里填写version字段。
+默认 Packagist 当前只提供适配包 v0.2.1 作为正式版本。适配包依赖核心 `^0.1.0`，默认稳定性下自动安装核心 v0.1.0。Composer 版本由标签推导。
 
 无需path或自定义VCS仓库；安装后的lock应指向上表两个提交，不应继续选择dev-main。开发工作区使用 path 及各包的开发别名，仅供开发测试。
 
@@ -50,20 +50,10 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 真实CDN/Ingress/网络策略、容量SLO、HA/状态丢失/恢复演练、独立安全审计及维护/漏洞渠道继续按[维护指南](maintenance.md)验收。0.1.0的正式标签、Packagist索引与本地通过结果不能关闭这些事项；发行决策依据用户最新正式版指令，见DEC-009。原生Swoole HTTP/2的503保护及HTTP/1尾部等待限制保留。
 
-## 从 0.2.0 升级
+## 升级到 0.2.1
 
-将适配包更新到 0.2.1 后，使用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成配置。宿主可以使用原有日志配置。已有安装若精确锁定 0.2.0，先调整 Composer 版本约束。
+适配包 v0.2.0、v0.1.0 和 v0.1.0-beta.1 已下架。若宿主固定了旧版本或使用本地仓库覆盖，先移除覆盖，再按上面的安装命令更新适配包约束与锁文件。宿主若直接依赖核心 beta，需将其约束更新为 `^0.1.0`。 [当前适配包](https://packagist.org/packages/lowelllab/hyperf-dpop#v0.2.1)
 
-公开安装及默认日志配置下的网关复测见 [0.2.1 发布与验收](release-0.2.1.md)。
-
-## 从 0.1.0 升级
-
-合并 [配置模板](../packages/hyperf-dpop/publish/dpop.php)中的新增键。mTLS 默认关闭，原有配置键继续生效。启用 mTLS 时先准备客户端 CA 和受信网关地址，再用 `dpop:gateway-config` 生成候选 HAProxy 配置，按[包能力与配置](configuration.md)部署。
-
-公开 Packagist 安装、文件校验及 mTLS 开关的双协议验证见 [0.2.0 发布与验收](release-0.2.0.md)。
-
-## 从beta升级
-
-先部署/合并网关配置并隔离后端。消费项目移除path/VCS覆盖及原beta精确根约束，再运行`composer require "lowelllab/hyperf-dpop:^0.2" --with-all-dependencies`；若原先直接要求核心0.1.0-beta.1，将它改为^0.1或在确认仅供扩展传递使用后移除该根约束，再由Composer更新。不要只改lock；安装后核对两个正式版本和source.reference。
+把新增配置键合并到已有 `config/autoload/dpop.php`。mTLS 默认关闭。启用时先准备客户端 CA 和受信网关地址，再用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 生成配置，通过 `haproxy -c` 后部署。宿主继续使用原有日志配置。 [配置步骤](configuration.md) · [v0.2.1 公开安装与验收](release-0.2.1.md)
 
 维护与私密漏洞报告见[SECURITY.md](../SECURITY.md)，三个仓库已启用报告功能。

@@ -1,6 +1,6 @@
 # 包能力与配置
 
-以下配置适用于Hyperf 适配包 0.2.0 及以上版本。宿主发布 [dpop.php 模板](../packages/hyperf-dpop/publish/dpop.php)后，将配置集中在 `config/autoload/dpop.php`。升级时可将新增键合并到已有文件中，原有平铺键继续生效。
+以下配置适用于 Hyperf 适配包 v0.2.1。宿主发布 [dpop.php 模板](../packages/hyperf-dpop/publish/dpop.php)后，将配置集中在 `config/autoload/dpop.php`。升级时可将新增键合并到已有文件中，原有平铺键继续生效。
 
 | 能力 | 配置或接入点 |
 | --- | --- |

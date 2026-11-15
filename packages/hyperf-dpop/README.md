@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2"
+composer require "lowelllab/hyperf-dpop:^0.2.1"
 ```
 
 默认从Packagist安装正式版并自动引入协议核心，无需path/VCS仓库或开发稳定性设置。目标生产拓扑验收及独立安全审计仍须按部署范围完成。接入前按[网关说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/gateway.md)部署入口检查、剥离请求尾部并隔离后端。
@@ -20,8 +20,8 @@ ConfigProvider自动发现提供依赖工厂、启动配置检查、可选doctor
 
 重复认证头同时检查PSR多值及Swoole HTTP/1原始头。Swoole原生HTTP/2无法读取原始头，受保护接口返回503；客户端HTTP/2应由检查重复头的入口网关终止，向Hyperf转发HTTP/1.1。`vendor:publish lowelllab/hyperf-dpop --id=gateway`可复制HAProxy模板，已有文件默认保留；证书、后端地址及访问隔离由宿主配置。详见[网关接入](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/gateway.md)。
 
-`0.2.0` 提供集中配置、`dpop:gateway-config` 和默认关闭的 `mtls_enabled`。开启后，HAProxy 在 TLS 握手校验客户端证书，扩展在处理签发、刷新和资源请求前核验网关的验证标记。令牌仍绑定 DPoP 公钥。证书生命周期、JWT验证、会话撤销和业务授权由宿主负责。现有配置可合并新增键，详见[包能力与配置](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/configuration.md)。正式使用前阅读工作区完整文档；当前尚未完成独立安全审计。私密漏洞报告见[安全政策](SECURITY.md)。
+在 `config/autoload/dpop.php` 集中配置扩展。`mtls_enabled` 默认关闭。开启后，HAProxy 在 TLS 握手校验客户端证书，扩展在处理签发、刷新和资源请求前核验网关的验证标记。令牌仍绑定 DPoP 公钥。证书生命周期、JWT验证、会话撤销和业务授权由宿主负责。现有配置可合并新增键，详见[包能力与配置](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/configuration.md)。正式使用前阅读工作区完整文档；当前尚未完成独立安全审计。私密漏洞报告见[安全政策](SECURITY.md)。
 
-从 0.2.1 起，使用 `php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.cfg` 直接生成配置，再运行 `haproxy -c -f haproxy-dpop.cfg`。宿主继续使用原有日志配置。
+已安装 `hyperf/command` 时，使用 `php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成候选配置，再运行 `haproxy -c -f haproxy-dpop.next.cfg`。宿主继续使用原有日志配置。
 
 完整文档：[使用示例](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/usage-examples.md)、[接入指南](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/integration.md)、[安全说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/security.md)。

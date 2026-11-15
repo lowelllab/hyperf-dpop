@@ -9,10 +9,10 @@
 在宿主目录执行：
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2" "hyperf/redis:~3.2.0"
+composer require "lowelllab/hyperf-dpop:^0.2.1" "hyperf/redis:~3.2.0" "hyperf/command:~3.2.0"
 ```
 
-协议核心自动作为依赖引入，保留宿主默认稳定性，不需要path/VCS仓库或克隆开发工作区。若宿主原有beta/path配置，先按[发布指南](publishing.md)移除覆盖，再通过Composer更新锁和vendor。
+Composer 从默认 Packagist 安装适配包并自动引入协议核心。已有项目如果使用旧版精确约束或本地仓库覆盖，先按升级步骤调整配置，再由 Composer 更新锁文件。 [升级说明](publishing.md#升级到-021)
 
 ## 2 配置与建表
 
@@ -23,7 +23,7 @@ php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=config
 php bin/hyperf.php vendor:publish lowelllab/hyperf-dpop --id=schema
 ```
 
-也可以手动复制[配置模板](../packages/hyperf-dpop/publish/dpop.php)和[防重放 DDL](../packages/hyperf-dpop/publish/dpop-proofs.sql)。DDL 需要由宿主迁移流程显式执行；安装和发布命令不会自动建表。
+也可以从 `vendor/lowelllab/hyperf-dpop/publish/` 手动复制 `dpop.php` 到 `config/autoload/`，再将 `dpop-proofs.sql` 交给宿主迁移流程执行。发布命令只复制模板，已有配置请合并新增键。 [配置模板](../packages/hyperf-dpop/publish/dpop.php) · [防重放 DDL](../packages/hyperf-dpop/publish/dpop-proofs.sql)
 
 配置模板读取以下环境变量；将占位值替换为实际部署值：
 
@@ -35,11 +35,17 @@ DPOP_MYSQL_DSN=mysql:host=mysql;dbname=dpop_security;charset=utf8mb4
 DPOP_MYSQL_USER=dpop
 DPOP_MYSQL_PASSWORD=<专用数据库密码>
 DPOP_REDIS_NAMESPACE=my-api-production
+DPOP_GATEWAY_BIND=0.0.0.0:443
+DPOP_GATEWAY_CERT=/etc/haproxy/tls/api.example.pem
+DPOP_BACKEND_ADDR=127.0.0.1:9501
+DPOP_MTLS_ENABLED=false
 ```
 
 生成一次随机 nonce 密钥，例如执行 `php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"`，再通过宿主的密钥管理注入。共享同一安全域的所有 Worker 和实例应使用一致的配置；不要每次启动随机更换密钥，也不要将真实 `.env` 提交到仓库。
 
 `DPOP_ORIGIN` 是客户端访问的公开 HTTPS origin，不带路径或末尾斜杠。若网关改写路径，在 `config/autoload/dpop.php` 中配置 `internal_prefix` / `external_prefix`；例如宿主收到 `/api/me`、外部访问 `/gateway/api/me`，可设置空 `internal_prefix` 和 `/gateway` 的 `external_prefix`。
+
+上述网关地址假设 HAProxy 与 Hyperf 同机。启用 mTLS 时，将 `DPOP_MTLS_ENABLED` 设为 `true`，配置 `DPOP_MTLS_CLIENT_CA`，并在 `config/autoload/dpop.php` 的 `mtls_trusted_proxies` 中填写直连 Hyperf 的网关 IP。可用 `DPOP_MTLS_CLIENT_CRL` 指定证书吊销列表。 [mTLS 配置示例](configuration.md#开启-mtls) · [网关与后端拓扑](gateway.md)
 
 宿主 `config/autoload/redis.php` 示例：
 
@@ -252,14 +258,16 @@ Router::addGroup('/api', static function (): void {
 
 `/auth/token` 和 `/auth/refresh` 使用 TokenEndpoint 辅助器，不再挂载资源 DpopMiddleware，避免重复消费证明。
 
-完成业务服务、DDL、密钥和存储配置后运行：
+完成业务服务、DDL、密钥和存储配置后，在应用目录运行诊断并生成网关候选配置：
 
 ```bash
-php bin/hyperf.php dpop:doctor
-php bin/hyperf.php start
+php bin/hyperf.php dpop:doctor && \
+  php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg
 ```
 
-公开地址需要通过 HTTPS 访问。CORS 中间件由宿主配置：允许请求头 `Authorization`、`DPoP`，暴露响应头 `DPoP-Nonce`、`WWW-Authenticate`，并为 OPTIONS 注册预检处理；DPoP 中间件会跳过 OPTIONS，但不会替你创建预检路由或开放跨域来源。
+在 HAProxy 所在环境运行 `haproxy -c -f haproxy-dpop.next.cfg`，通过后再部署配置。以 `php bin/hyperf.php start` 启动宿主，客户端通过公开 HTTPS 地址访问。 [网关接入](gateway.md)
+
+由宿主 CORS 中间件允许 `Authorization`、`DPoP`，暴露 `DPoP-Nonce`、`WWW-Authenticate`，并为 OPTIONS 注册预检处理。启用 mTLS 时，OPTIONS 也须先通过网关的 TLS 握手。
 
 ## 6 PHP 客户端完整请求示例
 
@@ -341,6 +349,18 @@ function sendRequest(string $method, string $url, string $proof, ?string $access
             return strlen($line);
         },
     ]);
+    $clientCert = getenv('DEMO_CLIENT_CERT') ?: '';
+    $clientKey = getenv('DEMO_CLIENT_KEY') ?: '';
+    if (($clientCert === '') !== ($clientKey === '')) {
+        throw new RuntimeException('Set both DEMO_CLIENT_CERT and DEMO_CLIENT_KEY for mTLS');
+    }
+    if ($clientCert !== '') {
+        curl_setopt_array($curl, [CURLOPT_SSLCERT => $clientCert, CURLOPT_SSLKEY => $clientKey]);
+    }
+    $serverCa = getenv('DEMO_SERVER_CA') ?: '';
+    if ($serverCa !== '') {
+        curl_setopt($curl, CURLOPT_CAINFO, $serverCa);
+    }
     if ($body !== null) {
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($body, JSON_THROW_ON_ERROR));
     }
@@ -406,6 +426,8 @@ echo json_encode($me, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), PHP_EOL;
 php tools/dpop-client.php https://api.example
 ```
 
+网关启用 mTLS 时，为客户端进程设置 `DEMO_CLIENT_CERT` 和 `DEMO_CLIENT_KEY`，分别指向 PEM 客户端证书及私钥。服务端证书由私有 CA 签发时，同时设置 `DEMO_SERVER_CA` 指向客户端信任的服务端 CA 文件。
+
 预期输出两次当前用户信息，分别来自初始 access 和刷新后的 access；示例不打印令牌、proof 或私钥。客户端机器需要信任目标 HTTPS 证书。
 
 签发和刷新 proof 不设置 `ath`，刷新令牌只放在请求 body；资源 proof 的 `ath` 是实际 access token 的 SHA-256 再 base64url 编码。示例只自动处理一次 nonce 挑战，不自动重试网络异常、429 或 503；这些情况需要结合业务幂等和重试策略处理。多 origin / 多密钥客户端应按 origin、公钥指纹和用途隔离 nonce 缓存。
@@ -435,6 +457,7 @@ php tools/dpop-client.php https://api.example
 | 400 invalid_grant | 检查 refresh 是否已轮换、撤销或过期，交由宿主决定是否重新登录 |
 | 429 rate_limited | 参考 Retry-After 并结合自己的请求期限退避 |
 | 503 dpop_security_unavailable | 检查共享存储、超时及时间偏差；不要据此清除刷新凭据 |
+| TLS 握手失败 | 检查服务端证书与主机名。启用 mTLS 时确认客户端证书、私钥、受信 CA、有效期和吊销状态 |
 
 资源入口 proof 错误通常是 401，token 入口对应 proof 错误是 400，完整映射见[错误契约](errors.md)。
 

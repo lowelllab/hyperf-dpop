@@ -12,7 +12,7 @@
 - **Hyperf 中间件**：通过路由中间件保护资源，使用请求属性传递认证结果，隔离不同请求的身份信息。
 - **认证资源控制**：提供 Redis 共享准入预算、来源限流和进程内验签并发限制，并在异常或协程取消时释放资源。
 - **配置与诊断**：通过 `config/autoload/dpop.php` 管理协议策略、共享存储、准入预算和网关参数。提供启动检查、只读 `dpop:doctor` 和 HAProxy 配置生成命令。
-- **mTLS 准入（适配包 0.2.0 起）**：可选要求 HAProxy 校验客户端证书，Hyperf 在签发、刷新及受保护资源入口校验网关凭据后继续执行 DPoP。详见[能力和配置清单](docs/configuration.md)。
+- **mTLS 准入**：可选要求 HAProxy 校验客户端证书，Hyperf 在签发、刷新及受保护资源入口校验网关凭据后继续执行 DPoP。详见[能力和配置清单](docs/configuration.md)。
 - **可扩展接口**：支持替换令牌绑定解析、公开 URI 解析、重放存储、准入预算、错误响应及认证指标采集。
 
 ## 组件结构
@@ -33,10 +33,12 @@
 ## 安装
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2"
+composer require "lowelllab/hyperf-dpop:^0.2.1"
 ```
 
-默认从Packagist安装正式版并自动引入协议核心，无需path/VCS仓库或开发稳定性设置。目标生产拓扑验收及独立安全审计仍须按部署范围完成。接入前按[网关说明](docs/gateway.md)部署入口检查、剥离请求尾部并隔离后端。
+Packagist 当前提供的正式适配包为 v0.2.1，Composer 会自动引入协议核心 v0.1.0。使用默认 Redis 认证预算及诊断和网关命令时，参照[使用示例](docs/usage-examples.md)安装 `hyperf/redis` 和 `hyperf/command`。
+
+在 `config/autoload/dpop.php` 配置公开地址、存储和网关。mTLS 默认关闭，可按部署需要启用。用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 生成候选配置，再执行 `haproxy -c -f haproxy-dpop.next.cfg`。 [网关接入](docs/gateway.md)
 
 ## 使用边界
 
