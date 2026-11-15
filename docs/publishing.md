@@ -1,6 +1,6 @@
 # 双包发布指南
 
-本项目维护 `lowelllab/dpop-core` 与 `lowelllab/hyperf-dpop` 两个 Composer 包；PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。正式版本为 Hyperf 适配 **0.2.0** 和协议核心 **0.1.0**。[0.1.0 发布记录](release-0.1.0.md)保留首次正式发行证据。[首次beta](release-0.1.0-beta.1.md)与[本地验收](acceptance-beta-20261103.md)保留历史；正式分发不等于独立审计或目标生产环境验收已完成。
+本项目维护 `lowelllab/dpop-core` 与 `lowelllab/hyperf-dpop` 两个 Composer 包；PHP 命名空间保持 `Acme\Dpop`、`Acme\HyperfDpop`。正式版本为 Hyperf 适配 **0.2.1** 和协议核心 **0.1.0**。[0.1.0 发布记录](release-0.1.0.md)保留首次正式发行证据。[首次beta](release-0.1.0-beta.1.md)与[本地验收](acceptance-beta-20261103.md)保留历史；正式分发不等于独立审计或目标生产环境验收已完成。
 
 ## 三个仓库的用途
 
@@ -8,7 +8,7 @@
 | --- | --- | --- | --- |
 | 开发、测试与文档 | [hyperf-dpop](https://github.com/lowelllab/hyperf-dpop) | lowelllab/hyperf-dpop-workspace（project） | 不作为扩展包安装入口、不打本次扩展标签 |
 | 核心包分发 | [dpop-core](https://github.com/lowelllab/dpop-core) | lowelllab/dpop-core（library） | v0.1.0，f8fae12，18个文件（含SECURITY.md） |
-| Hyperf适配分发 | [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | lowelllab/hyperf-dpop（library） | v0.2.0，74e79f2，36 个文件（含 SECURITY.md） |
+| Hyperf适配分发 | [hyperf-dpop-package](https://github.com/lowelllab/hyperf-dpop-package) | lowelllab/hyperf-dpop（library） | v0.2.1，d98d7e8，36 个文件（含 SECURITY.md） |
 
 开发时改主仓对应子包；发布时只将该包白名单文件同步至对应发布仓库。业务项目安装扩展时只访问两个包的公开分发，不需要克隆三个Git仓库。已经登记的workspace条目不用于扩展安装，本次未删除。
 
@@ -49,6 +49,10 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 ## 正式分发与目标部署验收
 
 真实CDN/Ingress/网络策略、容量SLO、HA/状态丢失/恢复演练、独立安全审计及维护/漏洞渠道继续按[维护指南](maintenance.md)验收。0.1.0的正式标签、Packagist索引与本地通过结果不能关闭这些事项；发行决策依据用户最新正式版指令，见DEC-009。原生Swoole HTTP/2的503保护及HTTP/1尾部等待限制保留。
+
+## 从 0.2.0 升级
+
+将适配包更新到 0.2.1 后，使用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成配置。宿主可以使用原有日志配置。已有安装若精确锁定 0.2.0，先调整 Composer 版本约束。
 
 ## 从 0.1.0 升级
 

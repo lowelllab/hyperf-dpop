@@ -28,12 +28,14 @@
 
 `mtls_enabled` 默认为 `false`。模板也接受 `DPOP_MTLS_ENABLED=true` 或 `false`，以及 `DPOP_MTLS_CLIENT_CA`、`DPOP_MTLS_CLIENT_CRL`、`DPOP_GATEWAY_BIND`、`DPOP_GATEWAY_CERT` 和 `DPOP_BACKEND_ADDR`。开启时必须在生成配置时提供客户端 CA 文件，并在应用配置中列出直接连接 Hyperf 的网关 IP。`mtls_client_crl` 可选，用于加载 PEM 格式的吊销列表。
 
-已安装 `hyperf/command` 的宿主可生成候选配置，再用 HAProxy 检查。两条命令均成功后，按宿主的部署流程启用候选配置并重启应用 Worker。
+已安装 `hyperf/command` 的宿主可生成候选配置，再用 HAProxy 检查。从适配包 0.2.1 起，`--output` 可直接将配置写入文件，宿主启动日志继续走原有输出。路径可相对当前目录，目标目录须已存在。成功时整文件替换，替换时保留权限，新文件遵循调用者的 `umask`。配置生成失败时保留原文件。
 
 ```bash
-php bin/hyperf.php dpop:gateway-config > haproxy-dpop.next.cfg && \
+php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg && \
   haproxy -c -f haproxy-dpop.next.cfg
 ```
+
+两条命令均成功后，按宿主的部署流程启用候选配置并重启应用 Worker。省略 `--output` 时命令继续打印配置，宿主的 stdout 日志也可能出现在同一输出流中。
 
 此开关覆盖生成配置中的整个 HTTPS 监听入口，含 OPTIONS 和健康检查。HAProxy 在 TLS 握手时验证客户端证书，随后清除入站的 `X-DPoP-MTLS-Verified`，并仅为已验证的连接写入 `1`。Hyperf 在资源中间件及签发、刷新辅助器中校验直连网关 IP 和该标记。受信网关应独占到后端的访问，跨主机部署应保护代理到应用的链路。如果 CDN 或 Ingress 提前终止客户端 TLS，需要由该入口实际完成客户端证书验证并建立等价的受信转发契约。 [HAProxy 客户端证书认证](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/security/authentication/client-certificate-authentication/) · [网关接入](gateway.md)
 

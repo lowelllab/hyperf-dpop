@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 · 2026-11-15
+
+- `dpop:gateway-config --output` 直接写入 HAProxy 配置文件，适用于保留默认启动日志的 Hyperf 宿主。
+- 文件成功生成后整体替换，保留目标文件权限；生成失败时保留原文件。
+
 ## 0.2.0 · 2026-11-15
 
 - Hyperf 适配包新增默认关闭的 mTLS 开关。开启后，HAProxy 验证客户端证书，Hyperf 核验受信网关的验证标记，再执行现有 DPoP 流程。

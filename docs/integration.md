@@ -2,7 +2,7 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：正式发行版本为核心 0.1.0、适配 0.2.0；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
+状态：正式发行版本为核心 0.1.0、适配 0.2.1；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 

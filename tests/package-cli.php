@@ -48,6 +48,26 @@ $writeOptions($gateway + $mtls + ['mtls_client_ca' => '/tls/client CA.pem', 'mtl
 $rendered = $run('render-mtls-gateway', ['dpop:gateway-config']);
 if (!str_contains($rendered, 'verify required ca-file "/tls/client CA.pem" crl-file "/tls/client.crl"')
     || !str_contains($rendered, 'set-header X-DPoP-MTLS-Verified 1')) { throw new RuntimeException('mTLS gateway config is missing certificate verification'); }
+$outputPath = 'runtime/HAProxy candidate.cfg';
+$output = $run('render-gateway-to-file', ['dpop:gateway-config', '--output', $outputPath]);
+$file = file_get_contents($app . '/' . $outputPath);
+if ($file !== $rendered || str_contains($output, 'frontend dpop_https')
+    || (fileperms($app . '/' . $outputPath) & 0777) !== (0666 & ~umask())) {
+    throw new RuntimeException('Unexpected configuration content, console output, or permissions');
+}
+$writeOptions($gateway + $mtls);
+$run('failed-render-keeps-existing-gateway-config', ['dpop:gateway-config', '--output', $outputPath], 1);
+if (file_get_contents($app . '/' . $outputPath) !== $file) { throw new RuntimeException('Failed render replaced existing gateway config'); }
+$writeOptions($gateway);
+$run('render-gateway-refuses-missing-parent', ['dpop:gateway-config', '-o', 'missing/haproxy.cfg'], 1);
+$run('render-gateway-refuses-directory', ['dpop:gateway-config', '-o', 'runtime'], 1);
+chmod($app . '/' . $outputPath, 0640);
+$run('render-gateway-replaces-existing-file', ['dpop:gateway-config', '-o', $outputPath]);
+clearstatcache();
+if (str_contains((string) file_get_contents($app . '/' . $outputPath), 'verify required')
+    || (fileperms($app . '/' . $outputPath) & 0777) !== 0640 || glob($app . '/runtime/.dpop-*') !== []) {
+    throw new RuntimeException('Unexpected gateway replacement output or leftover temporary file');
+}
 foreach (['mtls_enabled' => 'yes', 'mtls_trusted_proxies' => ['127.0.0.0/8']] as $key => $value) {
     $writeOptions(array_replace($mtls, [$key => $value]));
     $run('invalid-config-' . $key, ['dpop:doctor'], 1);
