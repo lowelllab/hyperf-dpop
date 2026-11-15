@@ -51,6 +51,7 @@ Packagist 当前提供的正式适配包为 v0.2.1，Composer 会自动引入协
 ## 使用文档
 
 - [使用示例](docs/usage-examples.md)：配置、令牌绑定、签发与刷新、路由保护及客户端请求。
+- 生成测试证书和 CRL，开启 mTLS，验证 HAProxy 配置、证书准入和 DPoP 请求。 [mTLS 本地验收](docs/usage-examples.md#9-mtls-本地验收)
 - [接入指南](docs/integration.md)
 - [错误契约](docs/errors.md)
 - [安全与部署说明](docs/security.md)

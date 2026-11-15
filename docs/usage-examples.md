@@ -45,7 +45,7 @@ DPOP_MTLS_ENABLED=false
 
 `DPOP_ORIGIN` 是客户端访问的公开 HTTPS origin，不带路径或末尾斜杠。若网关改写路径，在 `config/autoload/dpop.php` 中配置 `internal_prefix` / `external_prefix`；例如宿主收到 `/api/me`、外部访问 `/gateway/api/me`，可设置空 `internal_prefix` 和 `/gateway` 的 `external_prefix`。
 
-上述网关地址假设 HAProxy 与 Hyperf 同机。启用 mTLS 时，将 `DPOP_MTLS_ENABLED` 设为 `true`，配置 `DPOP_MTLS_CLIENT_CA`，并在 `config/autoload/dpop.php` 的 `mtls_trusted_proxies` 中填写直连 Hyperf 的网关 IP。可用 `DPOP_MTLS_CLIENT_CRL` 指定证书吊销列表。 [mTLS 配置示例](configuration.md#开启-mtls) · [网关与后端拓扑](gateway.md)
+上述网关地址假设 HAProxy 与 Hyperf 同机。启用 mTLS 时，将 `DPOP_MTLS_ENABLED` 设为 `true`，配置 `DPOP_MTLS_CLIENT_CA`，并在 `config/autoload/dpop.php` 的 `mtls_trusted_proxies` 中填写直连 Hyperf 的网关 IP。可用 `DPOP_MTLS_CLIENT_CRL` 指定证书吊销列表。 [mTLS 配置示例](configuration.md#开启-mtls) · [网关与后端拓扑](gateway.md) · [mTLS 本地验收](#9-mtls-本地验收)
 
 宿主 `config/autoload/redis.php` 示例：
 
@@ -460,5 +460,140 @@ php tools/dpop-client.php https://api.example
 | TLS 握手失败 | 检查服务端证书与主机名。启用 mTLS 时确认客户端证书、私钥、受信 CA、有效期和吊销状态 |
 
 资源入口 proof 错误通常是 401，token 入口对应 proof 错误是 400，完整映射见[错误契约](errors.md)。
+
+## 9 mTLS 本地验收
+
+在已完成第 1 至 6 节接入的独立 Hyperf 项目中执行。以下命令使用 Bash、OpenSSL 3、curl 和 HAProxy 3.2。示例让 HAProxy 和 Hyperf 在同一测试环境监听回环地址，分别使用 `127.0.0.1:9543` 和 `127.0.0.1:9545`，客户端以 `https://localhost:9543` 访问。CA、服务端证书、有效客户端证书和 CRL 仅用于本地验收，有效期为一天。
+
+### 生成测试证书和吊销列表
+
+```bash
+TLS_DIR=$(mktemp -d)
+export TLS_DIR
+(
+  set -e
+  : "${TLS_DIR:?Failed to create a temporary TLS directory}"
+  umask 077
+  mkdir "$TLS_DIR/issued"
+  touch "$TLS_DIR/index.txt"
+  printf '1000\n' > "$TLS_DIR/serial"
+  cat > "$TLS_DIR/openssl.cnf" <<'EOF'
+[ca]
+default_ca = test_ca
+[test_ca]
+database = $ENV::TLS_DIR/index.txt
+serial = $ENV::TLS_DIR/serial
+new_certs_dir = $ENV::TLS_DIR/issued
+certificate = $ENV::TLS_DIR/ca.pem
+private_key = $ENV::TLS_DIR/ca.key
+default_md = sha256
+default_days = 1
+default_crl_days = 1
+policy = subject_policy
+[subject_policy]
+commonName = supplied
+[server_cert]
+basicConstraints = critical,CA:FALSE
+keyUsage = critical,digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = DNS:localhost
+[client_cert]
+basicConstraints = critical,CA:FALSE
+keyUsage = critical,digitalSignature
+extendedKeyUsage = clientAuth
+EOF
+
+  cd "$TLS_DIR"
+  openssl req -new -x509 -newkey rsa:2048 -noenc -sha256 -days 1 \
+    -subj '/CN=Local mTLS Test CA' -addext 'basicConstraints=critical,CA:TRUE' \
+    -addext 'keyUsage=critical,keyCertSign,cRLSign' -keyout ca.key -out ca.pem
+  openssl req -new -newkey rsa:2048 -noenc -subj '/CN=localhost' \
+    -keyout server.key -out server.csr
+  openssl ca -batch -notext -config openssl.cnf -extensions server_cert \
+    -in server.csr -out server.pem
+  cat server.pem server.key > gateway.pem
+
+  issue_client() {
+    local name="$1"
+    shift
+    openssl req -new -newkey rsa:2048 -noenc -subj "/CN=Test client $name" \
+      -keyout "client-$name.key" -out "client-$name.csr"
+    openssl ca -batch -notext -config openssl.cnf -extensions client_cert \
+      -in "client-$name.csr" -out "client-$name.pem" "$@"
+  }
+
+  issue_client trusted
+  issue_client expired -startdate 20200101000000Z -enddate 20200102000000Z
+  issue_client revoked
+  openssl req -new -x509 -newkey rsa:2048 -noenc -sha256 -days 1 \
+    -subj '/CN=Untrusted test client' -addext 'basicConstraints=critical,CA:FALSE' \
+    -addext 'extendedKeyUsage=clientAuth' -keyout client-untrusted.key -out client-untrusted.pem
+  openssl ca -batch -config openssl.cnf -revoke client-revoked.pem
+  openssl ca -batch -config openssl.cnf -gencrl -out client.crl
+  openssl verify -CAfile ca.pem -purpose sslserver -verify_hostname localhost server.pem
+  openssl verify -CAfile ca.pem -purpose sslclient -crl_check -CRLfile client.crl client-trusted.pem
+  printf 'TLS_DIR=%s\n' "$TLS_DIR"
+)
+```
+
+证书和私钥保存在输出的临时目录。后续命令中的 `$TLS_DIR` 都指向这个绝对路径。本例用同一测试账号生成文件和启动服务。若 HAProxy 使用独立账号，校验配置前授予该账号访问临时目录及读取候选配置、`gateway.pem`、`ca.pem` 和 `client.crl` 的权限。CA 私钥和客户端私钥分别由签发端和客户端保管。验收后清理临时目录。
+
+### 开启 mTLS 并启动网关
+
+在现有 `config/autoload/dpop.php` 的配置数组中设置 `'mtls_trusted_proxies' => ['127.0.0.1']`。Hyperf 的 HTTP/1.1 服务应只监听 `127.0.0.1:9545`。从宿主项目目录执行以下命令，保留第 2 节所需的其他配置。
+
+如果宿主没有返回 `200` 的 `/health`，可在隔离项目的路由文件中加入 `Router::get('/health', static fn (): array => ['status' => 'ok']);`。
+
+```bash
+export DPOP_ORIGIN=https://localhost:9543
+export DPOP_GATEWAY_BIND=127.0.0.1:9543
+export DPOP_GATEWAY_CERT="$TLS_DIR/gateway.pem"
+export DPOP_BACKEND_ADDR=127.0.0.1:9545
+export DPOP_MTLS_ENABLED=true
+export DPOP_MTLS_CLIENT_CA="$TLS_DIR/ca.pem"
+export DPOP_MTLS_CLIENT_CRL="$TLS_DIR/client.crl"
+
+php bin/hyperf.php dpop:doctor &&
+  php bin/hyperf.php dpop:gateway-config --output "$TLS_DIR/haproxy-dpop.next.cfg" &&
+  haproxy -c -f "$TLS_DIR/haproxy-dpop.next.cfg"
+```
+
+校验通过后，在加载上述环境变量的终端运行 `php bin/hyperf.php start`。另开终端将 `TLS_DIR` 设为同一个绝对路径，运行 `haproxy -db -f "$TLS_DIR/haproxy-dpop.next.cfg"`。保留 Hyperf 原有日志配置，`--output` 会将网关配置单独写入文件。要关闭 mTLS，将 `DPOP_MTLS_ENABLED` 改为 `false`，重新生成并校验配置，再用同一开关值重启 Hyperf 和 HAProxy。
+
+### 验证证书准入及 DPoP 流程
+
+在已设置同一 `TLS_DIR` 的测试终端请求 `/health`。
+
+```bash
+curl --noproxy localhost --cacert "$TLS_DIR/ca.pem" \
+  --cert "$TLS_DIR/client-trusted.pem" --key "$TLS_DIR/client-trusted.key" \
+  --silent --show-error --fail --write-out '\nHTTP %{http_code}\n' \
+  https://localhost:9543/health
+
+curl --noproxy localhost --cacert "$TLS_DIR/ca.pem" \
+  --silent --show-error --write-out '\nHTTP %{http_code}\n' \
+  https://localhost:9543/health
+
+for kind in untrusted expired revoked; do
+  curl --noproxy localhost --cacert "$TLS_DIR/ca.pem" \
+    --cert "$TLS_DIR/client-$kind.pem" --key "$TLS_DIR/client-$kind.key" \
+    --silent --show-error --write-out '\nHTTP %{http_code}\n' \
+    https://localhost:9543/health
+done
+```
+
+受信客户端证书应得到 `HTTP 200`。无证书、不受信任、已过期和已吊销的证书应收到 TLS 错误，curl 报出的 `HTTP 000` 表示未收到 HTTP 响应。
+
+为第 6 节的客户端设置宿主测试账号 `DEMO_USERNAME` 和 `DEMO_PASSWORD`，再通过同一个 mTLS 入口运行。
+
+```bash
+NO_PROXY=localhost no_proxy=localhost \
+DEMO_SERVER_CA="$TLS_DIR/ca.pem" \
+DEMO_CLIENT_CERT="$TLS_DIR/client-trusted.pem" \
+DEMO_CLIENT_KEY="$TLS_DIR/client-trusted.key" \
+  php tools/dpop-client.php https://localhost:9543
+```
+
+预期客户端完成 `POST /auth/token`、`GET /api/me`、`POST /auth/refresh` 和刷新后的 `GET /api/me`，输出两次当前用户信息。示例会自动处理签发和第一次访问资源时的 nonce 挑战。
 
 上线入口必须在重复头被折叠前拒绝重复 `Authorization` / `DPoP`。DPoP 不签名 body 和 query，HTTPS、业务权限、刷新事务及业务幂等仍由宿主负责。详细约束见[接入指南](integration.md)与[安全说明](security.md)。仓库中的[示例控制器](../examples/hyperf/app/ExampleController.php)、[会话实现](../examples/hyperf/app/State.php)和[JWT 示例](../examples/hyperf/app/JwtTokens.php)可以辅助理解接口，但其中的合成身份不能直接用于生产登录。
