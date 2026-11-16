@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace DpopTest\Support;
 
 use Acme\HyperfDpop\Store\{RedisExecutorInterface, MySqlReplayStore, RedisReplayStore};
+use Composer\InstalledVersions;
 
 final class Environment
 {
@@ -13,7 +14,12 @@ final class Environment
 
     public static function schema(): void
     {
-        self::pdo()->exec(file_get_contents(__DIR__ . '/../../packages/hyperf-dpop/publish/dpop-proofs.sql'));
+        self::pdo()->exec(file_get_contents(self::publishedFile('dpop-proofs.sql')));
+    }
+
+    public static function publishedFile(string $file): string
+    {
+        return InstalledVersions::getInstallPath('lowelllab/hyperf-dpop') . '/publish/' . $file;
     }
 
     public static function redis(): RedisExecutorInterface

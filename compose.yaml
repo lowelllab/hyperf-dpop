@@ -4,13 +4,19 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: hyperf-dpop-lab:php8.5
+      args:
+        PHP_IMAGE: ${DPOP_PHP_IMAGE:-php:8.5.12-cli-bookworm@sha256:104890ada56869090c9cd0ec709fe205834d3e383b46d9995dc16cd6388a9302}
+        PHPUNIT_VERSION: ${DPOP_PHPUNIT_VERSION:-13.4.5}
+        PHPUNIT_SHA256: ${DPOP_PHPUNIT_SHA256:-b0cec6bc4a0d62b5cde873ce0a5d0e93a4cb833c87e638269d234e5ecee0c78f}
+    image: ${DPOP_TEST_IMAGE:-hyperf-dpop-lab:php8.5.12}
     working_dir: /workspace
     volumes:
-      - .:/workspace
+      - ${DPOP_WORKSPACE:-.}:/workspace
       - composer-cache:/tmp/composer-cache
     environment:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
+      DPOP_EXPECTED_PHP: ${DPOP_EXPECTED_PHP:-8.5.12}
+      DPOP_TEST_REPLAY_DRIVER: ${DPOP_TEST_REPLAY_DRIVER:-mysql}
       DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
       DPOP_TEST_MYSQL_USER: dpop
       DPOP_TEST_MYSQL_PASSWORD: isolated-test-only

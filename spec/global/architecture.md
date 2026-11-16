@@ -79,6 +79,8 @@ Swoole 原生 HTTP/2 无原始头，受保护入口返回 503；原生 HTTP/1 �
 
 测试容器镜像验证 PHP 8.5.12、Swoole 6.2.4、Hyperf Framework 3.2.0、JOSE 4.2.4；HAProxy 3.2.26 和 Node 24.22.2 用于真实协议测试。Node 是测试依赖，不是扩展运行依赖。MySQL/Redis 实验容器无宿主公开端口，MySQL 使用 tmpfs。
 
+PHP 兼容候选改用参数化 PHP 镜像与 Swoole 6.2.5。工作区锁和发布包独立安装均由矩阵验证。 [PHP 兼容说明](../../docs/compatibility.md)
+
 | 仓库内实验入口 | 实际监听/转发 | 用途 |
 | --- | --- | --- |
 | Hyperf HTTP 示例 | `127.0.0.1:9509` | 模拟 TLS 终止后的后端 |

@@ -4,7 +4,11 @@ declare(strict_types=1);
 $root=dirname(__DIR__);
 if(!is_dir($root.'/build') && !mkdir($root.'/build',0700,true) && !is_dir($root.'/build')){throw new RuntimeException('Consumer log directory unavailable');}
 $consumer=sys_get_temp_dir().'/dpop-consumer-'.bin2hex(random_bytes(6));mkdir($consumer,0700,true);
-$metadata=['name'=>'fixture/dpop-consumer','require'=>['php'=>'^8.5','lowelllab/hyperf-dpop'=>'^0.1@dev'],'repositories'=>[['type'=>'path','url'=>$root.'/packages/*','options'=>['symlink'=>true,'versions'=>['lowelllab/dpop-core'=>'0.1.x-dev','lowelllab/hyperf-dpop'=>'0.1.x-dev']]]],'config'=>['allow-plugins'=>new stdClass()]];
+$workspace=json_decode(file_get_contents($root.'/composer.json'),true,flags:JSON_THROW_ON_ERROR);
+$require=array_intersect_key($workspace['require'],array_flip(['php','lowelllab/hyperf-dpop']));
+$repositories=$workspace['repositories'];
+$repositories[0]['url']=$root.'/'.$repositories[0]['url'];
+$metadata=['name'=>'fixture/dpop-consumer','require'=>$require,'repositories'=>$repositories,'config'=>['allow-plugins'=>new stdClass()]];
 // This is an unpublished path development build; the consumer must explicitly opt into dev stability.
 $metadata['minimum-stability']='dev';$metadata['prefer-stable']=true;
 file_put_contents($consumer.'/composer.json',json_encode($metadata,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
@@ -18,8 +22,9 @@ if(Composer\InstalledVersions::isInstalled('phpunit/phpunit')){throw new Runtime
 foreach([Acme\Dpop\Authenticator::class,Acme\Dpop\Protocol\ProofVerifier::class,Acme\HyperfDpop\Middleware\DpopMiddleware::class,Acme\HyperfDpop\BootstrapValidator::class] as $class){if(!class_exists($class)){throw new RuntimeException('Package class unavailable');}}
 new Acme\Dpop\Protocol\ProofVerifier(new Acme\Dpop\ValueObject\SecurityPolicy());
 $config=(new Acme\HyperfDpop\ConfigProvider())();
-if(!isset($config['dependencies']) || $config['commands']!==[]){throw new RuntimeException('Optional command dependency was not isolated');}
-echo "Clean Composer consumer: package autoload and optional dependencies valid without root dev dependencies\n";
+if(!isset($config['dependencies']) || count($config['commands'])!==2){throw new RuntimeException('Required CLI commands were not registered');}
+if(Composer\InstalledVersions::isInstalled('hyperf/redis') || Composer\InstalledVersions::isInstalled('hyperf/devtool')){throw new RuntimeException('Optional host dependencies leaked into base installation');}
+echo "Clean Composer consumer: package autoload and required CLI valid without optional host dependencies\n";
 PHP;
 file_put_contents($consumer.'/check.php',$check);
 $process=proc_open([PHP_BINARY,$consumer.'/check.php'],[0=>['pipe','r'],1=>STDOUT,2=>STDERR],$pipes,$consumer);

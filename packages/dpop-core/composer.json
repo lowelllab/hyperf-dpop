@@ -4,7 +4,7 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": "^8.5",
+    "php": ">=8.2.35 <8.6",
     "ext-openssl": "*",
     "web-token/jwt-library": "^4.2.4",
     "psr/clock": "^1.0"
@@ -16,7 +16,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "0.1.x-dev"
+      "dev-main": "0.2.x-dev"
     }
   },
   "support": {

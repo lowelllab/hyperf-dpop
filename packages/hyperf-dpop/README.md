@@ -1,16 +1,18 @@
 # Hyperf DPoP
 
-`0.2.1` 正式版，Composer包名`lowelllab/hyperf-dpop`，依赖lowelllab/dpop-core ^0.1.0。PHP ^8.5，Hyperf ~3.2.0；首期验证运行引擎为Swoole6.2，PHP命名空间为`Acme\HyperfDpop`。
+`0.3.0`，Composer 包名 `lowelllab/hyperf-dpop`，依赖 `lowelllab/dpop-core ^0.2.0`。运行环境为 PHP `>=8.2.35 <8.6`、Hyperf `~3.2.0` 和 Linux Swoole `~6.2.5`。命名空间为 `Acme\HyperfDpop`。 [兼容说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/compatibility.md)
 
-## 安装
+## 安装 0.3.0
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2.1"
+composer require "lowelllab/hyperf-dpop:^0.3.0" "hyperf/redis:~3.2.0"
 ```
 
 默认从Packagist安装正式版并自动引入协议核心，无需path/VCS仓库或开发稳定性设置。目标生产拓扑验收及独立安全审计仍须按部署范围完成。接入前按[网关说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/gateway.md)部署入口检查、剥离请求尾部并隔离后端。
 
-ConfigProvider自动发现提供依赖工厂、启动配置检查、可选doctor命令和配置/DDL/网关模板发布。业务项目仍须显式实现TokenBindingResolverInterface并挂载DpopMiddleware到目标路由。
+ConfigProvider 自动发现提供依赖工厂、启动检查、诊断与网关命令。宿主可通过 Hyperf devtool 发布配置、DDL 和网关模板，并显式实现 TokenBindingResolverInterface、将 DpopMiddleware 挂载到目标路由。
+
+适配包使用支持 Swoole 运行方式的 `swow/psr7-plus ^1.1.2`，命令使用 Symfony Console 7.4。
 
 默认MySQL独立事务防重放及Redis共享认证预算，另提供显式Redis重放驱动。生产不得替换成无共享状态的防重放或Noop预算。
 
@@ -22,6 +24,6 @@ ConfigProvider自动发现提供依赖工厂、启动配置检查、可选doctor
 
 在 `config/autoload/dpop.php` 集中配置扩展。`mtls_enabled` 默认关闭。开启后，HAProxy 在 TLS 握手校验客户端证书，扩展在处理签发、刷新和资源请求前核验网关的验证标记。令牌仍绑定 DPoP 公钥。证书生命周期、JWT验证、会话撤销和业务授权由宿主负责。现有配置可合并新增键，详见[包能力与配置](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/configuration.md)。正式使用前阅读工作区完整文档；当前尚未完成独立安全审计。私密漏洞报告见[安全政策](SECURITY.md)。
 
-已安装 `hyperf/command` 时，使用 `php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成候选配置，再运行 `haproxy -c -f haproxy-dpop.next.cfg`。宿主继续使用原有日志配置。
+使用 `php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg` 直接生成候选配置，再运行 `haproxy -c -f haproxy-dpop.next.cfg`。
 
 完整文档：[使用示例](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/usage-examples.md)、[接入指南](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/integration.md)、[安全说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/security.md)。

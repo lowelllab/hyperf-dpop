@@ -1,6 +1,6 @@
 # DPoP Core
 
-`0.1.0` 正式版，Composer包名`lowelllab/dpop-core`。PHP ^8.5，使用web-token/jwt-library执行ES256验签；PHP命名空间为`Acme\Dpop`。
+`0.2.0`，Composer 包名 `lowelllab/dpop-core`。PHP `>=8.2.35 <8.6`，使用 OpenSSL 与 web-token/jwt-library 执行 ES256 验签。命名空间为 `Acme\Dpop`。 [兼容说明](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/compatibility.md)
 
 提供严格JSON/base64url、公钥指纹、RFC3986 URI规范化、必需nonce、时间策略和认证协调。只支持HTTP DPoP的ES256配置档，不包含账号认证或业务授权。
 

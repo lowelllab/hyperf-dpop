@@ -10,7 +10,11 @@ final class State
 {
     public function pdo(): \PDO
     {
-        return new \PDO((string) getenv('DPOP_TEST_MYSQL_DSN'), (string) getenv('DPOP_TEST_MYSQL_USER'), (string) getenv('DPOP_TEST_MYSQL_PASSWORD'), [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_EMULATE_PREPARES => false]);
+        return new \PDO((string) getenv('DPOP_TEST_MYSQL_DSN'), (string) getenv('DPOP_TEST_MYSQL_USER'), (string) getenv('DPOP_TEST_MYSQL_PASSWORD'), [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_TIMEOUT => 3,
+        ]);
     }
 
     public function issue(string $subject, string $jkt): array

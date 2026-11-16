@@ -16,6 +16,7 @@ final readonly class BootstrapValidator implements ListenerInterface
     public function listen(): array { return [BeforeServerStart::class]; }
     public function process(object $event): void
     {
+        RuntimeRequirements::assertSupported();
         // Resolve configuration only before fork: do not create live DB/socket connections here.
         foreach ([MtlsGuard::class, Authenticator::class, TokenBindingResolverInterface::class, ExternalUriResolverInterface::class, ClientSource::class, AdmissionBudgetInterface::class] as $id) { $this->container->get($id); }
     }

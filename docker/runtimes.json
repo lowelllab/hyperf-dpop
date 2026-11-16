@@ -1,0 +1,51 @@
+[
+  {
+    "version": "8.2.35",
+    "image": "php:8.2.35-cli-bookworm@sha256:ce09ca1d4b532edf9b0347b44a1968a80d9175addb581c450ba0c9a43fa0c5ea",
+    "phpunit": "11.5.58",
+    "phpunit_sha256": "9d488cd5e62b8eea20dd50ea1e2b65ff6e3837183922f152c7264407f82c368e",
+    "boundary": false
+  },
+  {
+    "version": "8.3.36",
+    "image": "php:8.3.36-cli-bookworm@sha256:232331112d3a7c5b98edeeddc3b85f610172f99352c0635fe6b3e166e47062cb",
+    "phpunit": "12.5.44",
+    "phpunit_sha256": "15714cd301c8d19377e8e5e5cd72712b8f921f4889621389f3a17344ddd2f1db",
+    "boundary": false
+  },
+  {
+    "version": "8.4.27",
+    "image": "php:8.4.27-cli-bookworm@sha256:b3e907a1108629c562c4bb313ce3449e34d49991f6bb2487913f6146f47200fe",
+    "phpunit": "13.4.5",
+    "phpunit_sha256": "b0cec6bc4a0d62b5cde873ce0a5d0e93a4cb833c87e638269d234e5ecee0c78f",
+    "boundary": false
+  },
+  {
+    "version": "8.5.12",
+    "image": "php:8.5.12-cli-bookworm@sha256:104890ada56869090c9cd0ec709fe205834d3e383b46d9995dc16cd6388a9302",
+    "phpunit": "13.4.5",
+    "phpunit_sha256": "b0cec6bc4a0d62b5cde873ce0a5d0e93a4cb833c87e638269d234e5ecee0c78f",
+    "boundary": false
+  },
+  {
+    "version": "8.3.0",
+    "image": "php:8.3.0-cli-bookworm@sha256:2ae8a4334536e4503d6e8c30885bf68dc4b169febaf42a351fdf68ca7aca2b8d",
+    "phpunit": "12.5.44",
+    "phpunit_sha256": "15714cd301c8d19377e8e5e5cd72712b8f921f4889621389f3a17344ddd2f1db",
+    "boundary": true
+  },
+  {
+    "version": "8.4.1",
+    "image": "php:8.4.1-cli-bookworm@sha256:246d2ca7e9cf21c4e7c354ce87e87bf1ad6d41b2061c77668845e04a8f8889d4",
+    "phpunit": "13.4.5",
+    "phpunit_sha256": "b0cec6bc4a0d62b5cde873ce0a5d0e93a4cb833c87e638269d234e5ecee0c78f",
+    "boundary": true
+  },
+  {
+    "version": "8.5.0",
+    "image": "php:8.5.0-cli-bookworm@sha256:4ff93cd1b053c4d5ff468ced40962092a350a8c86798fee96e807bc9b383ec75",
+    "phpunit": "13.4.5",
+    "phpunit_sha256": "b0cec6bc4a0d62b5cde873ce0a5d0e93a4cb833c87e638269d234e5ecee0c78f",
+    "boundary": true
+  }
+]

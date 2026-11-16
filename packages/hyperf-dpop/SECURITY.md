@@ -1,6 +1,6 @@
 # 安全政策
 
-维护入口：GitHub账号与仓库所有者 **lowelllab**。当前正式安全修复基线为 Hyperf 适配 0.2.1、协议核心 0.1.0；报告问题请附所用包版本和运行时。历史beta可用于复现，业务接入优先使用正式版。
+维护入口：GitHub账号与仓库所有者 **lowelllab**。本包的安全修复基线为 0.3.0，配套协议核心为 0.2.0；报告问题请附所用包版本和运行时。历史beta可用于复现，业务接入优先使用正式版。
 
 ## 私密报告
 
@@ -16,6 +16,6 @@
 
 ## 运行与验证边界
 
-已测PHP8.5.12、Hyperf Framework3.2.0/DI3.2.2及Swoole6.2.4；适配包要求PHP ^8.5及Hyperf ~3.2.0。入口必须检查重复认证头、拒绝认证Trailer声明、剥离请求尾部，以HTTP/1.1转发并隔离后端。原生Swoole HTTP2受保护入口503；原生HTTP1异常尾部报文可能在PHP前等待。
+0.3.0 支持 PHP 8.2.35 至 8.5.x、Hyperf 3.2 和 Linux Swoole 6.2.5。入口必须检查重复认证头、拒绝认证尾部声明、剥离请求尾部、转发 HTTP/1.1，并隔离后端。原生 Swoole HTTP/2 受保护入口返回 503。 [支持范围](https://github.com/lowelllab/hyperf-dpop/blob/main/docs/compatibility.md)
 
 正式版本标签表示可从默认稳定Composer渠道安装；不表示独立安全审计、目标生产拓扑、容量/SLO或HA/状态丢失/备份恢复已验收。宿主仍负责可信令牌绑定、JWT/会话与撤销、账户授权和刷新锁/CAS；DPoP不替代HTTPS或body/query完整性。

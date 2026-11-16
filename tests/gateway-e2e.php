@@ -39,7 +39,12 @@ if ($action === 'serve') {
             chmod("$dir/$name.key", 0600);
         }
     }
-    $render = proc_open([PHP_BINARY, $root . '/examples/hyperf/bin/hyperf.php', 'dpop:gateway-config'], [1 => ['file', $dir . '/haproxy.cfg', 'w'], 2 => STDERR], $pipes, $root);
+    $render = proc_open(
+        [PHP_BINARY, $root . '/examples/hyperf/bin/hyperf.php', 'dpop:gateway-config', '--output', $dir . '/haproxy.cfg'],
+        [1 => STDOUT, 2 => STDERR],
+        $pipes,
+        $root
+    );
     if (!is_resource($render) || proc_close($render) !== 0) {
         throw new RuntimeException('Cannot render gateway configuration from dpop.php');
     }
@@ -95,8 +100,45 @@ $request = static function (string $method, string $path, array $headers, ?array
     return ['status'=>curl_getinfo($curl,CURLINFO_RESPONSE_CODE),'protocol'=>curl_getinfo($curl,CURLINFO_HTTP_VERSION),'curl_error'=>curl_errno($curl),'verify'=>curl_getinfo($curl,CURLINFO_SSL_VERIFYRESULT),'headers'=>$out,'data'=>is_string($raw)?json_decode($raw,true):null];
 };
 $expect = static function (string $name, array $response, int $status, int $protocol, ?string $error = null) use ($check): void {
-    $check($name, $response['status']===$status && $response['protocol']===$protocol && $response['curl_error']===0 && $response['verify']===0 && ($error===null || ($response['data']['error']??null)===$error), ['status'=>$response['status'],'expected'=>$status,'negotiated_http_version'=>$response['protocol'],'expected_http_version'=>$protocol,'error'=>$response['data']['error']??null]);
+    $check($name, $response['status']===$status && $response['protocol']===$protocol && $response['curl_error']===0 && $response['verify']===0 && ($error===null || ($response['data']['error']??null)===$error), ['status'=>$response['status'],'expected'=>$status,'negotiated_http_version'=>$response['protocol'],'expected_http_version'=>$protocol,'curl_error'=>$response['curl_error'],'error'=>$response['data']['error']??null]);
 };
+if (in_array($action, ['recovery-prepare', 'recovery-outage', 'recovery-restored'], true)) {
+    $fixture = sys_get_temp_dir() . '/dpop-gateway-recovery.json';
+    $protocol = CURL_HTTP_VERSION_1_1;
+    if ($action === 'recovery-prepare') {
+        $factory = new ProofFactory();
+        $issue = static fn(?string $nonce = null): array => $request(
+            'POST', '/token', ['DPoP: ' . $factory->make(array_filter([
+                'htm' => 'POST', 'htu' => $origin . '/token', 'nonce' => $nonce,
+            ]))], ['subject' => 'fixture-recovery'], $protocol
+        );
+        $challenge = $issue();
+        $expect('recovery-issuance-challenge', $challenge, 400, $protocol, 'use_dpop_nonce');
+        $issued = $issue($challenge['headers']['dpop-nonce']);
+        $expect('recovery-issuance', $issued, 200, $protocol);
+
+        $access = $issued['data']['access_token'];
+        $claims = ['htu' => $origin . '/items', 'ath' => Base64Url::encode(hash('sha256', $access, true))];
+        $authorization = 'Authorization: DPoP ' . $access;
+        $challenge = $request('GET', '/items', [$authorization, 'DPoP: ' . $factory->make($claims)], null, $protocol);
+        $expect('recovery-resource-challenge', $challenge, 401, $protocol, 'use_dpop_nonce');
+        $proof = $factory->make($claims + ['nonce' => $challenge['headers']['dpop-nonce']]);
+        file_put_contents($fixture, json_encode([$authorization, 'DPoP: ' . $proof], JSON_THROW_ON_ERROR));
+        chmod($fixture, 0600);
+    } else {
+        $headers = json_decode(file_get_contents($fixture), true, flags: JSON_THROW_ON_ERROR);
+        $response = $request('GET', '/items', $headers, null, $protocol);
+        if ($action === 'recovery-outage') {
+            $expect('dependency-outage-fails-closed', $response, 503, $protocol, 'dpop_security_unavailable');
+        } else {
+            $expect('unconsumed-proof-after-recovery', $response, 200, $protocol);
+            $expect('proof-rejected-after-one-success', $request('GET', '/items', $headers, null, $protocol), 401, $protocol, 'invalid_dpop_proof');
+            unlink($fixture);
+        }
+    }
+    echo "$action checks passed\n";
+    exit;
+}
 $rawRequest = static function (string $path, array $headers, string $trailers, string $body = '{}', int $port = 9511) use ($dir, $mtls): array {
     $ssl = ['verify_peer'=>true,'verify_peer_name'=>true,'peer_name'=>'api.example','cafile'=>$dir.'/ca.pem','alpn_protocols'=>'http/1.1'];
     if ($mtls && $port === 9511) { $ssl += ['local_cert' => "$dir/trusted.pem", 'local_pk' => "$dir/trusted.key"]; }

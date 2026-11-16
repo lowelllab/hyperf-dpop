@@ -1,37 +1,65 @@
 name: DPoP verification
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [compatibility, published]
+        default: compatibility
+      core_version:
+        type: string
+        description: Exact published core version
+      adapter_version:
+        type: string
+        description: Exact published adapter version
+      core_commit:
+        type: string
+        description: Expected core tag commit
+      adapter_commit:
+        type: string
+        description: Expected adapter tag commit
 permissions:
   contents: read
 jobs:
-  php85-hyperf32:
+  runtimes:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: matrix
+        env:
+          DPOP_MODE: ${{ inputs.mode }}
+        run: |
+          matrix=$(jq -c --arg mode "$DPOP_MODE" '{include: map(select($mode != "published" or (.boundary | not)))}' docker/runtimes.json)
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+  compatibility:
+    needs: runtimes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.runtimes.outputs.matrix) }}
+    name: PHP ${{ matrix.version }} / Hyperf 3.2
+    env:
+      DPOP_EXPECTED_PHP: ${{ matrix.version }}
+      DPOP_PHP_IMAGE: ${{ matrix.image }}
+      DPOP_PHPUNIT_VERSION: ${{ matrix.phpunit }}
+      DPOP_PHPUNIT_SHA256: ${{ matrix.phpunit_sha256 }}
+      DPOP_TEST_IMAGE: hyperf-dpop-lab:php${{ matrix.version }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - run: docker compose build test
-      - run: docker compose up -d --wait mysql redis
-      - run: docker compose run --rm test composer install --no-interaction --prefer-dist
-      - run: docker compose run --rm test php tools/runtime.php
-      - run: docker compose run --rm test composer validate-packages
-      - run: docker compose run --rm test php tools/consumer-smoke.php
-      - run: docker compose run --rm test php tools/prepare-packages.php
-      - run: docker compose run --rm test php tools/verify-package-exports.php
-      - run: docker compose run --rm test composer check
-      - run: docker compose run --rm test php tests/http-e2e.php
-      - run: docker compose run --rm test php tests/tls-e2e.php
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait gateway
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml exec -T gateway-app php tests/gateway-e2e.php client
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml run --rm --no-deps gateway-wire
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml stop gateway gateway-app
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait --force-recreate --no-deps gateway-app
+      - if: inputs.mode != 'published'
+        run: |
+          bash tools/verify-compatibility.sh workspace
+          bash tools/verify-compatibility.sh candidate
+      - if: inputs.mode == 'published'
         env:
-          DPOP_MTLS_ENABLED: 'true'
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml up -d --wait --force-recreate --no-deps gateway
-        env:
-          DPOP_MTLS_ENABLED: 'true'
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml exec -T gateway-app php tests/gateway-e2e.php client
-      - run: docker compose -f compose.yaml -f compose.gateway.yaml stop gateway gateway-app
-      - run: docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor
-      - run: docker compose run --rm test composer audit --locked
-      - run: docker compose run --rm test php tools/verify-docs.php
-      - if: always()
-        run: docker compose -f compose.yaml -f compose.gateway.yaml down --remove-orphans
+          DPOP_CORE_VERSION: ${{ inputs.core_version }}
+          DPOP_ADAPTER_VERSION: ${{ inputs.adapter_version }}
+          DPOP_CORE_COMMIT: ${{ inputs.core_commit }}
+          DPOP_ADAPTER_COMMIT: ${{ inputs.adapter_commit }}
+        run: |
+          bash tools/verify-compatibility.sh published "$DPOP_CORE_VERSION" "$DPOP_ADAPTER_VERSION" "$DPOP_CORE_COMMIT" "$DPOP_ADAPTER_COMMIT"

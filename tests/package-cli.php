@@ -85,9 +85,9 @@ if(!str_contains($custom,'unverified')){throw new RuntimeException('Custom budge
 $writeDependencies([Acme\HyperfDpop\Admission\AdmissionBudgetInterface::class=>DpopTest\Support\ProbeableBudget::class]);
 $run('custom-budget-readonly-probe',['dpop:doctor']);$writeDependencies();
 $run('publish-ddl',['vendor:publish','lowelllab/hyperf-dpop','--id=schema']);
-if(hash_file('sha256',$app.'/dpop-proofs.sql')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/dpop-proofs.sql')){throw new RuntimeException('Published DDL differs');}
+if(hash_file('sha256',$app.'/dpop-proofs.sql')!==hash_file('sha256',Environment::publishedFile('dpop-proofs.sql'))){throw new RuntimeException('Published DDL differs');}
 $run('publish-gateway',['vendor:publish','lowelllab/hyperf-dpop','--id=gateway']);
-if(hash_file('sha256',$app.'/haproxy-dpop.cfg')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/haproxy.cfg')){throw new RuntimeException('Published gateway differs');}
+if(hash_file('sha256',$app.'/haproxy-dpop.cfg')!==hash_file('sha256',Environment::publishedFile('haproxy.cfg'))){throw new RuntimeException('Published gateway differs');}
 file_put_contents($app.'/haproxy-dpop.cfg', "# host-owned gateway\n");
 $run('publish-gateway-preserves-existing',['vendor:publish','lowelllab/hyperf-dpop','--id=gateway']);
 if(file_get_contents($app.'/haproxy-dpop.cfg')!=="# host-owned gateway\n"){throw new RuntimeException('Host gateway overwritten');}
@@ -95,7 +95,7 @@ $original=file_get_contents($app.'/config/autoload/dpop.php');
 $run('publish-config-preserves-existing',['vendor:publish','lowelllab/hyperf-dpop','--id=config']);
 if(file_get_contents($app.'/config/autoload/dpop.php')!==$original){throw new RuntimeException('Config overwritten without force');}
 $run('publish-config-explicit-force',['vendor:publish','lowelllab/hyperf-dpop','--id=config','--force']);
-if(hash_file('sha256',$app.'/config/autoload/dpop.php')!==hash_file('sha256',$root.'/packages/hyperf-dpop/publish/dpop.php')){throw new RuntimeException('Published config differs');}
+if(hash_file('sha256',$app.'/config/autoload/dpop.php')!==hash_file('sha256',Environment::publishedFile('dpop.php'))){throw new RuntimeException('Published config differs');}
 if($before!==(int)Environment::pdo()->query('SELECT COUNT(*) FROM dpop_proofs')->fetchColumn()){throw new RuntimeException('Doctor/publishing wrote authentication data');}
 file_put_contents($root.'/build/review2-cli-result.json',json_encode(['cases'=>$cases,'production_cache'=>true,'authentication_writes'=>0],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo count($cases)." production CLI scenarios passed: cold/warm cache, fail-closed config, custom probes, config/DDL publishing; no authentication writes\n";

@@ -4,9 +4,9 @@
   "type": "project",
   "license": "MIT",
   "require": {
-    "php": "^8.5",
-    "lowelllab/dpop-core": "^0.1@dev",
-    "lowelllab/hyperf-dpop": "^0.2@dev",
+    "php": ">=8.2.35 <8.6",
+    "lowelllab/dpop-core": "^0.2@dev",
+    "lowelllab/hyperf-dpop": "^0.3@dev",
     "hyperf/framework": "~3.2.0",
     "hyperf/di": "~3.2.0",
     "hyperf/command": "~3.2.0"
@@ -14,15 +14,14 @@
   "require-dev": {
     "hyperf/devtool": "~3.2.0",
     "hyperf/redis": "~3.2.0",
-    "phpstan/phpstan": "^2.3",
-    "phpunit/phpunit": "^13.4"
+    "phpstan/phpstan": "^2.3"
   },
-  "repositories": [{"type": "path", "url": "packages/*", "options": {"symlink": true, "versions": {"lowelllab/dpop-core": "0.1.x-dev", "lowelllab/hyperf-dpop": "0.2.x-dev"}}}],
+  "repositories": [{"type": "path", "url": "packages/*", "options": {"symlink": true, "versions": {"lowelllab/dpop-core": "0.2.x-dev", "lowelllab/hyperf-dpop": "0.3.x-dev"}}}],
   "autoload-dev": {"psr-4": {"DpopTest\\": "tests/", "DpopExample\\": "examples/hyperf/app/"}},
-  "config": {"sort-packages": true, "allow-plugins": {}},
+  "config": {"platform": {"php": "8.2.35"}, "sort-packages": true, "allow-plugins": {}},
   "scripts": {
-    "test": "phpunit tests",
-    "analyse": "phpstan analyse --no-progress",
+    "test": "phpunit --display-deprecations --fail-on-deprecation --fail-on-skipped tests",
+    "analyse": "phpstan analyse --memory-limit=512M --no-progress",
     "check": ["@test", "@analyse", "@php tools/lint.php", "@php tests/concurrency.php", "@php tests/coroutine.php", "@php tests/package-cli.php"],
     "validate-packages": ["@composer validate --strict", "@composer validate --strict packages/dpop-core/composer.json", "@composer validate --strict packages/hyperf-dpop/composer.json"]
   }

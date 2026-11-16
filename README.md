@@ -26,7 +26,7 @@
 
 ## 运行环境
 
-- PHP 8.5、Hyperf 3.2。
+- 适配包 0.3.0 候选面向 PHP 8.2.35 至 8.5.x、Hyperf 3.2 和 Linux Swoole 6.2.5。版本矩阵及验收流程见 [PHP 兼容说明](docs/compatibility.md)。
 - OpenSSL 扩展；默认 MySQL 防重放驱动需要 PDO MySQL 扩展。
 - 默认存储组合为 MySQL 防重放账本与 Redis 共享准入预算。
 
@@ -36,7 +36,7 @@
 composer require "lowelllab/hyperf-dpop:^0.2.1"
 ```
 
-Packagist 当前提供的正式适配包为 v0.2.1，Composer 会自动引入协议核心 v0.1.0。使用默认 Redis 认证预算及诊断和网关命令时，参照[使用示例](docs/usage-examples.md)安装 `hyperf/redis` 和 `hyperf/command`。
+当前公开适配包 v0.2.1 及其核心 v0.1.0 要求 PHP 8.5。使用默认 Redis 认证预算及诊断和网关命令时，参照[使用示例](docs/usage-examples.md)安装 `hyperf/redis` 和 `hyperf/command`。兼容版的标准安装见 [PHP 兼容说明](docs/compatibility.md)。
 
 在 `config/autoload/dpop.php` 配置公开地址、存储和网关。mTLS 默认关闭，可按部署需要启用。用 `dpop:gateway-config --output haproxy-dpop.next.cfg` 生成候选配置，再执行 `haproxy -c -f haproxy-dpop.next.cfg`。 [网关接入](docs/gateway.md)
 

@@ -4,7 +4,7 @@
 
 ## 版本与依赖
 
-当前双包为lowelllab/dpop-core及lowelllab/hyperf-dpop；正式版本分别为核心 0.1.0、适配 0.2.1，分发见[发布指南](publishing.md)；[beta发行](release-0.1.0-beta.1.md)与[独立验收](acceptance-beta-20261103.md)保留历史。开发工作区分别按 0.1.x-dev 和 0.2.x-dev 解析。PHP命名空间保持Acme\Dpop及Acme\HyperfDpop。使用[发布指南](publishing.md)准备两个独立包根目录，不将开发工作区提交为扩展包。
+当前双包为 lowelllab/dpop-core 及 lowelllab/hyperf-dpop。公开版本分别为核心 0.1.0、适配 0.2.1，候选工作区按 0.2.x-dev 和 0.3.x-dev 解析。PHP 命名空间为 Acme\Dpop 及 Acme\HyperfDpop。使用 [发布指南](publishing.md) 准备两个独立包根目录。 [兼容说明](compatibility.md)
 
 首版许可MIT；第三方依赖保持各自许可。更新依赖时重新执行协议边界、存储竞争、协程取消和HTTP端到端，不以composer约束满足替代兼容性结果。
 
@@ -14,22 +14,13 @@
 
 ```bash
 docker compose build test
-docker compose up -d --wait mysql redis
-docker compose run --rm test composer install --no-interaction
-docker compose run --rm test php tools/runtime.php
-docker compose run --rm test composer validate-packages
-docker compose run --rm test php tools/consumer-smoke.php
-docker compose run --rm test composer check
-docker compose run --rm test php tests/http-e2e.php
-docker compose run --rm test php tests/tls-e2e.php
-docker compose run --rm test php examples/hyperf/bin/hyperf.php dpop:doctor
-docker compose run --rm test composer audit --locked
-docker compose run --rm test php tools/verify-docs.php
+bash tools/verify-compatibility.sh workspace
+bash tools/verify-compatibility.sh candidate
 ```
 
 全新临时数据库先通过`php tools/setup-example.php`创建隔离测试schema；HTTP端到端脚本会自行执行这一初始化。以上只用于此独立实验环境，不是生产迁移命令。
 
-测试证据写入build目录，忽略vendor/build/runtime，不将合成私钥或完整凭据加入发布包。清理本实验服务用`docker compose down`；MySQL为tmpfs，关闭后测试数据丢失，下一轮需重新初始化。不会操作其他Compose项目。
+测试证据写入 `build`，发布白名单排除临时证书和凭据。兼容检查按独立 Compose 项目启动和清理 MySQL、Redis 与网关。并行运行不同 PHP 版本时，各自使用干净的工作区及不同的镜像标签。
 
 ## 检查边界
 

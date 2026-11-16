@@ -1,21 +1,22 @@
 # Isolated verification overlay; no host ports or production credentials.
 services:
   gateway-app:
-    image: hyperf-dpop-lab:php8.5
+    image: ${DPOP_TEST_IMAGE:-hyperf-dpop-lab:php8.5.12}
     working_dir: /workspace
-    volumes: [.:/workspace]
+    volumes: ["${DPOP_WORKSPACE:-.}:/workspace"]
     command: [php, tests/gateway-e2e.php, serve]
     environment:
       DPOP_EXAMPLE_ORIGIN: https://api.example:9511
       DPOP_MTLS_ENABLED: ${DPOP_MTLS_ENABLED:-false}
+      DPOP_TEST_REPLAY_DRIVER: ${DPOP_TEST_REPLAY_DRIVER:-mysql}
       DPOP_GATEWAY_BIND: 127.0.0.1:9511
       DPOP_GATEWAY_CERT: /workspace/build/gateway/tls.pem
       DPOP_BACKEND_ADDR: 127.0.0.1:9509
       DPOP_MTLS_CLIENT_CA: /workspace/build/gateway/ca.pem
-      DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
+      DPOP_TEST_MYSQL_DSN: mysql:host=${DPOP_GATEWAY_MYSQL_HOST:-mysql};dbname=dpop_test;charset=utf8mb4
       DPOP_TEST_MYSQL_USER: dpop
       DPOP_TEST_MYSQL_PASSWORD: isolated-test-only
-      DPOP_TEST_REDIS_HOST: redis
+      DPOP_TEST_REDIS_HOST: ${DPOP_GATEWAY_REDIS_HOST:-redis}
     depends_on:
       mysql: {condition: service_healthy}
       redis: {condition: service_healthy}
@@ -29,7 +30,7 @@ services:
     # Test fixture reads a temporary private key from a host-mounted directory.
     user: '0:0'
     network_mode: service:gateway-app
-    volumes: [.:/workspace:ro]
+    volumes: ["${DPOP_WORKSPACE:-.}:/workspace:ro"]
     command: [haproxy, -W, -db, -f, /workspace/build/gateway/haproxy.cfg]
     depends_on:
       gateway-app: {condition: service_healthy}
@@ -37,6 +38,6 @@ services:
     image: node@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85
     working_dir: /workspace
     network_mode: service:gateway-app
-    volumes: [.:/workspace:ro]
+    volumes: ["${DPOP_WORKSPACE:-.}:/workspace:ro"]
     command: [node, tests/gateway-trailers.mjs]
     profiles: [wire]

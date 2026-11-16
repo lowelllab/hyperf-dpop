@@ -4,6 +4,8 @@
 
 服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。两个包名为 `lowelllab/hyperf-dpop`、`lowelllab/dpop-core`，正式版本分别为 0.2.1、0.1.0，以下从默认Packagist安装。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
 
+PHP 8.2.35 至 8.5.x 候选的安装和验收见 [PHP 兼容说明](compatibility.md)。
+
 ## 1 安装正式包
 
 在宿主目录执行：

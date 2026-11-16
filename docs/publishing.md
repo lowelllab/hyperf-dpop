@@ -33,7 +33,13 @@ docker compose run --rm --no-deps test php tools/verify-package-exports.php
 
 每次准备新批次，输出 `build/packagist/<批次>/dpop-core` 与 `hyperf-dpop`，指针为build/packagist-latest.json。只复制composer.json、README、LICENSE、SECURITY.md、src及适用publish模板，manifest保存逐文件SHA256；不包含测试目录、vendor、.env、runtime、私钥或主仓配置。
 
-验证器在全新导出副本建立本地main分支，执行strict及第三个干净VCS消费，确认别名/依赖和PHP API；拒绝重置已有验证仓库。它不会添加远端、推送、打公开标签或提交Packagist。正式发布还要用计划标签测试准确的预发布依赖解析。
+验证器在全新导出副本创建本地候选标签，核对稳定安装、两个提交和逐文件 SHA-256。候选为核心 0.2.0、适配 0.3.0。运行 `bash tools/verify-compatibility.sh candidate` 在独立应用验证默认和最低稳定依赖及网关链路。 [PHP 兼容说明](compatibility.md)
+
+正式发布后，在对应源码上运行带期望提交的公开安装验证。GitHub Actions 的 DPoP verification 工作流选择 `published`，会在四个 PHP 安全补丁点执行相同检查。
+
+```bash
+bash tools/verify-compatibility.sh published 0.2.0 0.3.0 "$CORE_COMMIT" "$ADAPTER_COMMIT"
+```
 
 ## 后续发行顺序
 

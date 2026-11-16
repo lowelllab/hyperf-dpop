@@ -6,7 +6,7 @@
 
 ## 1. 包与运行环境
 
-业务项目安装`lowelllab/hyperf-dpop`即可引入核心。开发工作区安装与检查命令见[维护指南](maintenance.md)。包使用PHP `^8.5`，Hyperf组件`~3.2.0`；已验证的实际组合以[实施记录](../spec/feature_20261102_F001_hyperf-dpop-extension/implementation-progress.md)为准。
+业务项目安装 `lowelllab/hyperf-dpop` 即可引入核心。当前公开版使用 PHP `^8.5` 和 Hyperf `~3.2.0`。兼容候选面向 PHP 8.2.35 至 8.5.x，安装和验证见 [PHP 兼容说明](compatibility.md)。
 
 正式接入使用 `composer require "lowelllab/hyperf-dpop:^0.2.1"`，核心自动引入，保持宿主默认稳定性。默认准入预算需要 `hyperf/redis`，`dpop:doctor` 和 `dpop:gateway-config` 需要 `hyperf/command`。 [完整安装示例](usage-examples.md) · [发布指南](publishing.md)
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 / Core 0.2.0 · 候选
+
+- 声明 PHP 8.2.35 至 8.5.x，按各分支安全补丁和最低正式版本验证。
+- Hyperf 适配声明 Swoole 6.2.5 起的 6.2 系列及 Hyperf CLI 依赖。
+- 新增隔离的稳定候选及 Packagist 消费验证，覆盖 MySQL/Redis 重放和 mTLS。 [PHP 兼容说明](docs/compatibility.md)
+
 ## 0.2.1 · 2026-11-15
 
 - `dpop:gateway-config --output` 直接写入 HAProxy 配置文件，适用于保留默认启动日志的 Hyperf 宿主。

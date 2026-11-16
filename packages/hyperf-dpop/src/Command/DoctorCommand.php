@@ -7,6 +7,7 @@ use Acme\Dpop\Contract\ReplayStoreInterface;
 use Acme\HyperfDpop\Admission\{AdmissionBudgetInterface, AdmissionBudgetProbeInterface};
 use Acme\HyperfDpop\Contract\{TokenBindingResolverInterface, ExternalUriResolverInterface};
 use Acme\HyperfDpop\Http\{ClientSource, MtlsGuard};
+use Acme\HyperfDpop\RuntimeRequirements;
 use Acme\HyperfDpop\Store\ReplayStoreProbeInterface;
 use Hyperf\Command\Command;
 use Psr\Container\ContainerInterface;
@@ -16,8 +17,9 @@ final class DoctorCommand extends Command
     public function __construct(private readonly ContainerInterface $container) { parent::__construct('dpop:doctor'); }
     public function handle(): int
     {
-        $check = 'configuration';
+        $check = 'runtime';
         try {
+            RuntimeRequirements::assertSupported();
             foreach ([MtlsGuard::class, Authenticator::class, TokenBindingResolverInterface::class, ExternalUriResolverInterface::class, ClientSource::class, AdmissionBudgetInterface::class] as $id) { $check = $id; $this->container->get($id); }
             $check = 'replay-schema';
             $store = $this->container->get(ReplayStoreInterface::class);

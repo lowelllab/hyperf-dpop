@@ -56,7 +56,7 @@ final class ConfigProvider
                 ),
             ],
             'listeners' => [BootstrapValidator::class],
-            'commands' => class_exists(\Hyperf\Command\Command::class) ? [Command\DoctorCommand::class, Command\GatewayConfigCommand::class] : [],
+            'commands' => [Command\DoctorCommand::class, Command\GatewayConfigCommand::class],
             'publish' => [
                 ['id' => 'config', 'description' => 'DPoP configuration; fill keys and resolver before enabling', 'source' => __DIR__ . '/../publish/dpop.php', 'destination' => BASE_PATH . '/config/autoload/dpop.php'],
                 ['id' => 'schema', 'description' => 'Explicit MySQL DDL; never run automatically', 'source' => __DIR__ . '/../publish/dpop-proofs.sql', 'destination' => BASE_PATH . '/dpop-proofs.sql'],

@@ -6,10 +6,10 @@
 
 | 维度 | 当前约束/依据 |
 | --- | --- |
-| 语言 | PHP `^8.5`，源码使用 `strict_types=1`；已测 PHP 8.5.12 |
+| 语言 | 兼容候选 PHP `>=8.2.35 <8.6`，源码使用 `strict_types=1`。版本验收见 [PHP 兼容说明](../../docs/compatibility.md) |
 | 前端框架 | （未检测到）；项目是服务端扩展库 |
 | 后端框架 | 适配层 Hyperf 组件 `~3.2.0`；已测 Framework 3.2.0、DI 3.2.2 |
-| 运行引擎 | 首期实测 Swoole 6.2.4；其他引擎组合未建立兼容性结论 |
+| 运行引擎 | 兼容候选 Linux Swoole `~6.2.5` |
 | 密码学 | OpenSSL、`web-token/jwt-library ^4.2.4`，当前只支持 ES256/P-256 |
 | 数据库 | 默认 MySQL/InnoDB 防重放，需 PDO MySQL；实验镜像标签为 MySQL 8.4 |
 | 缓存/共享状态 | Redis 共享预算；可选 Redis 重放；实验镜像标签为 Redis 7.4 |
