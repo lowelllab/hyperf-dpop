@@ -29,6 +29,8 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - id: matrix
         env:
           DPOP_MODE: ${{ inputs.mode }}
@@ -50,6 +52,8 @@ jobs:
       DPOP_TEST_IMAGE: hyperf-dpop-lab:php${{ matrix.version }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
       - run: docker compose build test
       - if: inputs.mode != 'published'
         run: |
