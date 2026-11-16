@@ -1,6 +1,6 @@
 # PHP 兼容与验证
 
-兼容候选为 `lowelllab/dpop-core 0.2.0` 和 `lowelllab/hyperf-dpop 0.3.0`。两包声明 PHP `>=8.2.35 <8.6`，以下七个 PHP 版本已通过本地验收。当前公开版见 [发布记录](release-0.2.1.md)，详细结果见 [实施计划](../spec/feature_20261116_F001_php-runtime-compatibility/spec-plan.md#本地验证记录--2026-11-16)。
+正式版本为 `lowelllab/dpop-core 0.2.0` 和 `lowelllab/hyperf-dpop 0.3.0`。两包声明 PHP `>=8.2.35 <8.6`，以下七个 PHP 版本已通过发行前 CI。四个安全补丁点通过默认 Packagist 干净安装与回归。结果见 [发布记录](release-0.3.0.md)，详细结果见 [实施计划](../spec/feature_20261116_F001_php-runtime-compatibility/spec-plan.md#本地验证记录--2026-11-16)。
 
 | PHP 分支 | 安全补丁验证点 | 最低正式版本验证点 |
 | --- | --- | --- |
@@ -13,7 +13,7 @@ PHP 发布团队跳过了 8.4.0。生产使用各分支当前安全补丁。PHP 
 
 ## 运行环境和安装
 
-核心包使用 OpenSSL，无需 Hyperf。适配包要求 Hyperf 3.2、Linux Swoole 6.2.5 起的 6.2 系列，并随包安装诊断与网关命令。0.3.0 发布后，标准宿主执行以下命令：
+核心包使用 OpenSSL，无需 Hyperf。适配包要求 Hyperf 3.2、Linux Swoole 6.2.5 起的 6.2 系列，并随包安装诊断与网关命令。在 Hyperf 宿主中执行以下命令：
 
 ```bash
 composer require "lowelllab/hyperf-dpop:^0.3.0" "hyperf/redis:~3.2.0"

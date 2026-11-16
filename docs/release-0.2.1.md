@@ -1,6 +1,6 @@
 # Hyperf DPoP 0.2.1 发布与验收
 
-2026-11-15（Asia/Shanghai）发布适配包 `lowelllab/hyperf-dpop` v0.2.1，提交 `d98d7e8f8a5bfd04e6f0b71c194333d1a54e6916`。GitHub 和 Packagist 后续下架了旧版适配包，当前正式版为 v0.2.1。协议核心沿用 v0.1.0。 [GitHub Release](https://github.com/lowelllab/hyperf-dpop-package/releases/tag/v0.2.1) · [Packagist](https://packagist.org/packages/lowelllab/hyperf-dpop#v0.2.1)
+2026-11-15（Asia/Shanghai）发布适配包 `lowelllab/hyperf-dpop` v0.2.1，提交 `d98d7e8f8a5bfd04e6f0b71c194333d1a54e6916`。GitHub 和 Packagist 后续下架了旧版适配包，当时的正式版为 v0.2.1。协议核心沿用 v0.1.0。 [GitHub Release](https://github.com/lowelllab/hyperf-dpop-package/releases/tag/v0.2.1) · [Packagist](https://packagist.org/packages/lowelllab/hyperf-dpop#v0.2.1)
 
 新增 `dpop:gateway-config --output`，直接写入配置文件。生成成功时整体替换并保留已有文件权限，失败时保留已有文件。 [配置指南](configuration.md)
 

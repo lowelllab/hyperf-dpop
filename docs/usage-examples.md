@@ -2,19 +2,19 @@
 
 下面以现有 Hyperf 应用接入不透明令牌为例，串联配置、登录签发、受保护资源、刷新和客户端 nonce 重试。JWT 接入方式见第 7 节。
 
-服务端需要 PHP 8.5、Hyperf 3.2、OpenSSL、PDO MySQL 和 Redis。两个包名为 `lowelllab/hyperf-dpop`、`lowelllab/dpop-core`，正式版本分别为 0.2.1、0.1.0，以下从默认Packagist安装。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
+服务端使用 PHP 8.2.35 至 8.5.x、Hyperf 3.2、Linux Swoole 6.2.5、OpenSSL、PDO MySQL 和 Redis。下文从默认 Packagist 安装 `lowelllab/hyperf-dpop` 0.3.0 和 `lowelllab/dpop-core` 0.2.0。PHP 类仍使用 `Acme` 命名空间。账号校验、会话和权限使用宿主自己的业务服务。
 
-PHP 8.2.35 至 8.5.x 候选的安装和验收见 [PHP 兼容说明](compatibility.md)。
+运行时版本矩阵见 [PHP 兼容说明](compatibility.md)。
 
 ## 1 安装正式包
 
 在宿主目录执行：
 
 ```bash
-composer require "lowelllab/hyperf-dpop:^0.2.1" "hyperf/redis:~3.2.0" "hyperf/command:~3.2.0"
+composer require "lowelllab/hyperf-dpop:^0.3.0" "hyperf/redis:~3.2.0"
 ```
 
-Composer 从默认 Packagist 安装适配包并自动引入协议核心。已有项目如果使用旧版精确约束或本地仓库覆盖，先按升级步骤调整配置，再由 Composer 更新锁文件。 [升级说明](publishing.md#升级到-021)
+Composer 从默认 Packagist 安装适配包并自动引入协议核心。已有项目如果使用旧版精确约束或本地仓库覆盖，先按升级步骤调整配置，再由 Composer 更新锁文件。 [升级说明](publishing.md#升级到-030)
 
 ## 2 配置与建表
 
@@ -601,6 +601,8 @@ DEMO_CLIENT_KEY="$TLS_DIR/client-trusted.key" \
 上线入口必须在重复头被折叠前拒绝重复 `Authorization` / `DPoP`。DPoP 不签名 body 和 query，HTTPS、业务权限、刷新事务及业务幂等仍由宿主负责。详细约束见[接入指南](integration.md)与[安全说明](security.md)。仓库中的[示例控制器](../examples/hyperf/app/ExampleController.php)、[会话实现](../examples/hyperf/app/State.php)和[JWT 示例](../examples/hyperf/app/JwtTokens.php)可以辅助理解接口，但其中的合成身份不能直接用于生产登录。
 
 ### Packagist 全新安装复测
+
+0.3.0 与协议核心 0.2.0 的四分支复验及宿主复验见 [本次发布记录](release-0.3.0.md)。以下保留 0.2.1 的验收记录。
 
 2026-11-15 使用全新的 Hyperf 3.2.0 骨架和空 Composer 缓存，从 Packagist 安装了 `lowelllab/hyperf-dpop v0.2.1` 及其依赖 `lowelllab/dpop-core v0.1.0`。两个包共 54 个文件的 SHA-256 与对应标签一致。测试环境使用 PHP 8.5.12、Swoole 6.2.4、HAProxy 3.2.26，以及独立 MySQL、Redis 和宿主测试账号。 [复测使用的文档版本](https://github.com/lowelllab/hyperf-dpop/blob/3817b7ed269390d68046a5521b9dcaa532badc85/docs/usage-examples.md#9-mtls-本地验收)
 

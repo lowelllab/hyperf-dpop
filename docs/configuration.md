@@ -1,6 +1,6 @@
 # 包能力与配置
 
-以下配置适用于 Hyperf 适配包 v0.2.1。宿主发布 [dpop.php 模板](../packages/hyperf-dpop/publish/dpop.php)后，将配置集中在 `config/autoload/dpop.php`。升级时可将新增键合并到已有文件中，原有平铺键继续生效。
+以下配置适用于 Hyperf 适配包 v0.3.0。宿主发布 [dpop.php 模板](../packages/hyperf-dpop/publish/dpop.php)后，将配置集中在 `config/autoload/dpop.php`。升级时可将新增键合并到已有文件中，原有平铺键继续生效。
 
 | 能力 | 配置或接入点 |
 | --- | --- |
@@ -28,7 +28,7 @@
 
 `mtls_enabled` 默认为 `false`。模板也接受 `DPOP_MTLS_ENABLED=true` 或 `false`，以及 `DPOP_MTLS_CLIENT_CA`、`DPOP_MTLS_CLIENT_CRL`、`DPOP_GATEWAY_BIND`、`DPOP_GATEWAY_CERT` 和 `DPOP_BACKEND_ADDR`。开启时必须在生成配置时提供客户端 CA 文件，并在应用配置中列出直接连接 Hyperf 的网关 IP。`mtls_client_crl` 可选，用于加载 PEM 格式的吊销列表。
 
-已安装 `hyperf/command` 的宿主可生成候选配置，再用 HAProxy 检查。从适配包 0.2.1 起，`--output` 可直接将配置写入文件，宿主启动日志继续走原有输出。路径可相对当前目录，目标目录须已存在。成功时整文件替换，替换时保留权限，新文件遵循调用者的 `umask`。配置生成失败时保留原文件。
+安装适配包后可以生成候选配置，再用 HAProxy 检查。从适配包 0.2.1 起，`--output` 可直接将配置写入文件，宿主启动日志继续走原有输出。路径可相对当前目录，目标目录须已存在。成功时整文件替换，替换时保留权限，新文件遵循调用者的 `umask`。配置生成失败时保留原文件。
 
 ```bash
 php bin/hyperf.php dpop:gateway-config --output haproxy-dpop.next.cfg && \

@@ -4,7 +4,7 @@
 
 ## 版本与依赖
 
-当前双包为 lowelllab/dpop-core 及 lowelllab/hyperf-dpop。公开版本分别为核心 0.1.0、适配 0.2.1，候选工作区按 0.2.x-dev 和 0.3.x-dev 解析。PHP 命名空间为 Acme\Dpop 及 Acme\HyperfDpop。使用 [发布指南](publishing.md) 准备两个独立包根目录。 [兼容说明](compatibility.md)
+当前双包为 lowelllab/dpop-core 及 lowelllab/hyperf-dpop。公开版本分别为核心 0.2.0、适配 0.3.0，工作区开发别名为 0.2.x-dev 和 0.3.x-dev。PHP 命名空间为 Acme\Dpop 及 Acme\HyperfDpop。使用 [发布指南](publishing.md) 准备两个独立包根目录。 [兼容说明](compatibility.md)
 
 首版许可MIT；第三方依赖保持各自许可。更新依赖时重新执行协议边界、存储竞争、协程取消和HTTP端到端，不以composer约束满足替代兼容性结果。
 

@@ -2,13 +2,13 @@
 
 需要完整接入代码和客户端请求流程时，先看[使用示例](usage-examples.md)。
 
-状态：正式发行版本为核心 0.1.0、适配 0.2.1；安装与更新状态见[发布指南](publishing.md)。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
+当前正式版本为核心 0.2.0、适配 0.3.0。Composer包名为`lowelllab/dpop-core`和`lowelllab/hyperf-dpop`。PHP命名空间继续使用`Acme\Dpop`和`Acme\HyperfDpop`，与Composer包名独立，现有接入代码无需改名。
 
 ## 1. 包与运行环境
 
-业务项目安装 `lowelllab/hyperf-dpop` 即可引入核心。当前公开版使用 PHP `^8.5` 和 Hyperf `~3.2.0`。兼容候选面向 PHP 8.2.35 至 8.5.x，安装和验证见 [PHP 兼容说明](compatibility.md)。
+业务项目安装 `lowelllab/hyperf-dpop` 即可引入核心。当前运行范围为 PHP `>=8.2.35 <8.6`、Hyperf `~3.2.0` 和 Linux Swoole `~6.2.5`。安装和验证见 [PHP 兼容说明](compatibility.md)。
 
-正式接入使用 `composer require "lowelllab/hyperf-dpop:^0.2.1"`，核心自动引入，保持宿主默认稳定性。默认准入预算需要 `hyperf/redis`，`dpop:doctor` 和 `dpop:gateway-config` 需要 `hyperf/command`。 [完整安装示例](usage-examples.md) · [发布指南](publishing.md)
+正式接入使用 `composer require "lowelllab/hyperf-dpop:^0.3.0" "hyperf/redis:~3.2.0"`。适配包会引入协议核心与 `hyperf/command`，`hyperf/redis` 用于默认共享认证预算。 [完整安装示例](usage-examples.md) · [发布指南](publishing.md)
 
 默认方案需要pdo_mysql及共享Redis：MySQL负责权威防重放，Redis负责跨Worker/实例认证预算。切换Redis重放驱动不会消除预算，也不会获得数据库同等的恢复保证。
 
