@@ -70,7 +70,7 @@ gateway() {
                 fi
                 "${compose[@]}" exec -T gateway-app php tests/gateway-e2e.php recovery-restored
             fi
-            cp "${DPOP_WORKSPACE:-.}/build/gateway/result.json" "${DPOP_WORKSPACE:-.}/build/gateway/result-$driver-$mtls.json"
+            "${compose[@]}" exec -T gateway-app +                cp build/gateway/result.json "build/gateway/result-$driver-$mtls.json"
             "${compose[@]}" stop gateway gateway-app
         done
     done

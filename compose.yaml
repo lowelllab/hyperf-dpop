@@ -15,6 +15,9 @@ services:
       - composer-cache:/tmp/composer-cache
     environment:
       COMPOSER_CACHE_DIR: /tmp/composer-cache
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: /workspace
       DPOP_EXPECTED_PHP: ${DPOP_EXPECTED_PHP:-8.5.12}
       DPOP_TEST_REPLAY_DRIVER: ${DPOP_TEST_REPLAY_DRIVER:-mysql}
       DPOP_TEST_MYSQL_DSN: mysql:host=mysql;dbname=dpop_test;charset=utf8mb4
